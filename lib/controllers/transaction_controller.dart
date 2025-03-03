@@ -21,10 +21,13 @@ class TransactionController extends GetxController {
   var expandedIndex = (-1).obs;
   var transactionDetailItems = <TransactionDetailModel>[].obs;
   var total = 0.obs;
+  var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
+  var textSingleDate = ''.obs;
   var textStartDate = ''.obs;
   var textEndDate = ''.obs;
+  var checkSingleDate = true.obs;
 
   @override
   void onInit() {
@@ -36,7 +39,11 @@ class TransactionController extends GetxController {
     try {
       isLoading(true);
       var result = await RemoteDataSource.getTransactions(
-          startDate.value, endDate.value);
+        startDate.value,
+        endDate.value,
+        singleDate.value,
+        checkSingleDate.value,
+      );
       if (result != null) {
         transactionItems.assignAll(result);
         total.value = transactionItems
@@ -162,32 +169,45 @@ class TransactionController extends GetxController {
     return false;
   }
 
-  chooseDate(startorend) async {
-    DateTime? pickedDate = await showDatePicker(
-        context: Get.context!,
-        initialDate: startorend == 'start' ? startDate.value : endDate.value,
-        firstDate: DateTime(DateTime.now().year - 1),
-        lastDate: DateTime(DateTime.now().year + 1),
-        //initialEntryMode: DatePickerEntryMode.input,
-        // initialDatePickerMode: DatePickerMode.year,
-        // helpText: 'Pilih Tanggal Uji',
-        cancelText: 'Close',
-        confirmText: 'Confirm',
-        errorFormatText: 'Enter valid date',
-        errorInvalidText: 'Enter valid date range',
-        // fieldLabelText: 'Pilih Tanggal Uji',
-        fieldHintText: 'Month/Date/Year',
-        selectableDayPredicate: disableDate);
-    if (startorend == 'start') {
-      if (pickedDate != null && pickedDate != startDate.value) {
-        startDate.value = pickedDate;
-        textStartDate.value =
-            DateFormat('dd MMMM yyyy').format(startDate.value);
-      }
+  chooseDate(singleOrstartOrend) async {
+    var initialDate = DateTime.now();
+    if (singleOrstartOrend == 'single') {
+      initialDate = singleDate.value;
+    } else if (singleOrstartOrend == 'start') {
+      initialDate = startDate.value;
     } else {
-      if (pickedDate != null && pickedDate != endDate.value) {
-        endDate.value = pickedDate;
-        textEndDate.value = DateFormat('dd MMMM yyyy').format(endDate.value);
+      initialDate = endDate.value;
+    }
+    DateTime? pickedDate = await showDatePicker(
+      context: Get.context!,
+      initialDate: initialDate,
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 1),
+      cancelText: 'Close',
+      confirmText: 'Confirm',
+      errorFormatText: 'Enter valid date',
+      errorInvalidText: 'Enter valid date range',
+      fieldHintText: 'Month/Date/Year',
+      selectableDayPredicate: disableDate,
+    );
+    if (pickedDate != null) {
+      if (singleOrstartOrend == 'single') {
+        if (pickedDate != singleDate.value) {
+          singleDate.value = pickedDate;
+          textSingleDate.value =
+              DateFormat('dd MMMM yyyy').format(singleDate.value);
+        }
+      } else if (singleOrstartOrend == 'start') {
+        if (pickedDate != startDate.value) {
+          startDate.value = pickedDate;
+          textStartDate.value =
+              DateFormat('dd MMMM yyyy').format(startDate.value);
+        }
+      } else {
+        if (pickedDate != endDate.value) {
+          endDate.value = pickedDate;
+          textEndDate.value = DateFormat('dd MMMM yyyy').format(endDate.value);
+        }
       }
     }
   }

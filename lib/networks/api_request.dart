@@ -57,13 +57,13 @@ class RemoteDataSource {
   }
 
   // GET TRANSACTION
-  static Future<List<TransactionModel>?> getTransactions(
-      DateTime startdate, DateTime enddate) async {
+  static Future<List<TransactionModel>?> getTransactions(DateTime startdate,
+      DateTime enddate, DateTime singledate, bool checksingledate) async {
     try {
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.getTransactions;
-      final response =
-          await Dio().get('$url?startdate=$startdate&enddate=$enddate');
+      final response = await Dio().get(
+          '$url?startdate=$startdate&enddate=$enddate&singledate=$singledate&checksingledate=$checksingledate');
       if (response.statusCode == 200) {
         List<dynamic> jsonData = response.data;
         // print(jsonData);
