@@ -4,7 +4,7 @@ class TransactionModel {
   String? transactionDate;
   String? kios;
   int? grandTotal;
-  bool? deleteStatus;
+  bool deleteStatus = false;
 
   TransactionModel(
       {this.id,
@@ -12,7 +12,7 @@ class TransactionModel {
       this.transactionDate,
       this.kios,
       this.grandTotal,
-      this.deleteStatus});
+      required this.deleteStatus});
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

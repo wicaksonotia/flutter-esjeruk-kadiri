@@ -56,6 +56,23 @@ class RemoteDataSource {
     }
   }
 
+  // DELETE TRANSACTION
+  static Future<bool> deleteTransaction(int numerator, String kios) async {
+    try {
+      Dio dio = Dio();
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteTransaction;
+      Response response =
+          await dio.delete('$url?numerator=$numerator&kios=$kios');
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
   // GET TRANSACTION
   static Future<List<TransactionModel>?> getTransactions(DateTime startdate,
       DateTime enddate, DateTime singledate, bool checksingledate) async {

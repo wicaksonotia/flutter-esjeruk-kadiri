@@ -47,6 +47,7 @@ class TransactionController extends GetxController {
       if (result != null) {
         transactionItems.assignAll(result);
         total.value = transactionItems
+            .where((e) => e.deleteStatus == false)
             .map((e) => e.grandTotal ?? 0)
             .fold(0, (value, element) => value + element);
       }
@@ -68,7 +69,27 @@ class TransactionController extends GetxController {
     }
   }
 
-  void PrintTransaction(int numerator, String kios) async {
+  void removeTransaction(int numerator, String kios) async {
+    try {
+      isLoading(true);
+      var result = await RemoteDataSource.deleteTransaction(numerator, kios);
+      if (result) {
+        fetchTransaction();
+        Get.snackbar('Notification', 'Transaction deleted',
+            icon: const Icon(Icons.info), snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar('Notification', 'Error delete transaction',
+            icon: const Icon(Icons.info), snackPosition: SnackPosition.BOTTOM);
+      }
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  /// ===================================
+  /// PRINT TRANSACTION
+  /// ===================================
+  void printTransaction(int numerator, String kios) async {
     bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
     if (connectionStatus) {
       List<int> nota = await printPurchaseOrder(numerator, kios);
@@ -162,6 +183,9 @@ class TransactionController extends GetxController {
     return bytes;
   }
 
+  /// ===================================
+  /// FILTER DATE
+  /// ===================================
   bool disableDate(DateTime day) {
     if ((day.isBefore(DateTime.now().add(const Duration(days: 0))))) {
       return true;

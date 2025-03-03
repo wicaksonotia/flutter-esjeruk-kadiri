@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:esjerukkadiri/controllers/transaction_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
@@ -132,45 +133,94 @@ class TransactionPageState extends State<TransactionPage> {
               var kios = transactionItem.kios!;
               var grandtotal = transactionItem.grandTotal;
 
-              return ListTile(
-                title: Text(
-                  '${kios.toUpperCase()}-${numerator.toString().padLeft(4, '0').toUpperCase()}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(DateFormat('dd MMM yyyy')
-                    .format(DateTime.parse(transactionDate))),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
+              return Slidable(
+                key: Key(numerator.toString()),
+                endActionPane: ActionPane(
+                  extentRatio: 0.25,
+                  motion: const ScrollMotion(),
                   children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          const TextSpan(
-                            text: 'Rp ',
-                            style: TextStyle(
-                              fontSize: MySizes.fontSizeMd,
-                            ),
-                          ),
-                          TextSpan(
-                            text: CurrencyFormat.convertToIdr(grandtotal, 0),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: MyColors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.print, color: MyColors.green),
-                      onPressed: () {
-                        transactionController.PrintTransaction(numerator, kios);
+                    SlidableAction(
+                      onPressed: (context) {
+                        transactionController.removeTransaction(
+                            numerator, kios);
                       },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Delete',
                     ),
                   ],
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[300]!, width: 1.0),
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      '${kios.toUpperCase()}-${numerator.toString().padLeft(4, '0').toUpperCase()}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(DateFormat('dd MMM yyyy')
+                        .format(DateTime.parse(transactionDate))),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Rp ',
+                                    style: TextStyle(
+                                      fontSize: MySizes.fontSizeMd,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: CurrencyFormat.convertToIdr(
+                                        grandtotal, 0),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: MyColors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (transactionItem.deleteStatus)
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.remove_circle,
+                                    color: Colors.red,
+                                    size: 16,
+                                  ),
+                                  Text(
+                                    'Deleted',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.print, color: MyColors.green),
+                          onPressed: () {
+                            transactionController.printTransaction(
+                                numerator, kios);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             },
