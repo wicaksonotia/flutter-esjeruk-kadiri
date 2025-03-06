@@ -149,8 +149,17 @@ class CartController extends GetxController {
     final ByteData data = await rootBundle.load('assets/images/logo.jpg');
     final Uint8List bytesImg = data.buffer.asUint8List();
     final image = decodeImage(bytesImg);
-    final resizedImage = copyResize(image!, width: 250);
+    final resizedImage = copyResize(image!, width: 300);
     bytes += generator.image(resizedImage);
+
+    bytes += generator.text(
+        'Dsn. Sumbertugu RT 07 RW 04 \nDepan Musholla Sumbertugu',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.text('Kec. Gampengrejo, Kab. Kediri',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.text('Telp. 085755124535',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.feed(2);
 
     // CART LIST
     for (var cartItem in cartList) {

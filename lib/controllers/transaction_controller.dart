@@ -115,8 +115,17 @@ class TransactionController extends GetxController {
     final ByteData data = await rootBundle.load('assets/images/logo.jpg');
     final Uint8List bytesImg = data.buffer.asUint8List();
     final image = decodeImage(bytesImg);
-    final resizedImage = copyResize(image!, width: 250);
+    final resizedImage = copyResize(image!, width: 300);
     bytes += generator.image(resizedImage);
+
+    bytes += generator.text(
+        'Dsn. Sumbertugu RT 07 RW 04 \nDepan Musholla Sumbertugu',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.text('Kec. Gampengrejo, Kab. Kediri',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.text('Telp. 085755124535',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.feed(1);
 
     var result = await RemoteDataSource.getTransactionDetails(numerator, kios);
     transactionDetailItems.assignAll(result!);
@@ -158,7 +167,7 @@ class TransactionController extends GetxController {
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),
     ]);
-
+    bytes += generator.feed(1);
     //barcode
     // final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
     // bytes += generator.barcode(Barcode.upcA(barData));

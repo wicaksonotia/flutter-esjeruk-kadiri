@@ -223,7 +223,7 @@ class TransactionPageState extends State<TransactionPage> {
                                     width:
                                         MediaQuery.of(context).size.width * 0.5,
                                     child: Text(
-                                        details![detailIndex].productName ??
+                                        details[detailIndex].productName ??
                                             'Unknown Product'),
                                   ),
                                   Container(
@@ -238,7 +238,7 @@ class TransactionPageState extends State<TransactionPage> {
                                         0.25,
                                     alignment: Alignment.centerRight,
                                     child: Text(CurrencyFormat.convertToIdr(
-                                        details![detailIndex].totalPrice, 0)),
+                                        details[detailIndex].totalPrice, 0)),
                                   ),
                                 ],
                               );
