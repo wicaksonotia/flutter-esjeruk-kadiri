@@ -1,3 +1,4 @@
+import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
 import 'package:esjerukkadiri/models/product_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
@@ -165,7 +166,9 @@ class CartController extends GetxController {
           styles: const PosStyles(align: PosAlign.center),
         ),
         PosColumn(
-          text: (cartItem.productModel.price! * cartItem.quantity).toString(),
+          text: (CurrencyFormat.convertToIdr(
+                  cartItem.productModel.price! * cartItem.quantity, 0))
+              .toString(),
           width: 3,
           styles: const PosStyles(align: PosAlign.right),
         ),
@@ -179,7 +182,7 @@ class CartController extends GetxController {
         styles: const PosStyles(align: PosAlign.left, bold: true),
       ),
       PosColumn(
-        text: totalPrice.value.toString(),
+        text: (CurrencyFormat.convertToIdr(totalPrice.value, 0)).toString(),
         width: 6,
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),

@@ -134,7 +134,8 @@ class TransactionController extends GetxController {
           styles: const PosStyles(align: PosAlign.center),
         ),
         PosColumn(
-          text: (cartItem.totalPrice).toString(),
+          text:
+              (CurrencyFormat.convertToIdr(cartItem.totalPrice, 0)).toString(),
           width: 3,
           styles: const PosStyles(align: PosAlign.right),
         ),

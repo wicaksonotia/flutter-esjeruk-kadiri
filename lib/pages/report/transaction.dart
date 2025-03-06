@@ -132,11 +132,12 @@ class TransactionPageState extends State<TransactionPage> {
               var transactionDate = transactionItem.transactionDate!;
               var kios = transactionItem.kios!;
               var grandtotal = transactionItem.grandTotal;
+              var details = transactionItem.details;
 
               return Slidable(
                 key: Key(numerator.toString()),
                 endActionPane: ActionPane(
-                  extentRatio: 0.25,
+                  // extentRatio: 0.4,
                   motion: const ScrollMotion(),
                   children: [
                     SlidableAction(
@@ -149,78 +150,104 @@ class TransactionPageState extends State<TransactionPage> {
                       icon: Icons.delete,
                       label: 'Delete',
                     ),
+                    SlidableAction(
+                      onPressed: (context) {
+                        transactionController.printTransaction(numerator, kios);
+                      },
+                      backgroundColor: Color(0xFF21B7CA),
+                      foregroundColor: Colors.white,
+                      icon: Icons.print,
+                      label: 'Print',
+                    ),
                   ],
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!, width: 1.0),
+                child: ExpansionTile(
+                  title: Text(
+                    '${kios.toUpperCase()}-${numerator.toString().padLeft(4, '0').toUpperCase()}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: ListTile(
-                    title: Text(
-                      '${kios.toUpperCase()}-${numerator.toString().padLeft(4, '0').toUpperCase()}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  subtitle: Text(DateFormat('dd MMM yyyy HH:mm')
+                      .format(DateTime.parse(transactionDate))),
+                  trailing: Column(
+                    children: [
+                      Text(
+                        CurrencyFormat.convertToIdr(grandtotal, 0),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: MyColors.green),
                       ),
-                    ),
-                    subtitle: Text(DateFormat('dd MMM yyyy')
-                        .format(DateTime.parse(transactionDate))),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
+                      if (transactionItem.deleteStatus!)
+                        const Row(
                           children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: 'Rp ',
-                                    style: TextStyle(
-                                      fontSize: MySizes.fontSizeMd,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: CurrencyFormat.convertToIdr(
-                                        grandtotal, 0),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: MyColors.red,
-                                    ),
-                                  ),
-                                ],
+                            Icon(
+                              Icons.remove_circle,
+                              color: Colors.red,
+                              size: 16,
+                            ),
+                            Text(
+                              'Deleted',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: MySizes.fontSizeSm,
                               ),
                             ),
-                            if (transactionItem.deleteStatus)
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.remove_circle,
-                                    color: Colors.red,
-                                    size: 16,
-                                  ),
-                                  Text(
-                                    'Deleted',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                ],
-                              ),
                           ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.print, color: MyColors.green),
-                          onPressed: () {
-                            transactionController.printTransaction(
-                                numerator, kios);
-                          },
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
+                  leading: const Icon(Icons.receipt),
+                  iconColor: MyColors.green,
+                  children: [
+                    ListTile(
+                      title: const Text(
+                        'Transaction Details',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: details!.length,
+                            itemBuilder: (context, detailIndex) {
+                              return Row(
+                                children: [
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Text(
+                                        details![detailIndex].productName ??
+                                            'Unknown Product'),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.1,
+                                    child: Text(
+                                        '${details[detailIndex].quantity}'),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    alignment: Alignment.centerRight,
+                                    child: Text(CurrencyFormat.convertToIdr(
+                                        details![detailIndex].totalPrice, 0)),
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
