@@ -78,12 +78,6 @@ class _ProductPageState extends State<ProductPage> {
                             Get.toNamed('/bluetooth_setting');
                           }),
                     ),
-                    const PopupMenuItem(
-                      child: ListTile(
-                        leading: Icon(Icons.settings),
-                        title: Text('Settings'),
-                      ),
-                    ),
                     PopupMenuItem(
                       child: ListTile(
                         leading: const Icon(Icons.logout),

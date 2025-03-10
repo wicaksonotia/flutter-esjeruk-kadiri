@@ -43,7 +43,7 @@ class LoginController extends GetxController {
       }
     } catch (error) {
       Get.snackbar('Notification', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.BOTTOM);
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } finally {
       isLoading(false);
     }

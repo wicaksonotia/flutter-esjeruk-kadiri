@@ -1,6 +1,7 @@
 import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
+import 'package:esjerukkadiri/controllers/login_controller.dart';
 import 'package:esjerukkadiri/pages/report/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -20,6 +21,7 @@ class TransactionPage extends StatefulWidget {
 class TransactionPageState extends State<TransactionPage> {
   final TransactionController transactionController =
       Get.put(TransactionController());
+  final LoginController loginController = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,36 @@ class TransactionPageState extends State<TransactionPage> {
               Get.back();
             },
           ),
+          actions: [
+            PopupMenuButton(
+              color: Colors.white,
+              icon: const Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              ),
+              onSelected: (dynamic value) {},
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  child: ListTile(
+                      leading: const Icon(Icons.bluetooth_searching),
+                      title: const Text('Setting Bluetooth'),
+                      onTap: () {
+                        Get.back();
+                        Get.toNamed('/bluetooth_setting');
+                      }),
+                ),
+                PopupMenuItem(
+                  child: ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: const Text('Logout'),
+                    onTap: () {
+                      loginController.logout();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       body: Obx(() {
@@ -154,7 +186,7 @@ class TransactionPageState extends State<TransactionPage> {
                       onPressed: (context) {
                         transactionController.printTransaction(numerator, kios);
                       },
-                      backgroundColor: Color(0xFF21B7CA),
+                      backgroundColor: const Color(0xFF21B7CA),
                       foregroundColor: Colors.white,
                       icon: Icons.print,
                       label: 'Print',
@@ -179,23 +211,13 @@ class TransactionPageState extends State<TransactionPage> {
                             fontSize: 18,
                             color: MyColors.green),
                       ),
-                      if (transactionItem.deleteStatus!)
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.remove_circle,
-                              color: Colors.red,
-                              size: 16,
-                            ),
-                            Text(
-                              'Deleted',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: MySizes.fontSizeSm,
-                              ),
-                            ),
-                          ],
+                      Text(
+                        transactionItem.deleteStatus! ? 'Deleted' : '',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: MySizes.fontSizeSm,
                         ),
+                      ),
                     ],
                   ),
                   leading: const Icon(Icons.receipt),

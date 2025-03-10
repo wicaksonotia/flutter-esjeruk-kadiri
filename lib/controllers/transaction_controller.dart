@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
 import 'package:esjerukkadiri/models/transaction_detail_model.dart';
@@ -76,10 +74,10 @@ class TransactionController extends GetxController {
       if (result) {
         fetchTransaction();
         Get.snackbar('Notification', 'Transaction deleted',
-            icon: const Icon(Icons.info), snackPosition: SnackPosition.BOTTOM);
+            icon: const Icon(Icons.info), snackPosition: SnackPosition.TOP);
       } else {
         Get.snackbar('Notification', 'Error delete transaction',
-            icon: const Icon(Icons.info), snackPosition: SnackPosition.BOTTOM);
+            icon: const Icon(Icons.info), snackPosition: SnackPosition.TOP);
       }
     } finally {
       isLoading(false);
@@ -96,11 +94,11 @@ class TransactionController extends GetxController {
       var resultPrint = await PrintBluetoothThermal.writeBytes(nota);
       if (!resultPrint) {
         Get.snackbar('Notification', 'Failed to print',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.BOTTOM);
+            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       }
     } else {
       Get.snackbar('Notification', 'Bluetooth not connected',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.BOTTOM);
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     }
   }
 

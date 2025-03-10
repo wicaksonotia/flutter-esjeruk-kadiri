@@ -95,8 +95,7 @@ class CartController extends GetxController {
         if (resultSave) {
           // NOTIF SAVE SUCCESS
           Get.snackbar('Notification', 'Data saved successfully',
-              icon: const Icon(Icons.check),
-              snackPosition: SnackPosition.BOTTOM);
+              icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
 
           bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
           if (connectionStatus) {
@@ -105,12 +104,12 @@ class CartController extends GetxController {
             if (!resultPrint) {
               Get.snackbar('Notification', 'Failed to print',
                   icon: const Icon(Icons.error),
-                  snackPosition: SnackPosition.BOTTOM);
+                  snackPosition: SnackPosition.TOP);
             }
           } else {
             Get.snackbar('Notification', 'Bluetooth not connected',
                 icon: const Icon(Icons.error),
-                snackPosition: SnackPosition.BOTTOM);
+                snackPosition: SnackPosition.TOP);
           }
           // CLEAR TRANSACTION
           cartList.clear();
@@ -120,12 +119,12 @@ class CartController extends GetxController {
         }
       } else {
         Get.snackbar('Notification', 'Your cart is empty',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.BOTTOM);
+            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       }
     } catch (e) {
       Get.snackbar(
           'Notification', 'Failed to save transaction: ${e.toString()}',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.BOTTOM);
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
     } finally {
       isLoading(false);
     }
@@ -159,7 +158,7 @@ class CartController extends GetxController {
         styles: const PosStyles(align: PosAlign.center));
     bytes += generator.text('Telp. 085755124535',
         styles: const PosStyles(align: PosAlign.center));
-    bytes += generator.feed(2);
+    bytes += generator.feed(1);
 
     // CART LIST
     for (var cartItem in cartList) {
@@ -196,7 +195,7 @@ class CartController extends GetxController {
         styles: const PosStyles(align: PosAlign.right, bold: true),
       ),
     ]);
-
+    bytes += generator.feed(1);
     //barcode
     // final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
     // bytes += generator.barcode(Barcode.upcA(barData));
