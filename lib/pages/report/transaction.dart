@@ -2,6 +2,7 @@ import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/login_controller.dart';
+import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
 import 'package:esjerukkadiri/pages/report/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -19,9 +20,11 @@ class TransactionPage extends StatefulWidget {
 }
 
 class TransactionPageState extends State<TransactionPage> {
-  final TransactionController transactionController =
+  final TransactionController _transactionController =
       Get.put(TransactionController());
-  final LoginController loginController = Get.find<LoginController>();
+  final PrintNotaController _printNotaController =
+      Get.find<PrintNotaController>();
+  final LoginController _loginController = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +70,7 @@ class TransactionPageState extends State<TransactionPage> {
                     leading: const Icon(Icons.logout),
                     title: const Text('Logout'),
                     onTap: () {
-                      loginController.logout();
+                      _loginController.logout();
                     },
                   ),
                 ),
@@ -77,12 +80,12 @@ class TransactionPageState extends State<TransactionPage> {
         ),
       ),
       body: Obx(() {
-        if (transactionController.isLoading.value) {
+        if (_transactionController.isLoading.value) {
           return Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: ListView.builder(
-              itemCount: transactionController.transactionItems.length,
+              itemCount: _transactionController.transactionItems.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -130,7 +133,7 @@ class TransactionPageState extends State<TransactionPage> {
             ),
           );
         }
-        if (transactionController.transactionItems.isEmpty) {
+        if (_transactionController.transactionItems.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -153,13 +156,13 @@ class TransactionPageState extends State<TransactionPage> {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            transactionController.fetchTransaction();
+            _transactionController.fetchTransaction();
           },
           child: ListView.builder(
-            itemCount: transactionController.transactionItems.length,
+            itemCount: _transactionController.transactionItems.length,
             itemBuilder: (context, index) {
               var transactionItem =
-                  transactionController.transactionItems[index];
+                  _transactionController.transactionItems[index];
               var numerator = transactionItem.numerator!;
               var transactionDate = transactionItem.transactionDate!;
               var kios = transactionItem.kios!;
@@ -174,7 +177,7 @@ class TransactionPageState extends State<TransactionPage> {
                   children: [
                     SlidableAction(
                       onPressed: (context) {
-                        transactionController.removeTransaction(
+                        _transactionController.removeTransaction(
                             numerator, kios);
                       },
                       backgroundColor: Colors.red,
@@ -184,7 +187,7 @@ class TransactionPageState extends State<TransactionPage> {
                     ),
                     SlidableAction(
                       onPressed: (context) {
-                        transactionController.printTransaction(numerator, kios);
+                        _printNotaController.printTransaction(numerator, kios);
                       },
                       backgroundColor: const Color(0xFF21B7CA),
                       foregroundColor: Colors.white,

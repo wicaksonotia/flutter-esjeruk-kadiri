@@ -4,6 +4,8 @@ class TransactionModel {
   String? transactionDate;
   String? kios;
   int? grandTotal;
+  int? discount;
+  int? total;
   bool? deleteStatus;
   List<Details>? details;
 
@@ -13,6 +15,8 @@ class TransactionModel {
       this.transactionDate,
       this.kios,
       this.grandTotal,
+      this.discount,
+      this.total,
       this.deleteStatus,
       this.details});
 
@@ -22,6 +26,8 @@ class TransactionModel {
     transactionDate = json['transaction_date'];
     kios = json['kios'];
     grandTotal = json['grand_total'];
+    discount = json['discount'];
+    total = json['total'];
     deleteStatus = json['delete_status'];
     if (json['details'] != null) {
       details = <Details>[];
@@ -38,6 +44,8 @@ class TransactionModel {
     data['transaction_date'] = transactionDate;
     data['kios'] = kios;
     data['grand_total'] = grandTotal;
+    data['discount'] = discount;
+    data['total'] = total;
     data['delete_status'] = deleteStatus;
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();

@@ -6,6 +6,7 @@ import 'package:esjerukkadiri/models/product_model.dart';
 import 'package:esjerukkadiri/models/transaction_detail_model.dart';
 import 'package:esjerukkadiri/models/transaction_model.dart';
 import 'package:esjerukkadiri/networks/api_endpoints.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoteDataSource {
   static Future<bool> login(FormData data) async {
@@ -36,14 +37,37 @@ class RemoteDataSource {
   }
 
   // SAVE TRANSACTION
-  static Future<bool> saveTransaction(List<dynamic> data) async {
+  static Future<bool> saveDetailTransaction(List<dynamic> data) async {
     // String jsonData = jsonEncode(data);
     try {
+      Dio dio = Dio();
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.saveDetailTransaction;
+      Response response = await dio.post(url,
+          data: jsonEncode(data),
+          options: Options(
+            contentType: Headers.jsonContentType,
+          ));
+      if (response.statusCode == 200) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString(
+            'numerator', response.data['numerator'].toString());
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  static Future<bool> saveTransaction(String kios, int discount) async {
+    try {
+      var rawFormat = jsonEncode({'kios': kios, 'discount': discount});
       Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveTransaction;
       Response response = await dio.post(url,
-          data: jsonEncode(data),
+          data: rawFormat,
           options: Options(
             contentType: Headers.jsonContentType,
           ));
@@ -74,11 +98,14 @@ class RemoteDataSource {
   }
 
   // GET TRANSACTION
-  static Future<List<TransactionModel>?> getTransactions(DateTime startdate,
-      DateTime enddate, DateTime singledate, bool checksingledate) async {
+  static Future<List<TransactionModel>?> getHistoryTransactions(
+      DateTime startdate,
+      DateTime enddate,
+      DateTime singledate,
+      bool checksingledate) async {
     try {
-      var url =
-          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.getTransactions;
+      var url = ApiEndPoints.baseUrl +
+          ApiEndPoints.authEndpoints.getHistoryTransactions;
       final response = await Dio().get(
           '$url?startdate=$startdate&enddate=$enddate&singledate=$singledate&checksingledate=$checksingledate');
       if (response.statusCode == 200) {
@@ -92,8 +119,25 @@ class RemoteDataSource {
     }
   }
 
-  // GET TRANSACTION DETAILS
-  static Future<List<TransactionDetailModel>?> getTransactionDetails(
+  // GET TRANSACTION DETAIL BY NUMERATOR AND KIOS
+  static Future<TransactionModel?> getRowTransactionDetails(
+      int numerator, String kios) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.getRowTransactions;
+      final response = await Dio().get('$url?numerator=$numerator&kios=$kios');
+      if (response.statusCode == 200) {
+        dynamic jsonData = response.data;
+        return TransactionModel.fromJson(jsonData);
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // GET LIST TRANSACTION DETAILS BY NUMERATOR AND KIOS
+  static Future<List<TransactionDetailModel>?> getListTransactionDetails(
       int numerator, String kios) async {
     try {
       var url = ApiEndPoints.baseUrl +

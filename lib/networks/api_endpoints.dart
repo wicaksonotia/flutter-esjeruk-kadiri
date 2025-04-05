@@ -6,8 +6,10 @@ class ApiEndPoints {
 class _AuthEndPoints {
   final String login = 'loginkios';
   final String product = 'products';
+  final String saveDetailTransaction = 'savedetailtransaction';
   final String saveTransaction = 'savetransaction';
-  final String getTransactions = 'transactions';
+  final String getRowTransactions = 'gettransaction';
+  final String getHistoryTransactions = 'transactions';
   final String deleteTransaction = 'deletetransaction';
   final String getTransactionDetails = 'transactiondetails';
   final String categories = 'productCategory';
