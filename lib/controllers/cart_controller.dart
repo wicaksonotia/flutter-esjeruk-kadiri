@@ -1,8 +1,11 @@
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
 import 'package:esjerukkadiri/models/product_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -74,75 +77,135 @@ class CartController extends GetxController {
     }
   }
 
-  void saveCart() async {
-    try {
-      isLoading(true);
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (cartList.isNotEmpty) {
-        // Show dialog to input discount
-        TextEditingController discountController = TextEditingController();
-        int discount = 0;
-
-        await Get.defaultDialog(
-          title: "Enter Discount",
-          content: Column(
+  void showBottomSheet() async {
+    TextEditingController discountController = TextEditingController();
+    int discount = 0;
+    if (cartList.isNotEmpty) {
+      await Get.bottomSheet(
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16.0),
+              topRight: Radius.circular(16.0),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                "Enter Discount",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const Gap(10),
               TextField(
-                controller: discountController,
+                inputFormatters: [
+                  CurrencyTextInputFormatter.currency(
+                    locale: 'id',
+                    decimalDigits: 0,
+                    symbol: 'Rp.',
+                  )
+                ],
                 keyboardType: TextInputType.number,
+                controller: discountController,
                 decoration: const InputDecoration(
                   labelText: "Discount",
                   border: OutlineInputBorder(),
                 ),
               ),
+              const Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(Get.context!).size.width * .45,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: const BorderSide(color: MyColors.green),
+                        ),
+                      ),
+                      onPressed: () {
+                        Get.back();
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: MyColors.green),
+                      ),
+                    ),
+                  ),
+                  const Gap(5),
+                  SizedBox(
+                    width: MediaQuery.of(Get.context!).size.width * .45,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: MyColors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        discount = discountController.text.isNotEmpty
+                            ? int.parse(discountController.text)
+                            : 0;
+                        saveCart(discount);
+                        Get.back();
+                      },
+                      child: const Text(
+                        'Proccess',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
-          textConfirm: "Save",
-          textCancel: "No",
-          onConfirm: () {
-            discount = discountController.text.isNotEmpty
-                ? int.parse(discountController.text)
-                : 0;
-            Get.back();
-          },
-          onCancel: () {
-            discount = 0;
-            Get.back();
-          },
-        );
+        ),
+      );
+    } else {
+      Get.snackbar('Notification', 'Your cart is empty',
+          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      return;
+    }
+  }
 
-        var payload = cartList.map((cartItem) {
-          return {
-            'id_product': cartItem.idProduct,
-            'product_name': cartItem.productModel.productName.toString(),
-            'quantity': cartItem.quantity,
-            'unit_price': cartItem.productModel.price,
-            'kios': prefs.getString('username'),
-          };
-        }).toList();
-        var resultSave = await RemoteDataSource.saveDetailTransaction(payload);
-        if (resultSave) {
-          await RemoteDataSource.saveTransaction(
-            prefs.getString('username')!,
-            discount,
-          );
-          // NOTIF SAVE SUCCESS
-          Get.snackbar('Notification', 'Data saved successfully',
-              icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
-          // PRINT TRANSACTION
-          _printNotaController.printTransaction(
-            int.parse(prefs.getString('numerator')!),
-            prefs.getString('username')!,
-          );
-          // CLEAR TRANSACTION
-          cartList.clear();
-          totalAllQuantity = 0.obs;
-          totalPrice.value = 0;
-          update();
-        }
-      } else {
-        Get.snackbar('Notification', 'Your cart is empty',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+  void saveCart(discount) async {
+    try {
+      isLoading(true);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var payload = cartList.map((cartItem) {
+        return {
+          'id_product': cartItem.idProduct,
+          'product_name': cartItem.productModel.productName.toString(),
+          'quantity': cartItem.quantity,
+          'unit_price': cartItem.productModel.price,
+          'kios': prefs.getString('username'),
+        };
+      }).toList();
+      var resultSave = await RemoteDataSource.saveDetailTransaction(payload);
+      if (resultSave) {
+        await RemoteDataSource.saveTransaction(
+          prefs.getString('username')!,
+          discount,
+        );
+        // NOTIF SAVE SUCCESS
+        Get.snackbar('Notification', 'Data saved successfully',
+            icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);
+        // PRINT TRANSACTION
+        _printNotaController.printTransaction(
+          int.parse(prefs.getString('numerator')!),
+          prefs.getString('username')!,
+        );
+        // CLEAR TRANSACTION
+        cartList.clear();
+        totalAllQuantity = 0.obs;
+        totalPrice.value = 0;
+        update();
       }
     } catch (e) {
       Get.snackbar(

@@ -93,7 +93,7 @@ class _FooterProductState extends State<FooterProduct> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                cartController.saveCart();
+                cartController.showBottomSheet();
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

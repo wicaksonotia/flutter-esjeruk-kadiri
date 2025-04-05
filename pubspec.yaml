@@ -33,6 +33,7 @@ dependencies:
   bottom_navbar_with_indicator: ^0.0.9
   carousel_slider: ^5.0.0
   cupertino_icons: ^1.0.8
+  currency_text_input_formatter: ^2.3.0
   dio: ^5.7.0
   flutter:
     sdk: flutter
