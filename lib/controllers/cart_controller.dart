@@ -150,7 +150,8 @@ class CartController extends GetxController {
                       ),
                       onPressed: () {
                         discount = discountController.text.isNotEmpty
-                            ? int.parse(discountController.text)
+                            ? int.parse(discountController.text
+                                .replaceAll(RegExp('[^0-9]'), ''))
                             : 0;
                         saveCart(discount);
                         Get.back();
