@@ -13,7 +13,7 @@ class RouterClass {
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
     GetPage(page: () => const ProductPage(), name: product),
-    GetPage(page: () => TransactionPage(), name: reporttransaction),
+    GetPage(page: () => const TransactionPage(), name: reporttransaction),
     GetPage(page: () => const BluetoothSetting(), name: bluetoothSetting)
   ];
 }

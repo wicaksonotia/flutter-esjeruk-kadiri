@@ -41,6 +41,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
   void initState() {
     super.initState();
     getBluetoots();
+    autoConnectToRPP02N(); // Automatically attempt to connect to RPP02N on app start
     PrintBluetoothThermal.connectionStatus.then((bool result) {
       setState(() {
         connected = result;
@@ -251,8 +252,34 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
     });
     final bool result =
         await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-    print("state conected $result");
+    print("state connected $result");
     if (result) connected = true;
+    setState(() {
+      _progress = false;
+    });
+  }
+
+  Future<void> autoConnectToRPP02N() async {
+    setState(() {
+      _progress = true;
+      _msjprogress = "Searching for RPP02N...";
+    });
+
+    final List<BluetoothInfo> pairedDevices =
+        await PrintBluetoothThermal.pairedBluetooths;
+
+    final BluetoothInfo? targetDevice = pairedDevices.firstWhere(
+        (device) => device.name == "RPP02N",
+        orElse: () => BluetoothInfo(name: '', macAdress: ''));
+
+    if (targetDevice != null) {
+      await connect(targetDevice.macAdress);
+    } else {
+      setState(() {
+        _msj = "RPP02N not found. Please pair it in Bluetooth settings.";
+      });
+    }
+
     setState(() {
       _progress = false;
     });

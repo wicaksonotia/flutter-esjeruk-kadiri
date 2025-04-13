@@ -28,29 +28,27 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  animate_do: ^4.1.1
+  animate_do: ^4.2.0
   badges: ^3.1.2
   bottom_navbar_with_indicator: ^0.0.9
-  carousel_slider: ^5.0.0
   cupertino_icons: ^1.0.8
   currency_text_input_formatter: ^2.3.0
-  dio: ^5.7.0
+  dio: ^5.8.0+1
   flutter:
     sdk: flutter
   flutter_esc_pos_utils: ^1.0.1
-  flutter_slidable: ^3.1.2
+  flutter_slidable: ^4.0.0
   gap: ^3.0.1
-  get: ^4.6.6
-  http: ^1.2.2
+  get: ^4.7.2
+  http: ^1.3.0
   iconly: ^1.0.1
-  image: null
-  intl: ^0.19.0
-  permission_handler: ^11.4.0
+  intl: ^0.20.2
+  permission_handler: ^12.0.0+1
   print_bluetooth_thermal: ^1.1.6
   scrollable_positioned_list: ^0.3.8
-  shared_preferences: ^2.5.2
+  shared_preferences: ^2.5.3
   shimmer: ^3.0.0
-
+# animate_do,badges,bottom_navbar_with_indicator,cupertino_icons,currency_text_input_formatter,dio,flutter_esc_pos_utils,flutter_slidable,gap,get,http,iconly,intl,permission_handler,print_bluetooth_thermal,scrollable_positioned_list,shared_preferences,shimmer,carousel_slider
 dev_dependencies:
   flutter_launcher_icons: "^0.14.3"
   flutter_lints: ^4.0.0
