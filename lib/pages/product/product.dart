@@ -17,11 +17,11 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+  final ProductController productController = Get.find<ProductController>();
+  final LoginController loginController = Get.find<LoginController>();
+
   @override
   Widget build(BuildContext context) {
-    final ProductController productController = Get.find<ProductController>();
-    final LoginController loginController = Get.find<LoginController>();
-
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       bottomNavigationBar: const FooterProduct(),
@@ -90,7 +90,7 @@ class _ProductPageState extends State<ProductPage> {
                   ],
                 ),
               ],
-              backgroundColor: MyColors.green,
+              backgroundColor: MyColors.primary,
               flexibleSpace: const FlexibleSpaceBar(
                   collapseMode: CollapseMode.parallax,
                   background: Image(

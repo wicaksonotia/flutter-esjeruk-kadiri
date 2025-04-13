@@ -191,7 +191,7 @@ class _FilterReportState extends State<FilterReport> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: MyColors.green,
+                    backgroundColor: MyColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

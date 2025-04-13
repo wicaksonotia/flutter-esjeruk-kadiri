@@ -86,7 +86,7 @@ class _FooterReportState extends State<FooterReport> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // <-- Radius
                 ),
-                backgroundColor: MyColors.green,
+                backgroundColor: MyColors.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 textStyle: const TextStyle(

@@ -62,7 +62,7 @@ class _FooterProductState extends State<FooterProduct> {
                     child: const Icon(
                       Icons.shopping_bag,
                       size: 30,
-                      color: MyColors.green,
+                      color: MyColors.primary,
                     ),
                   ),
                   const Gap(10),
@@ -99,7 +99,7 @@ class _FooterProductState extends State<FooterProduct> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // <-- Radius
                 ),
-                backgroundColor: MyColors.green,
+                backgroundColor: MyColors.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 textStyle: const TextStyle(

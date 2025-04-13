@@ -1,5 +1,5 @@
 import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/controllers/product_category.dart';
+import 'package:esjerukkadiri/commons/lists.dart';
 import 'package:esjerukkadiri/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,67 +13,40 @@ class CategoriesMenu extends StatefulWidget {
 }
 
 class _CategoriesMenuState extends State<CategoriesMenu> {
-  int? groupValue = 8;
+  int? segmentedControlGroupValue = 8;
   bool selectedColor = false;
-  Map<int, Widget> categories = {};
-  final ProductCategoryController _productCategoryController =
-      Get.find<ProductCategoryController>();
   final ProductController productController = Get.find<ProductController>();
 
   @override
-  void initState() {
-    super.initState();
-    getProductCategories();
-  }
-
-  Future<void> getProductCategories() async {
-    // Simulate fetching data from an API or database
-    await Future.delayed(Duration(seconds: 2));
-    List<Map<String, dynamic>> fetchedCategories =
-        _productCategoryController.productCategoryItems
-            .map((item) => {
-                  'id': item.idCategories ?? '0',
-                  'name': item.name ?? 'Unknown',
-                })
-            .toList();
-
-    setState(() {
-      categories = {
-        for (int i = 0; i < fetchedCategories.length; i++)
-          fetchedCategories[i]['id']: Text(fetchedCategories[i]['name']),
-      };
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      child: categories.length >= 2
-          ? CupertinoSlidingSegmentedControl(
-              backgroundColor: Colors.transparent,
-              thumbColor: MyColors.green,
-              padding: const EdgeInsets.all(5),
-              groupValue: groupValue,
-              children: categories.map((key, value) {
-                return MapEntry(
-                  key,
-                  Text(
-                    (value as Text).data ?? "",
-                    style: TextStyle(
-                      color: groupValue == key ? Colors.white : Colors.black,
-                    ),
-                  ),
-                );
-              }),
-              onValueChanged: (value) {
-                productController.idProductCategory.value = value!;
-                productController.fetchProduct();
-                setState(() {
-                  groupValue = value;
-                });
-              },
-            )
-          : Text(''),
-    );
+    return CupertinoSlidingSegmentedControl(
+        backgroundColor: Colors.transparent,
+        thumbColor: MyColors.primary,
+        padding: const EdgeInsets.all(5),
+        groupValue: segmentedControlGroupValue,
+        children: Map.fromEntries(
+          kategori.map(
+            (item) => MapEntry(
+              item['value'] as int,
+              Text(
+                item['nama'] ?? "",
+                style: TextStyle(
+                  color: segmentedControlGroupValue == item['value']
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ),
+        onValueChanged: (int? i) {
+          if (i != null) {
+            productController.idProductCategory.value = i;
+            productController.fetchProduct();
+            setState(() {
+              segmentedControlGroupValue = i;
+            });
+          }
+        });
   }
 }

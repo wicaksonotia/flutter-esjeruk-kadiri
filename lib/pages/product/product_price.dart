@@ -19,7 +19,7 @@ class ProductPrice extends StatelessWidget {
           const TextSpan(
             text: 'Rp ',
             style: const TextStyle(
-              color: MyColors.green,
+              color: MyColors.primary,
               fontSize: MySizes.fontSizeMd,
             ),
           ),
@@ -28,7 +28,7 @@ class ProductPrice extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: MySizes.fontSizeXl,
-              color: MyColors.green,
+              color: MyColors.primary,
             ),
           ),
         ],

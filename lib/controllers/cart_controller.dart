@@ -126,7 +126,7 @@ class CartController extends GetxController {
                         backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          side: const BorderSide(color: MyColors.green),
+                          side: const BorderSide(color: MyColors.primary),
                         ),
                       ),
                       onPressed: () {
@@ -134,7 +134,7 @@ class CartController extends GetxController {
                       },
                       child: const Text(
                         'Cancel',
-                        style: TextStyle(color: MyColors.green),
+                        style: TextStyle(color: MyColors.primary),
                       ),
                     ),
                   ),
@@ -143,7 +143,7 @@ class CartController extends GetxController {
                     width: MediaQuery.of(Get.context!).size.width * .45,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColors.green,
+                        backgroundColor: MyColors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
