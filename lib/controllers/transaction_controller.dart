@@ -10,7 +10,6 @@ class TransactionController extends GetxController {
   List<CartModel> cartList = <CartModel>[].obs;
   var isLoading = true.obs;
   var isLoadingDetail = true.obs;
-  var expandedIndex = (-1).obs;
   var total = 0.obs;
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;

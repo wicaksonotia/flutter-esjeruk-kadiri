@@ -17,16 +17,34 @@ class PrintNotaController extends GetxController {
   /// ===================================
   void printTransaction(int numerator, String kios) async {
     bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
+    List<int> nota = await printPurchaseOrder(numerator, kios);
     if (connectionStatus) {
-      List<int> nota = await printPurchaseOrder(numerator, kios);
       var resultPrint = await PrintBluetoothThermal.writeBytes(nota);
       if (!resultPrint) {
         Get.snackbar('Notification', 'Failed to print',
             icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       }
     } else {
-      Get.snackbar('Notification', 'Bluetooth not connected',
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      PrintBluetoothThermal.pairedBluetooths.then((devices) {
+        for (var device in devices) {
+          if (device.name == "RPP02N") {
+            PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
+                .then((connected) {
+              // if (!connected) {
+              //   Get.snackbar('Notification', 'Failed to connect to RPP02N',
+              //       icon: const Icon(Icons.error),
+              //       snackPosition: SnackPosition.TOP);
+              // } else {
+              //   PrintBluetoothThermal.writeBytes(nota);
+              // }
+              if (connected) {
+                PrintBluetoothThermal.writeBytes(nota);
+              }
+            });
+            break;
+          }
+        }
+      });
     }
   }
 

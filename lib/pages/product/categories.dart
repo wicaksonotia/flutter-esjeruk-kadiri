@@ -14,7 +14,6 @@ class CategoriesMenu extends StatefulWidget {
 
 class _CategoriesMenuState extends State<CategoriesMenu> {
   int? segmentedControlGroupValue = 8;
-  bool selectedColor = false;
   final ProductController productController = Get.find<ProductController>();
 
   @override
