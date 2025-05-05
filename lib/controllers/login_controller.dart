@@ -31,12 +31,9 @@ class LoginController extends GetxController {
         // "password": passwordController.text,
       });
       bool result = await RemoteDataSource.login(formData);
-      // print(result);
       if (result) {
-        // final SharedPreferences prefs = await _prefs;
-        await prefs.setBool('statusLogin', true);
-        await prefs.setString('username', emailController.text.trim());
-        // await prefs.setString('password', passwordController.text);
+        // await prefs.setBool('statusLogin', true);
+        // await prefs.setString('username', emailController.text.trim());
         Get.offNamed('/product');
       } else {
         throw "Kios is not regsitered";

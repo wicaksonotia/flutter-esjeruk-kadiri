@@ -42,7 +42,7 @@ class CartController extends GetxController {
   void decrementProductQuantity(ProductModel dataProduct) {
     var index = cartList
         .indexWhere((element) => element.idProduct == dataProduct.idProduct);
-    if (index >= 0) {
+    if (index > 0) {
       if (cartList[index].quantity > 0) {
         cartList[index].quantity--;
         totalAllQuantity--;

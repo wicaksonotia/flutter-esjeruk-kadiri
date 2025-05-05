@@ -8,6 +8,7 @@ import 'package:image/image.dart';
 import 'package:intl/intl.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PrintNotaController extends GetxController {
   var transactionDetailItems = <TransactionDetailModel>[].obs;
@@ -62,13 +63,18 @@ class PrintNotaController extends GetxController {
     final resizedImage = copyResize(image!, width: 300);
     bytes += generator.image(resizedImage);
 
-    bytes += generator.text(
-        'Dsn. Sumbertugu RT 07 RW 04 \nDepan Musholla Sumbertugu',
+    // ALAMAT
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? kiosAddress = prefs.getString('alamat')?.replaceAll(r'\n', '\n');
+    bytes += generator.text('$kiosAddress',
         styles: const PosStyles(align: PosAlign.center));
-    bytes += generator.text('Kec. Gampengrejo, Kab. Kediri',
-        styles: const PosStyles(align: PosAlign.center));
-    bytes += generator.text('Telp. 085755124535',
-        styles: const PosStyles(align: PosAlign.center));
+    // bytes += generator.text(
+    //     'Dsn. Sumbertugu RT 07 RW 04 \nDepan Musholla Sumbertugu',
+    //     styles: const PosStyles(align: PosAlign.center));
+    // bytes += generator.text('Kec. Gampengrejo, Kab. Kediri',
+    //     styles: const PosStyles(align: PosAlign.center));
+    // bytes += generator.text('Whatsapp. 085755124535',
+    //     styles: const PosStyles(align: PosAlign.center));
     bytes += generator.feed(1);
 
     var result =
