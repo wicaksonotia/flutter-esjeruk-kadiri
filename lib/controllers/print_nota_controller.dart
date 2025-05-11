@@ -26,25 +26,37 @@ class PrintNotaController extends GetxController {
             icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       }
     } else {
+      var macPrinterAddress = "86:67:7A:49:4E:11";
       PrintBluetoothThermal.pairedBluetooths.then((devices) {
-        for (var device in devices) {
-          if (device.name == "RPP02N") {
-            PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
-                .then((connected) {
-              // if (!connected) {
-              //   Get.snackbar('Notification', 'Failed to connect to RPP02N',
-              //       icon: const Icon(Icons.error),
-              //       snackPosition: SnackPosition.TOP);
-              // } else {
-              //   PrintBluetoothThermal.writeBytes(nota);
-              // }
-              if (connected) {
-                PrintBluetoothThermal.writeBytes(nota);
+        PrintBluetoothThermal.connect(macPrinterAddress: macPrinterAddress)
+            .then((connected) {
+          if (!connected) {
+            Get.snackbar('Notification', 'Failed to connect to printer',
+                icon: const Icon(Icons.error),
+                snackPosition: SnackPosition.TOP);
+          } else {
+            PrintBluetoothThermal.writeBytes(nota).then((result) {
+              if (!result) {
+                Get.snackbar('Notification', 'Failed to print',
+                    icon: const Icon(Icons.error),
+                    snackPosition: SnackPosition.TOP);
               }
             });
-            break;
           }
-        }
+        });
+        // for (var device in devices) {
+        //   if (device.name == macPrinterAddress) {
+        //     PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
+        //         .then((connected) {
+        //       if (connected) {
+        //         PrintBluetoothThermal.writeBytes(nota);
+        //       } else {
+        //         print('Failed to connect to printer');
+        //       }
+        //     });
+        //     break;
+        //   }
+        // }
       });
     }
   }

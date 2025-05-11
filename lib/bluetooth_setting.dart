@@ -41,7 +41,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
   void initState() {
     super.initState();
     getBluetoots();
-    autoConnectToRPP02N(); // Automatically attempt to connect to RPP02N on app start
+    // autoConnectToRPP02N(); // Automatically attempt to connect to RPP02N on app start
     PrintBluetoothThermal.connectionStatus.then((bool result) {
       setState(() {
         connected = result;
