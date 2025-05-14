@@ -25,8 +25,7 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
     return Obx(
       () => BoxContainer(
         height: 35,
-        width: MediaQuery.of(context).size.width * 0.32,
-        padding: const EdgeInsets.all(3),
+        width: MediaQuery.of(context).size.width * 0.3,
         radius: 5,
         showBorder: true,
         borderColor: Colors.grey.shade200,
@@ -52,8 +51,8 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
                 color: Colors.black,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.05,
               child: Center(
                 child: Text(
                   '${cartController.getProductQuantity(widget.dataProduct)}',
@@ -84,67 +83,6 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
           ],
         ),
       ),
-      // Container(
-      //   height: 35,
-      //   padding: const EdgeInsets.all(3),
-      //   decoration: BoxDecoration(
-      //     color: MyColors.primary,
-      //     borderRadius: BorderRadius.circular(5),
-      //   ),
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //     children: [
-      //       IconButton(
-      //         padding: EdgeInsets.zero,
-      //         constraints: const BoxConstraints(),
-      //         iconSize: 20.0, // desired size
-      //         onPressed: () {
-      //           cartController.decrementProductQuantity(widget.dataProduct);
-      //           setState(() {
-      //             quantity--;
-      //           });
-      //         },
-      //         icon: const Icon(
-      //           Icons.remove,
-      //           color: Colors.white,
-      //         ),
-      //       ),
-      //       Container(
-      //         margin: const EdgeInsets.symmetric(horizontal: 3),
-      //         padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-      //         width: MediaQuery.of(context).size.width * 0.12,
-      //         decoration: BoxDecoration(
-      //             borderRadius: BorderRadius.circular(3), color: Colors.white),
-      //         child: Center(
-      //           child: Text(
-      //             '${cartController.getProductQuantity(widget.dataProduct)}',
-      //             textAlign: TextAlign.left,
-      //             style: const TextStyle(
-      //               fontSize: 18,
-      //               fontWeight: FontWeight.bold,
-      //               color: MyColors.primary,
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //       IconButton(
-      //         padding: EdgeInsets.zero,
-      //         constraints: const BoxConstraints(),
-      //         iconSize: 20.0, // desired size
-      //         onPressed: () {
-      //           cartController.incrementProductQuantity(widget.dataProduct);
-      //           setState(() {
-      //             quantity++;
-      //           });
-      //         },
-      //         icon: const Icon(
-      //           Icons.add,
-      //           color: Colors.white,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }

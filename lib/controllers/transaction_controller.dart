@@ -14,7 +14,7 @@ class TransactionController extends GetxController {
   var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
-  var textSingleDate = ''.obs;
+  var textSingleDate = DateFormat('dd MMMM yyyy').format(DateTime.now()).obs;
   var textStartDate = ''.obs;
   var textEndDate = ''.obs;
   var checkSingleDate = true.obs;
@@ -106,6 +106,7 @@ class TransactionController extends GetxController {
           startDate.value = pickedDate;
           textStartDate.value =
               DateFormat('dd MMMM yyyy').format(startDate.value);
+          textSingleDate.value = '';
         }
       } else {
         if (pickedDate != endDate.value) {

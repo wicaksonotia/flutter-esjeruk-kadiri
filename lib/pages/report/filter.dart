@@ -20,7 +20,7 @@ class _FilterReportState extends State<FilterReport> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .36,
+      initialChildSize: .4,
       maxChildSize: .5,
       minChildSize: .2,
       builder: (context, scrollController) {
@@ -186,7 +186,7 @@ class _FilterReportState extends State<FilterReport> {
                   ),
                 ],
               ),
-              const Gap(10),
+              const Spacer(),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
