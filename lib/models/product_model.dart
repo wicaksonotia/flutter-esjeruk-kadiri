@@ -1,10 +1,13 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 class ProductModel {
   int? idProduct;
   String? productName;
   String? categoriesName;
   String? description;
   int? price;
-  String? photo1;
+  Uint8List? photo1;
   bool promo = false;
 
   ProductModel(
@@ -22,7 +25,9 @@ class ProductModel {
     categoriesName = json['categories_name'];
     description = json['description'];
     price = json['price'];
-    photo1 = json['photo_1'];
+    Uint8List decodePhoto;
+    decodePhoto = const Base64Decoder().convert('${json['photo_1']}');
+    photo1 = decodePhoto;
     promo = json['promo'];
   }
 

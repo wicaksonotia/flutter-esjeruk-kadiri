@@ -1,17 +1,16 @@
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/models/transaction_detail_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image/image.dart';
+import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrintNotaController extends GetxController {
-  var transactionDetailItems = <TransactionDetailModel>[].obs;
+  var transactionDetailItems = <ListDetailTransaction>[].obs;
 
   /// ===================================
   /// PRINT TRANSACTION
@@ -20,29 +19,30 @@ class PrintNotaController extends GetxController {
     bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
     List<int> nota = await printPurchaseOrder(numerator, kios);
     if (connectionStatus) {
-      var resultPrint = await PrintBluetoothThermal.writeBytes(nota);
-      if (!resultPrint) {
-        Get.snackbar('Notification', 'Failed to print',
-            icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
-      }
+      PrintBluetoothThermal.writeBytes(nota);
+      // if (!resultPrint) {
+      //   Get.snackbar('Notification', 'Failed to print',
+      //       icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      // }
     } else {
       var macPrinterAddress = "86:67:7A:49:4E:11";
       PrintBluetoothThermal.pairedBluetooths.then((devices) {
         PrintBluetoothThermal.connect(macPrinterAddress: macPrinterAddress)
             .then((connected) {
-          if (!connected) {
-            Get.snackbar('Notification', 'Failed to connect to printer',
-                icon: const Icon(Icons.error),
-                snackPosition: SnackPosition.TOP);
-          } else {
-            PrintBluetoothThermal.writeBytes(nota).then((result) {
-              if (!result) {
-                Get.snackbar('Notification', 'Failed to print',
-                    icon: const Icon(Icons.error),
-                    snackPosition: SnackPosition.TOP);
-              }
-            });
-          }
+          // if (!connected) {
+          //   Get.snackbar('Notification', 'Failed to connect to printer',
+          //       icon: const Icon(Icons.error),
+          //       snackPosition: SnackPosition.TOP);
+          // } else {
+          PrintBluetoothThermal.writeBytes(nota);
+          // PrintBluetoothThermal.writeBytes(nota).then((result) {
+          //   if (!result) {
+          //     Get.snackbar('Notification', 'Failed to print',
+          //         icon: const Icon(Icons.error),
+          //         snackPosition: SnackPosition.TOP);
+          //   }
+          // });
+          // }
         });
         // for (var device in devices) {
         //   if (device.name == macPrinterAddress) {
@@ -71,8 +71,8 @@ class PrintNotaController extends GetxController {
     // IMAGE
     final ByteData data = await rootBundle.load('assets/images/logo.jpg');
     final Uint8List bytesImg = data.buffer.asUint8List();
-    final image = decodeImage(bytesImg);
-    final resizedImage = copyResize(image!, width: 300);
+    final image = img.decodeImage(bytesImg);
+    final resizedImage = img.copyResize(image!, width: 300);
     bytes += generator.image(resizedImage);
 
     // ALAMAT
@@ -80,21 +80,11 @@ class PrintNotaController extends GetxController {
     String? kiosAddress = prefs.getString('alamat')?.replaceAll(r'\n', '\n');
     bytes += generator.text('$kiosAddress',
         styles: const PosStyles(align: PosAlign.center));
-    // bytes += generator.text(
-    //     'Dsn. Sumbertugu RT 07 RW 04 \nDepan Musholla Sumbertugu',
-    //     styles: const PosStyles(align: PosAlign.center));
-    // bytes += generator.text('Kec. Gampengrejo, Kab. Kediri',
-    //     styles: const PosStyles(align: PosAlign.center));
-    // bytes += generator.text('Whatsapp. 085755124535',
-    //     styles: const PosStyles(align: PosAlign.center));
     bytes += generator.feed(1);
 
-    var result =
-        await RemoteDataSource.getListTransactionDetails(numerator, kios);
-    var resultRowTransaction =
-        await RemoteDataSource.getRowTransactionDetails(numerator, kios);
-    transactionDetailItems.assignAll(result!);
-    // CART LIST
+    var result = await RemoteDataSource.getDetailTransaction(
+        {"numerator": numerator, "kios": kios});
+    transactionDetailItems.value = result!.details ?? [];
     for (var cartItem in transactionDetailItems) {
       bytes += generator.row([
         PosColumn(
@@ -125,8 +115,8 @@ class PrintNotaController extends GetxController {
       PosColumn(
         text: CurrencyFormat.convertToIdr(
             transactionDetailItems
-                .map((e) => e.totalPrice)
-                .fold(0, (value, element) => value + element!),
+                .map((e) => e.totalPrice ?? 0)
+                .fold<int>(0, (value, element) => value + element),
             0),
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
@@ -139,9 +129,7 @@ class PrintNotaController extends GetxController {
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: resultRowTransaction!.discount.toString() == '0'
-            ? '0'
-            : CurrencyFormat.convertToIdr(resultRowTransaction.discount, 0),
+        text: CurrencyFormat.convertToIdr((result.discount ?? 0), 0),
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),
@@ -154,12 +142,7 @@ class PrintNotaController extends GetxController {
         styles: const PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: CurrencyFormat.convertToIdr(
-            transactionDetailItems
-                    .map((e) => e.totalPrice)
-                    .fold(0, (value, element) => value + element!) -
-                resultRowTransaction.discount!,
-            0),
+        text: CurrencyFormat.convertToIdr((result.grandTotal ?? 0), 0),
         width: 6,
         styles: const PosStyles(align: PosAlign.right),
       ),
@@ -178,12 +161,12 @@ class PrintNotaController extends GetxController {
     bytes += generator.feed(1);
 
     // IMAGE
-    final ByteData _dataHastag =
+    final ByteData dataHastag =
         await rootBundle.load('assets/images/hastag.jpg');
-    final Uint8List _bytesImgHastag = _dataHastag.buffer.asUint8List();
-    final _imageHastag = decodeImage(_bytesImgHastag);
-    final _resizedImageHastag = copyResize(_imageHastag!, width: 300);
-    bytes += generator.image(_resizedImageHastag);
+    final Uint8List bytesImgHastag = dataHastag.buffer.asUint8List();
+    final imageHastag = img.decodeImage(bytesImgHastag);
+    final resizedImageHastag = img.copyResize(imageHastag!, width: 300);
+    bytes += generator.image(resizedImageHastag);
 
     bytes += generator.feed(2);
     // bytes += generator.cut();

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:esjerukkadiri/pages/product/increment_and_decrement.dart';
 import 'package:esjerukkadiri/pages/product/product_price.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class ProductListView extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
               scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
-              itemCount: controller.productItems.length,
+              itemCount: 2,
               shrinkWrap: true,
               itemBuilder: (_, index) {
                 return BoxContainer(
@@ -112,58 +114,57 @@ class ProductListView extends StatelessWidget {
                 var dataDescription =
                     controller.productItems[index].description!;
                 var dataPrice = controller.productItems[index].price!;
+                var dataPhoto = controller.productItems[index].photo1;
 
                 return BoxContainer(
                   margin: const EdgeInsets.only(top: 10),
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(10),
                   shadow: true,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: const EdgeInsets.only(right: 5),
-                        width: 100,
-                        height: 100,
-                        decoration: const BoxDecoration(
+                        width: 70,
+                        height: 80,
+                        decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/images/orange_ice.png'),
-                            fit: BoxFit.cover,
+                            image: MemoryImage(dataPhoto ?? Uint8List(0)),
+                            fit: BoxFit.fitHeight,
                           ),
                         ),
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dataProductName,
-                                style: const TextStyle(
-                                    fontSize: MySizes.fontSizeLg,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              const Gap(5),
-                              Text(
-                                dataDescription,
-                                style: const TextStyle(
-                                    fontSize: MySizes.fontSizeSm,
-                                    color: Colors.black54),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const Gap(10),
-                              Row(
-                                children: [
-                                  ProductPrice(dataPrice: dataPrice),
-                                  const Spacer(),
-                                  IncrementAndDecrement(
-                                      dataProduct:
-                                          controller.productItems[index]),
-                                ],
-                              ),
-                            ],
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              dataProductName,
+                              style: const TextStyle(
+                                  fontSize: MySizes.fontSizeLg,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const Gap(5),
+                            Text(
+                              dataDescription,
+                              style: const TextStyle(
+                                  fontSize: MySizes.fontSizeSm,
+                                  color: Colors.black54),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const Gap(10),
+                            Row(
+                              children: [
+                                ProductPrice(dataPrice: dataPrice),
+                                const Spacer(),
+                                IncrementAndDecrement(
+                                    dataProduct:
+                                        controller.productItems[index]),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],

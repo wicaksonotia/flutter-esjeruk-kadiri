@@ -1,23 +1,23 @@
+import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
 import 'package:esjerukkadiri/models/transaction_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
-  var transactionItems = <TransactionModel>[].obs;
+  var transactionItems = <Data>[].obs;
   List<CartModel> cartList = <CartModel>[].obs;
   var isLoading = true.obs;
   var isLoadingDetail = true.obs;
   var total = 0.obs;
-  var singleDate = DateTime.now().obs;
   var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
-  var textSingleDate = DateFormat('dd MMMM yyyy').format(DateTime.now()).obs;
-  var textStartDate = ''.obs;
-  var textEndDate = ''.obs;
-  var checkSingleDate = true.obs;
+  var filterBy = 'bulan'.obs;
+  var initMonth = DateTime.now().month.obs;
+  var initYear = DateTime.now().year.obs;
+  var isSideBarOpen = false.obs;
 
   @override
   void onInit() {
@@ -28,19 +28,38 @@ class TransactionController extends GetxController {
   void fetchTransaction() async {
     try {
       isLoading(true);
-      var result = await RemoteDataSource.getHistoryTransactions(
-        startDate.value,
-        endDate.value,
-        singleDate.value,
-        checkSingleDate.value,
-      );
-      if (result != null) {
-        transactionItems.assignAll(result);
-        total.value = transactionItems
-            .where((e) => e.deleteStatus == false)
-            .map((e) => e.grandTotal ?? 0)
-            .fold(0, (value, element) => value + element);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var kios = prefs.getString('username');
+      TransactionModel? result;
+      if (filterBy.value == 'bulan') {
+        var data = {
+          'monthYear': '${initMonth.value}-${initYear.value}',
+          'kios': kios,
+        };
+        result = await RemoteDataSource.transactionHistoryByMonth(data);
+      } else {
+        var data = {
+          'startDate': startDate.value,
+          'endDate': endDate.value,
+          'kios': kios,
+        };
+        result = await RemoteDataSource.transactionHistoryByDateRange(data);
       }
+      if (result != null && result.data != null) {
+        transactionItems.assignAll(result.data!);
+        total.value = transactionItems.fold(
+          0,
+          (sum, item) => sum + (item.grandTotal ?? 0),
+        );
+      }
+    } catch (error) {
+      Get.snackbar(
+        'Error',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+      isLoading(false);
     } finally {
       isLoading(false);
     }
@@ -64,56 +83,56 @@ class TransactionController extends GetxController {
   }
 
   /// ===================================
-  /// FILTER DATE
+  /// FILTER DATE, MONTH
   /// ===================================
-  bool disableDate(DateTime day) {
-    if ((day.isBefore(DateTime.now().add(const Duration(days: 0))))) {
-      return true;
+  void nextOrPreviousMonth(bool isNext) {
+    if (isNext) {
+      initMonth.value++;
+      if (initMonth.value > 12) {
+        initMonth.value = 1;
+        initYear.value++;
+      }
+    } else {
+      initMonth.value--;
+      if (initMonth.value < 1) {
+        initMonth.value = 12;
+        initYear.value--;
+      }
     }
-    return false;
+    // monthYear.value =
+    //     "${startMonth.value.month.toString()}-${startMonth.value.year.toString()}";
+    // fetchData();
   }
 
-  chooseDate(singleOrstartOrend) async {
-    var initialDate = DateTime.now();
-    if (singleOrstartOrend == 'single') {
-      initialDate = singleDate.value;
-    } else if (singleOrstartOrend == 'start') {
-      initialDate = startDate.value;
-    } else {
-      initialDate = endDate.value;
-    }
-    DateTime? pickedDate = await showDatePicker(
+  void showDialogDateRangePicker() async {
+    var pickedDate = await showDateRangePicker(
       context: Get.context!,
-      initialDate: initialDate,
-      firstDate: DateTime(DateTime.now().year - 1),
-      lastDate: DateTime(DateTime.now().year + 1),
-      cancelText: 'Close',
-      confirmText: 'Confirm',
-      errorFormatText: 'Enter valid date',
-      errorInvalidText: 'Enter valid date range',
-      fieldHintText: 'Month/Date/Year',
-      selectableDayPredicate: disableDate,
+      initialDateRange: DateTimeRange(
+        start: startDate.value,
+        end: endDate.value,
+      ),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: MyColors.primary,
+              onPrimary: Colors.white,
+              outlineVariant: Colors.grey.shade200,
+              // onSurfaceVariant: MyColors.green,
+              outline: Colors.grey.shade300,
+              secondaryContainer: Colors.green.shade50,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (pickedDate != null) {
-      if (singleOrstartOrend == 'single') {
-        if (pickedDate != singleDate.value) {
-          singleDate.value = pickedDate;
-          textSingleDate.value =
-              DateFormat('dd MMMM yyyy').format(singleDate.value);
-        }
-      } else if (singleOrstartOrend == 'start') {
-        if (pickedDate != startDate.value) {
-          startDate.value = pickedDate;
-          textStartDate.value =
-              DateFormat('dd MMMM yyyy').format(startDate.value);
-          textSingleDate.value = '';
-        }
-      } else {
-        if (pickedDate != endDate.value) {
-          endDate.value = pickedDate;
-          textEndDate.value = DateFormat('dd MMMM yyyy').format(endDate.value);
-        }
-      }
+      startDate.value = pickedDate.start;
+      endDate.value = pickedDate.end;
+      fetchTransaction();
     }
   }
 }

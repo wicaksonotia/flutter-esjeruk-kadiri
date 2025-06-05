@@ -178,21 +178,25 @@ class CartController extends GetxController {
     try {
       isLoading(true);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var payload = cartList.map((cartItem) {
+      var kios = prefs.getString('username');
+      var dataDetailTransaction = cartList.map((cartItem) {
         return {
           'id_product': cartItem.idProduct,
           'product_name': cartItem.productModel.productName.toString(),
           'quantity': cartItem.quantity,
           'unit_price': cartItem.productModel.price,
-          'kios': prefs.getString('username'),
+          'kios': kios,
         };
       }).toList();
-      var resultSave = await RemoteDataSource.saveDetailTransaction(payload);
+      var dataTransaction = {
+        'kios': kios,
+        'discount': discount,
+      };
+      var resultSave = await RemoteDataSource.saveTransaction(
+        dataTransaction,
+        dataDetailTransaction,
+      );
       if (resultSave) {
-        await RemoteDataSource.saveTransaction(
-          prefs.getString('username')!,
-          discount,
-        );
         // NOTIF SAVE SUCCESS
         Get.snackbar('Notification', 'Data saved successfully',
             icon: const Icon(Icons.check), snackPosition: SnackPosition.TOP);

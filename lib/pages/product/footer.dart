@@ -16,7 +16,7 @@ class FooterProduct extends StatefulWidget {
 }
 
 class _FooterProductState extends State<FooterProduct> {
-  final CartController cartController = Get.find<CartController>();
+  final CartController _cartController = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +33,9 @@ class _FooterProductState extends State<FooterProduct> {
         ],
         color: Colors.white,
       ),
-      child: Obx(
-        () => Row(
+      child: Obx(() {
+        bool _isButtonDisabled = _cartController.cartList.length == 0;
+        return Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             InkWell(
@@ -54,7 +55,7 @@ class _FooterProductState extends State<FooterProduct> {
                 children: [
                   badges.Badge(
                     badgeContent: Text(
-                      cartController.totalAllQuantity.value.toString(),
+                      _cartController.totalAllQuantity.value.toString(),
                       style: const TextStyle(color: Colors.white),
                     ),
                     badgeAnimation: const badges.BadgeAnimation.fade(
@@ -77,7 +78,7 @@ class _FooterProductState extends State<FooterProduct> {
                       children: [
                         TextSpan(
                           text: CurrencyFormat.convertToIdr(
-                              cartController.totalPrice.value, 0),
+                              _cartController.totalPrice.value, 0),
                           style: const TextStyle(
                             fontSize: MySizes.fontSizeXl,
                             color: MyColors.primary,
@@ -93,13 +94,16 @@ class _FooterProductState extends State<FooterProduct> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                cartController.showBottomSheet();
+                if (_isButtonDisabled) return;
+                _cartController.showBottomSheet();
+                _isButtonDisabled = _cartController.cartList.isEmpty;
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // <-- Radius
                 ),
-                backgroundColor: MyColors.primary,
+                backgroundColor:
+                    _isButtonDisabled ? Colors.grey : MyColors.primary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 textStyle: const TextStyle(
@@ -122,8 +126,8 @@ class _FooterProductState extends State<FooterProduct> {
               ),
             ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 
