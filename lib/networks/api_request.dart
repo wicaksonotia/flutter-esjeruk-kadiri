@@ -86,7 +86,12 @@ class RemoteDataSource {
         options: Options(contentType: Headers.jsonContentType),
       );
       if (response.statusCode == 200) {
-        return true;
+        if (response.data['status'] == 'ok') {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString(
+              'numerator', response.data['numerator'].toString());
+          return true;
+        }
       }
       return false;
     } catch (error) {
