@@ -7,5 +7,14 @@ class MyColors {
   static const Color yellow = Color(0xFFf7c143);
   static const Color grey = Color(0xFF9e9e9e);
 
-// Here we created a special class for the colors used in the project for ease of use later
+  // Notion Background Colors
+  static const Color notionBgGrey = Color(0xFFF1F1EF);
+  static const Color notionBgBrown = Color(0xFFF4EEEE);
+  static const Color notionBgOrange = Color(0xFFFAEBDD);
+  static const Color notionBgYellow = Color(0xFFFBF3DB);
+  static const Color notionBgGreen = Color(0xFFEDF3EC);
+  static const Color notionBgBlue = Color(0xFFE7F3F8);
+  static const Color notionBgPurple = Color(0xFFF6F3F9);
+  static const Color notionBgPink = Color(0xFFFAF1F5);
+  static const Color notionBgRed = Color(0xFFFDEBEC);
 }

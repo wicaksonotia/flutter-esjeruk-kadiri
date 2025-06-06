@@ -24,6 +24,7 @@ class TransactionPage extends StatefulWidget {
 }
 
 class TransactionPageState extends State<TransactionPage> {
+  int? groupValue = 1;
   final TransactionController _transactionController =
       Get.put(TransactionController());
   final PrintNotaController _printNotaController =
@@ -33,6 +34,7 @@ class TransactionPageState extends State<TransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyColors.notionBgGrey,
       // bottomNavigationBar: const FooterReport(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
@@ -94,31 +96,78 @@ class TransactionPageState extends State<TransactionPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Obx(
-                    () => ChipsChoice.single(
-                      wrapped: true,
-                      padding: EdgeInsets.zero,
-                      value: _transactionController.filterBy.value,
-                      onChanged: (val) =>
-                          _transactionController.filterBy.value = val,
-                      choiceItems:
-                          C2Choice.listFrom<String, Map<String, dynamic>>(
-                        source: filterKategori,
-                        value: (i, v) => v['value'] as String,
-                        label: (i, v) => v['nama'] as String,
-                      ),
-                      choiceStyle: C2ChipStyle.filled(
-                        foregroundStyle: const TextStyle(
-                          fontSize: MySizes.fontSizeSm,
+                  SizedBox(
+                    width: 130,
+                    child: Obx(
+                      () => ChipsChoice.single(
+                        wrapped: true,
+                        padding: EdgeInsets.zero,
+                        value: _transactionController.filterBy.value,
+                        onChanged: (val) {
+                          _transactionController.filterBy.value = val;
+                          _transactionController.fetchTransaction();
+                        },
+                        choiceItems:
+                            C2Choice.listFrom<String, Map<String, dynamic>>(
+                          source: filterKategori,
+                          value: (i, v) => v['value'] as String,
+                          label: (i, v) => v['nama'] as String,
                         ),
-                        borderRadius: BorderRadius.circular(25),
-                        color: Colors.grey[200],
-                        selectedStyle: const C2ChipStyle(
-                          backgroundColor: MyColors.primary,
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                        choiceStyle: C2ChipStyle.filled(
+                          foregroundStyle: const TextStyle(
+                            fontSize: MySizes.fontSizeSm,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                          color: MyColors.notionBgGrey,
+                          selectedStyle: const C2ChipStyle(
+                            backgroundColor: MyColors.red,
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                          ),
                         ),
                       ),
                     ),
+                    // Row(
+                    //   children: List.generate(
+                    //     filterKategori.length,
+                    //     (index) => Expanded(
+                    //       child: GestureDetector(
+                    //         onTap: () {
+                    //           setState(() {
+                    //             groupValue = index;
+                    //           });
+                    //           _transactionController.filterBy.value =
+                    //               filterKategori[index]['value']!;
+                    //           _transactionController.fetchTransaction();
+                    //         },
+                    //         child: Container(
+                    //           decoration: BoxDecoration(
+                    //             border: Border(
+                    //               right: BorderSide(
+                    //                 width: 0.5,
+                    //                 color: Colors.grey[300]!,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           padding: const EdgeInsets.symmetric(
+                    //               horizontal: 10, vertical: 5),
+                    //           child: Center(
+                    //             child: Text(
+                    //               filterKategori[index]['nama']!,
+                    //               style: TextStyle(
+                    //                 color: groupValue == index
+                    //                     ? MyColors.primary
+                    //                     : Colors.black,
+                    //                 fontWeight: groupValue == index
+                    //                     ? FontWeight.bold
+                    //                     : FontWeight.normal,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ),
                   const Spacer(),
                   Obx(() {
