@@ -18,6 +18,7 @@ class TransactionController extends GetxController {
   var initMonth = DateTime.now().month.obs;
   var initYear = DateTime.now().year.obs;
   var isSideBarOpen = false.obs;
+  var totalCup = 0.obs;
 
   @override
   void onInit() {
@@ -46,6 +47,7 @@ class TransactionController extends GetxController {
         result = await RemoteDataSource.transactionHistoryByDateRange(data);
       }
       if (result != null && result.data != null) {
+        totalCup.value = result.totalCup ?? 0;
         transactionItems.assignAll(result.data!);
         total.value = transactionItems.fold(
           0,

@@ -2,9 +2,7 @@ import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/transaction_controller.dart';
-import 'package:esjerukkadiri/pages/report/filter.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class FooterReport extends StatefulWidget {
@@ -37,6 +35,24 @@ class _FooterReportState extends State<FooterReport> {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Container(
+              width: 150,
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: MyColors.primary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Total Cup: ${_transactionController.totalCup.value}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: MySizes.fontSizeLg,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const Spacer(),
             Row(
               children: [
                 RichText(
@@ -47,13 +63,6 @@ class _FooterReportState extends State<FooterReport> {
                       color: MyColors.primary,
                     ),
                     children: [
-                      const TextSpan(
-                        text: 'Rp',
-                        style: const TextStyle(
-                          fontSize: MySizes.fontSizeMd,
-                          color: MyColors.primary,
-                        ),
-                      ),
                       TextSpan(
                         text: CurrencyFormat.convertToIdr(
                             _transactionController.total.value, 0),
@@ -67,46 +76,6 @@ class _FooterReportState extends State<FooterReport> {
                   ),
                 ),
               ],
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => const FilterReport(),
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // <-- Radius
-                ),
-                backgroundColor: MyColors.primary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                textStyle: const TextStyle(
-                  fontSize: MySizes.fontSizeMd,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.filter_alt_outlined,
-                    color: Colors.white,
-                  ),
-                  Gap(5),
-                  Text(
-                    'Filter',
-                    style: TextStyle(color: Colors.white),
-                  )
-                ],
-              ),
             ),
           ],
         ),

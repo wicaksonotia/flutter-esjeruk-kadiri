@@ -7,6 +7,7 @@ import 'package:esjerukkadiri/controllers/login_controller.dart';
 import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
 import 'package:esjerukkadiri/pages/report/filter_date_range.dart';
 import 'package:esjerukkadiri/pages/report/filter_month.dart';
+import 'package:esjerukkadiri/pages/report/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,7 @@ class TransactionPageState extends State<TransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MyColors.notionBgGrey,
-      // bottomNavigationBar: const FooterReport(),
+      bottomNavigationBar: const FooterReport(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
@@ -90,123 +91,35 @@ class TransactionPageState extends State<TransactionPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+              padding: const EdgeInsets.only(top: 10, left: 15, right: 20),
               color: Colors.white,
               width: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 130,
-                    child: Obx(
-                      () => ChipsChoice.single(
-                        wrapped: true,
-                        padding: EdgeInsets.zero,
-                        value: _transactionController.filterBy.value,
-                        onChanged: (val) {
-                          _transactionController.filterBy.value = val;
-                          _transactionController.fetchTransaction();
-                        },
-                        choiceItems:
-                            C2Choice.listFrom<String, Map<String, dynamic>>(
-                          source: filterKategori,
-                          value: (i, v) => v['value'] as String,
-                          label: (i, v) => v['nama'] as String,
-                        ),
-                        choiceStyle: C2ChipStyle.filled(
-                          foregroundStyle: const TextStyle(
-                            fontSize: MySizes.fontSizeSm,
-                          ),
-                          borderRadius: BorderRadius.circular(25),
-                          color: MyColors.notionBgGrey,
-                          selectedStyle: const C2ChipStyle(
-                            backgroundColor: MyColors.red,
-                            borderRadius: BorderRadius.all(Radius.circular(25)),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Row(
-                    //   children: List.generate(
-                    //     filterKategori.length,
-                    //     (index) => Expanded(
-                    //       child: GestureDetector(
-                    //         onTap: () {
-                    //           setState(() {
-                    //             groupValue = index;
-                    //           });
-                    //           _transactionController.filterBy.value =
-                    //               filterKategori[index]['value']!;
-                    //           _transactionController.fetchTransaction();
-                    //         },
-                    //         child: Container(
-                    //           decoration: BoxDecoration(
-                    //             border: Border(
-                    //               right: BorderSide(
-                    //                 width: 0.5,
-                    //                 color: Colors.grey[300]!,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //           padding: const EdgeInsets.symmetric(
-                    //               horizontal: 10, vertical: 5),
-                    //           child: Center(
-                    //             child: Text(
-                    //               filterKategori[index]['nama']!,
-                    //               style: TextStyle(
-                    //                 color: groupValue == index
-                    //                     ? MyColors.primary
-                    //                     : Colors.black,
-                    //                 fontWeight: groupValue == index
-                    //                     ? FontWeight.bold
-                    //                     : FontWeight.normal,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+              child: Obx(
+                () => ChipsChoice.single(
+                  wrapped: true,
+                  padding: EdgeInsets.zero,
+                  value: _transactionController.filterBy.value,
+                  onChanged: (val) {
+                    _transactionController.filterBy.value = val;
+                    _transactionController.fetchTransaction();
+                  },
+                  choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
+                    source: filterKategori,
+                    value: (i, v) => v['value'] as String,
+                    label: (i, v) => v['nama'] as String,
                   ),
-                  const Spacer(),
-                  Obx(() {
-                    if (_transactionController.isLoading.value) {
-                      return Shimmer.fromColors(
-                        baseColor: Colors.grey,
-                        highlightColor: Colors.white,
-                        child: const Text(
-                          'Loading...',
-                          style: TextStyle(
-                            fontSize: MySizes.fontSizeLg,
-                            color: MyColors.primary,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return RichText(
-                        text: TextSpan(
-                          text: 'Total: ',
-                          style: const TextStyle(
-                            fontSize: MySizes.fontSizeLg,
-                            color: MyColors.primary,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: CurrencyFormat.convertToIdr(
-                                  _transactionController.total.value, 0),
-                              style: const TextStyle(
-                                fontSize: MySizes.fontSizeXl,
-                                color: MyColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  }),
-                ],
+                  choiceStyle: C2ChipStyle.filled(
+                    foregroundStyle: const TextStyle(
+                      fontSize: MySizes.fontSizeSm,
+                    ),
+                    borderRadius: BorderRadius.circular(25),
+                    color: MyColors.notionBgGrey,
+                    selectedStyle: const C2ChipStyle(
+                      backgroundColor: MyColors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                    ),
+                  ),
+                ),
               ),
             ),
             Container(

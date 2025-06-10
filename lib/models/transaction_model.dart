@@ -1,15 +1,15 @@
 class TransactionModel {
   String? status;
   String? message;
-  int? income;
+  int? totalCup;
   List<Data>? data;
 
-  TransactionModel({this.status, this.message, this.income, this.data});
+  TransactionModel({this.status, this.message, this.totalCup, this.data});
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    income = json['income'];
+    totalCup = json['total_cup'];
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -22,7 +22,7 @@ class TransactionModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
     data['message'] = message;
-    data['income'] = income;
+    data['total_cup'] = totalCup;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
