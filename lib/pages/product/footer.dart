@@ -3,7 +3,7 @@ import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/cart_controller.dart';
-import 'package:esjerukkadiri/pages/product/cart.dart';
+import 'package:esjerukkadiri/navigation/app_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -29,83 +29,75 @@ class _FooterProductState extends State<FooterProduct> {
             color: Colors.grey.withOpacity(0.3),
             spreadRadius: 0,
             blurRadius: 7,
-          )
+          ),
         ],
         color: Colors.white,
       ),
       child: Obx(() {
-        bool _isButtonDisabled = _cartController.cartList.length == 0;
         return Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => const CartPage(),
-                  isScrollControlled: true,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
+            Row(
+              children: [
+                badges.Badge(
+                  badgeContent: Text(
+                    _cartController.totalAllQuantity.value.toString(),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                );
-              },
-              child: Row(
-                children: [
-                  badges.Badge(
-                    badgeContent: Text(
-                      _cartController.totalAllQuantity.value.toString(),
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    badgeAnimation: const badges.BadgeAnimation.fade(
-                        animationDuration: Duration(milliseconds: 400)),
-                    child: const Icon(
-                      Icons.shopping_bag,
-                      size: 30,
+                  badgeAnimation: const badges.BadgeAnimation.fade(
+                    animationDuration: Duration(milliseconds: 400),
+                  ),
+                  child: const Icon(
+                    Icons.shopping_bag,
+                    size: 30,
+                    color: MyColors.primary,
+                  ),
+                ),
+                const Gap(10),
+                verticalSeparator(),
+                RichText(
+                  text: TextSpan(
+                    text: 'Rp ',
+                    style: const TextStyle(
+                      fontSize: MySizes.fontSizeMd,
                       color: MyColors.primary,
                     ),
-                  ),
-                  const Gap(10),
-                  verticalSeparator(),
-                  RichText(
-                    text: TextSpan(
-                      text: 'Rp ',
-                      style: const TextStyle(
-                        fontSize: MySizes.fontSizeMd,
-                        color: MyColors.primary,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: CurrencyFormat.convertToIdr(
-                              _cartController.totalPrice.value, 0),
-                          style: const TextStyle(
-                            fontSize: MySizes.fontSizeXl,
-                            color: MyColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    children: [
+                      TextSpan(
+                        text: CurrencyFormat.convertToIdr(
+                          _cartController.subTotal.value,
+                          0,
                         ),
-                      ],
-                    ),
+                        style: const TextStyle(
+                          fontSize: MySizes.fontSizeXl,
+                          color: MyColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                if (_isButtonDisabled) return;
-                _cartController.showBottomSheet();
-                _isButtonDisabled = _cartController.cartList.isEmpty;
+                if (_cartController.isButtonDisabled.value) return;
+                Get.toNamed(RouterClass.checkoutPage);
+                _cartController.applyDiscount();
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // <-- Radius
                 ),
                 backgroundColor:
-                    _isButtonDisabled ? Colors.grey : MyColors.primary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    _cartController.isButtonDisabled.value
+                        ? Colors.grey
+                        : MyColors.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 textStyle: const TextStyle(
                   fontSize: MySizes.fontSizeMd,
                   fontWeight: FontWeight.bold,
@@ -113,15 +105,9 @@ class _FooterProductState extends State<FooterProduct> {
               ),
               child: const Row(
                 children: [
-                  Icon(
-                    Icons.save,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.save, color: Colors.white),
                   Gap(5),
-                  Text(
-                    'Checkout',
-                    style: TextStyle(color: Colors.white),
-                  )
+                  Text('Checkout', style: TextStyle(color: Colors.white)),
                 ],
               ),
             ),
@@ -132,10 +118,6 @@ class _FooterProductState extends State<FooterProduct> {
   }
 
   VerticalDivider verticalSeparator() {
-    return VerticalDivider(
-      color: Colors.grey[300],
-      thickness: 1,
-      width: 20,
-    );
+    return VerticalDivider(color: Colors.grey[300], thickness: 1, width: 20);
   }
 }

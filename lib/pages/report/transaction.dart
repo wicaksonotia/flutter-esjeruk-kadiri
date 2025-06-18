@@ -26,8 +26,9 @@ class TransactionPage extends StatefulWidget {
 
 class TransactionPageState extends State<TransactionPage> {
   int? groupValue = 1;
-  final TransactionController _transactionController =
-      Get.put(TransactionController());
+  final TransactionController _transactionController = Get.put(
+    TransactionController(),
+  );
   final PrintNotaController _printNotaController =
       Get.find<PrintNotaController>();
   final LoginController _loginController = Get.find<LoginController>();
@@ -40,16 +41,10 @@ class TransactionPageState extends State<TransactionPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
-          title: const Text(
-            'Report',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: const Text('Report', style: TextStyle(color: Colors.white)),
           backgroundColor: MyColors.primary,
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Get.back();
             },
@@ -57,31 +52,30 @@ class TransactionPageState extends State<TransactionPage> {
           actions: [
             PopupMenuButton(
               color: Colors.white,
-              icon: const Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.more_vert, color: Colors.white),
               onSelected: (dynamic value) {},
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                PopupMenuItem(
-                  child: ListTile(
-                      leading: const Icon(Icons.bluetooth_searching),
-                      title: const Text('Setting Bluetooth'),
-                      onTap: () {
-                        Get.back();
-                        Get.toNamed('/bluetooth_setting');
-                      }),
-                ),
-                PopupMenuItem(
-                  child: ListTile(
-                    leading: const Icon(Icons.logout),
-                    title: const Text('Logout'),
-                    onTap: () {
-                      _loginController.logout();
-                    },
-                  ),
-                ),
-              ],
+              itemBuilder:
+                  (BuildContext context) => <PopupMenuEntry>[
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.bluetooth_searching),
+                        title: const Text('Setting Bluetooth'),
+                        onTap: () {
+                          Get.back();
+                          Get.toNamed('/bluetooth_setting');
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.logout),
+                        title: const Text('Logout'),
+                        onTap: () {
+                          _loginController.logout();
+                        },
+                      ),
+                    ),
+                  ],
             ),
           ],
         ),
@@ -126,10 +120,14 @@ class TransactionPageState extends State<TransactionPage> {
               color: Colors.white,
               height: context.height * 0.05,
               child: Obx(
-                () => _transactionController.filterBy.value == 'bulan'
-                    ? FilterMonth(transactionController: _transactionController)
-                    : FilterDateRange(
-                        transactionController: _transactionController),
+                () =>
+                    _transactionController.filterBy.value == 'bulan'
+                        ? FilterMonth(
+                          transactionController: _transactionController,
+                        )
+                        : FilterDateRange(
+                          transactionController: _transactionController,
+                        ),
               ),
             ),
             Expanded(
@@ -161,17 +159,13 @@ class TransactionPageState extends State<TransactionPage> {
                                       height: 16,
                                       color: Colors.grey[300],
                                     ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
+                                    const SizedBox(height: 8),
                                     Container(
                                       width: double.infinity,
                                       height: 16,
                                       color: Colors.grey[300],
                                     ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
+                                    const SizedBox(height: 8),
                                     Container(
                                       width: double.infinity,
                                       height: 16,
@@ -210,8 +204,9 @@ class TransactionPageState extends State<TransactionPage> {
                 }
                 Map<String, List<dynamic>> resultDataMap = {};
                 for (var item in _transactionController.transactionItems) {
-                  String formattedDate = DateFormat('dd MMMM yyyy')
-                      .format(DateTime.parse(item.transactionDate!));
+                  String formattedDate = DateFormat(
+                    'dd MMMM yyyy',
+                  ).format(DateTime.parse(item.transactionDate!));
                   if (!resultDataMap.containsKey(formattedDate)) {
                     resultDataMap[formattedDate] = [];
                   }
@@ -227,17 +222,20 @@ class TransactionPageState extends State<TransactionPage> {
                       return resultDataMap.values.toList()[section].length;
                     },
                     itemBuilder: (BuildContext context, IndexPath index) {
-                      var items = resultDataMap.values.toList()[index.section]
-                          [index.index];
+                      var items =
+                          resultDataMap.values.toList()[index.section][index
+                              .index];
+                      print(items);
                       return Slidable(
-                        key: Key('${items.numerator}_${items.kios}'),
+                        key: Key('${items.id}'),
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           children: [
                             SlidableAction(
                               onPressed: (context) {
                                 _transactionController.removeTransaction(
-                                    items.numerator, items.kios);
+                                  items.id,
+                                );
                               },
                               backgroundColor: Colors.red,
                               foregroundColor: Colors.white,
@@ -247,7 +245,8 @@ class TransactionPageState extends State<TransactionPage> {
                             SlidableAction(
                               onPressed: (context) {
                                 _printNotaController.printTransaction(
-                                    items.numerator, items.kios);
+                                  items.transactionId,
+                                );
                               },
                               backgroundColor: const Color(0xFF21B7CA),
                               foregroundColor: Colors.white,
@@ -261,13 +260,15 @@ class TransactionPageState extends State<TransactionPage> {
                           child: ExpansionTile(
                             leading: const Icon(Icons.receipt),
                             title: Text(
-                              '${items.kios.toUpperCase()}-${items.numerator.toString().padLeft(4, '0').toUpperCase()}',
-                              style:
-                                  const TextStyle(fontSize: MySizes.fontSizeMd),
+                              items.numerator.toString().padLeft(4, '0'),
+                              style: const TextStyle(
+                                fontSize: MySizes.fontSizeMd,
+                              ),
                             ),
                             subtitle: Text(
-                              DateFormat('dd MMM yyyy HH:mm').format(
-                                  DateTime.parse(items.transactionDate)),
+                              DateFormat(
+                                'dd MMM yyyy HH:mm',
+                              ).format(DateTime.parse(items.transactionDate)),
                               style: const TextStyle(
                                 color: MyColors.grey,
                                 fontSize: MySizes.fontSizeSm,
@@ -277,19 +278,31 @@ class TransactionPageState extends State<TransactionPage> {
                               children: [
                                 Text(
                                   CurrencyFormat.convertToIdr(
-                                      items.grandTotal, 0),
+                                    items.grandTotal,
+                                    0,
+                                  ),
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: MySizes.fontSizeMd,
-                                      color: MyColors.primary),
-                                ),
-                                Text(
-                                  items.deleteStatus! ? 'Deleted' : '',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: MySizes.fontSizeSm,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: MySizes.fontSizeMd,
+                                    color: MyColors.primary,
                                   ),
                                 ),
+                                if (items.deleteStatus!) ...[
+                                  const Text(
+                                    'Deleted',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
+                                  ),
+                                  Text(
+                                    '( ${items.deleteReason} )',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: MySizes.fontSizeXsm,
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                             iconColor: MyColors.primary,
@@ -297,9 +310,7 @@ class TransactionPageState extends State<TransactionPage> {
                               ListTile(
                                 title: const Text(
                                   'Transaction Details',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,40 +325,49 @@ class TransactionPageState extends State<TransactionPage> {
                                           children: [
                                             Container(
                                               alignment: Alignment.centerLeft,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
+                                              width:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
                                                   0.5,
-                                              child: Text(items
-                                                      .details[detailIndex]
-                                                      .productName ??
-                                                  'Unknown Product'),
+                                              child: Text(
+                                                items
+                                                        .details[detailIndex]
+                                                        .productName ??
+                                                    'Unknown Product',
+                                              ),
                                             ),
                                             Container(
                                               alignment: Alignment.center,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
+                                              width:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
                                                   0.1,
                                               child: Text(
-                                                  '${items.details[detailIndex].quantity}'),
+                                                '${items.details[detailIndex].quantity}',
+                                              ),
                                             ),
                                             Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
+                                              width:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
                                                   0.25,
                                               alignment: Alignment.centerRight,
                                               child: Text(
-                                                  CurrencyFormat.convertToIdr(
-                                                      items.details[detailIndex]
-                                                          .totalPrice,
-                                                      0)),
+                                                CurrencyFormat.convertToIdr(
+                                                  items
+                                                      .details[detailIndex]
+                                                      .totalPrice,
+                                                  0,
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         );
                                       },
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -365,8 +385,10 @@ class TransactionPageState extends State<TransactionPage> {
                           color: Colors.white,
                           border: Border(
                             top: BorderSide(color: Colors.grey[100]!, width: 1),
-                            bottom:
-                                BorderSide(color: Colors.grey[100]!, width: 1),
+                            bottom: BorderSide(
+                              color: Colors.grey[100]!,
+                              width: 1,
+                            ),
                           ),
                         ),
                         child: Row(
@@ -374,11 +396,14 @@ class TransactionPageState extends State<TransactionPage> {
                           children: [
                             Text(
                               DateFormat('dd').format(
-                                DateFormat('dd MMMM yyyy').parse(
-                                    resultDataMap.keys.toList()[section]),
+                                DateFormat(
+                                  'dd MMMM yyyy',
+                                ).parse(resultDataMap.keys.toList()[section]),
                               ),
                               style: const TextStyle(
-                                  fontSize: 33, fontWeight: FontWeight.bold),
+                                fontSize: 33,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const Gap(10),
                             Column(
@@ -388,7 +413,8 @@ class TransactionPageState extends State<TransactionPage> {
                                 Text(
                                   DateFormat('EEEE').format(
                                     DateFormat('dd MMMM yyyy').parse(
-                                        resultDataMap.keys.toList()[section]),
+                                      resultDataMap.keys.toList()[section],
+                                    ),
                                   ),
                                   style: const TextStyle(
                                     fontSize: MySizes.fontSizeMd,
@@ -398,7 +424,8 @@ class TransactionPageState extends State<TransactionPage> {
                                 Text(
                                   DateFormat('MMMM yyyy').format(
                                     DateFormat('dd MMMM yyyy').parse(
-                                        resultDataMap.keys.toList()[section]),
+                                      resultDataMap.keys.toList()[section],
+                                    ),
                                   ),
                                   style: const TextStyle(
                                     fontSize: MySizes.fontSizeSm,
@@ -410,7 +437,9 @@ class TransactionPageState extends State<TransactionPage> {
                             const Spacer(),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
+                                vertical: 5,
+                                horizontal: 10,
+                              ),
                               decoration: BoxDecoration(
                                 color: MyColors.primary,
                                 borderRadius: BorderRadius.circular(8),
@@ -418,13 +447,17 @@ class TransactionPageState extends State<TransactionPage> {
                               child: Text(
                                 CurrencyFormat.convertToIdr(
                                   _transactionController.transactionItems
-                                      .where((element) =>
-                                          DateFormat('dd MMMM yyyy').format(
-                                                  DateTime.parse(element
-                                                      .transactionDate!)) ==
-                                              resultDataMap.keys
-                                                  .toList()[section] &&
-                                          !element.deleteStatus!)
+                                      .where(
+                                        (element) =>
+                                            DateFormat('dd MMMM yyyy').format(
+                                                  DateTime.parse(
+                                                    element.transactionDate!,
+                                                  ),
+                                                ) ==
+                                                resultDataMap.keys
+                                                    .toList()[section] &&
+                                            !element.deleteStatus!,
+                                      )
                                       .fold<int>(
                                         0,
                                         (sum, element) =>
@@ -443,10 +476,10 @@ class TransactionPageState extends State<TransactionPage> {
                         ),
                       );
                     },
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 2),
-                    sectionSeparatorBuilder: (context, section) =>
-                        const SizedBox(height: 20),
+                    separatorBuilder:
+                        (context, index) => const SizedBox(height: 2),
+                    sectionSeparatorBuilder:
+                        (context, section) => const SizedBox(height: 20),
                   ),
                 );
               }),

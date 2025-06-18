@@ -1,21 +1,18 @@
 class ProductCategoryModel {
-  int? idCategories;
-  String? name;
+  int? categoryId;
+  String? categoryName;
 
-  ProductCategoryModel({
-    this.idCategories,
-    this.name,
-  });
+  ProductCategoryModel({this.categoryId, this.categoryName});
 
   ProductCategoryModel.fromJson(Map<String, dynamic> json) {
-    idCategories = json['id_categories'];
-    name = json['name'];
+    categoryId = json['category_id'];
+    categoryName = json['category_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id_categories'] = idCategories;
-    data['name'] = name;
+    data['category_id'] = categoryId;
+    data['category_name'] = categoryName;
     return data;
   }
 }

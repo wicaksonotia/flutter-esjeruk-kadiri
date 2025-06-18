@@ -12,7 +12,7 @@ class LoginController extends GetxController {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   var isLogin = false.obs;
-  final SharedPreferences prefs = Get.find<SharedPreferences>();
+
   showPassword() {
     isPasswordVisible(!isPasswordVisible.value);
   }
@@ -28,7 +28,7 @@ class LoginController extends GetxController {
       isLoading(true);
       Dio.FormData formData = Dio.FormData.fromMap({
         "username": emailController.text.trim(),
-        // "password": passwordController.text,
+        "password": passwordController.text,
       });
       bool result = await RemoteDataSource.login(formData);
       if (result) {
@@ -39,8 +39,12 @@ class LoginController extends GetxController {
         throw "Kios is not regsitered";
       }
     } catch (error) {
-      Get.snackbar('Notification', error.toString(),
-          icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Notification',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isLoading(false);
     }
@@ -57,10 +61,9 @@ class LoginController extends GetxController {
   }
 
   void logout() async {
-    // final SharedPreferences prefs = await _prefs;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('statusLogin', false);
     isLogin.value = prefs.getBool('statusLogin') ?? false;
-    print(isLogin.value);
     Get.offAllNamed('/login');
   }
 
@@ -82,7 +85,9 @@ class LoginController extends GetxController {
               child: Text(
                 'Do you want to logout?',
                 style: TextStyle(
-                    color: Colors.black, fontSize: MySizes.fontSizeLg),
+                  color: Colors.black,
+                  fontSize: MySizes.fontSizeLg,
+                ),
               ),
             ),
             const Gap(10),
@@ -91,26 +96,32 @@ class LoginController extends GetxController {
               children: [
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green,
-                      textStyle: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold)),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   icon: const Icon(Icons.thumb_up),
                   onPressed: () => logout(),
                   label: const Text('yes'),
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
-                      textStyle: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold)),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red,
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   icon: const Icon(Icons.thumb_down),
                   onPressed: () => Get.back(),
                   label: const Text('cancel'),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

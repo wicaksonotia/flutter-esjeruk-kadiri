@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
-  var transactionItems = <Data>[].obs;
+  var transactionItems = <TransactionModel>[].obs;
   List<CartModel> cartList = <CartModel>[].obs;
   var isLoading = true.obs;
   var isLoadingDetail = true.obs;
@@ -30,19 +30,22 @@ class TransactionController extends GetxController {
     try {
       isLoading(true);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var kios = prefs.getString('username');
-      TransactionModel? result;
+      var kios = prefs.getInt('id_kios');
+      var cabang = prefs.getInt('id_cabang');
+      TransactionHistoryModel? result;
       if (filterBy.value == 'bulan') {
         var data = {
           'monthYear': '${initMonth.value}-${initYear.value}',
-          'kios': kios,
+          'id_kios': kios,
+          'id_cabang': cabang,
         };
         result = await RemoteDataSource.transactionHistoryByMonth(data);
       } else {
         var data = {
           'startDate': startDate.value,
           'endDate': endDate.value,
-          'kios': kios,
+          'id_kios': kios,
+          'id_cabang': cabang,
         };
         result = await RemoteDataSource.transactionHistoryByDateRange(data);
       }
@@ -67,20 +70,78 @@ class TransactionController extends GetxController {
     }
   }
 
-  void removeTransaction(int numerator, String kios) async {
-    try {
-      isLoading(true);
-      var result = await RemoteDataSource.deleteTransaction(numerator, kios);
-      if (result) {
-        fetchTransaction();
-        Get.snackbar('Notification', 'Transaction deleted',
-            icon: const Icon(Icons.info), snackPosition: SnackPosition.TOP);
-      } else {
-        Get.snackbar('Notification', 'Error delete transaction',
-            icon: const Icon(Icons.info), snackPosition: SnackPosition.TOP);
+  void removeTransaction(int transactionId) async {
+    TextEditingController reasonController = TextEditingController();
+    bool confirm =
+        (await showDialog<bool>(
+          context: Get.context!,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Konfirmasi Hapus Transaksi'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Apakah Anda yakin ingin menghapus transaksi ini?',
+                  ),
+                  TextField(
+                    controller: reasonController,
+                    decoration: const InputDecoration(
+                      labelText: 'Alasan penghapusan',
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Batal'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Konfirmasi'),
+                ),
+              ],
+            );
+          },
+        )) ??
+        false;
+
+    if (confirm) {
+      String reason = reasonController.text.trim();
+      if (reason.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Mohon isi alasan penghapusan',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+        return;
       }
-    } finally {
-      isLoading(false);
+
+      try {
+        isLoading(true);
+        var rawFormat = {'id_transaction': transactionId, 'reason': reason};
+        var result = await RemoteDataSource.deleteTransaction(rawFormat);
+        if (result) {
+          fetchTransaction();
+          Get.snackbar(
+            'Notification',
+            'Transaksi berhasil dihapus',
+            icon: const Icon(Icons.info),
+            snackPosition: SnackPosition.TOP,
+          );
+        } else {
+          Get.snackbar(
+            'Notification',
+            'Error menghapus transaksi',
+            icon: const Icon(Icons.info),
+            snackPosition: SnackPosition.TOP,
+          );
+        }
+      } finally {
+        isLoading(false);
+      }
     }
   }
 

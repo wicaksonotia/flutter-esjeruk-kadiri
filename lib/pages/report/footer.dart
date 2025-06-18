@@ -43,7 +43,7 @@ class _FooterReportState extends State<FooterReport> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Total Cup: ${_transactionController.totalCup.value}',
+                'Total Item: ${_transactionController.totalCup.value}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeLg,

@@ -2,12 +2,8 @@ import 'package:esjerukkadiri/bindings/initial_binding.dart';
 import 'package:flutter/material.dart';
 import 'package:esjerukkadiri/navigation/app_navigation.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  Get.put(prefs);
+void main() {
   runApp(const MyApp());
 }
 
