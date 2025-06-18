@@ -32,12 +32,14 @@ class TransactionController extends GetxController {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       var kios = prefs.getInt('id_kios');
       var cabang = prefs.getInt('id_cabang');
+      var kasir = prefs.getInt('id_kasir');
       TransactionHistoryModel? result;
       if (filterBy.value == 'bulan') {
         var data = {
           'monthYear': '${initMonth.value}-${initYear.value}',
           'id_kios': kios,
           'id_cabang': cabang,
+          'id_kasir': kasir,
         };
         result = await RemoteDataSource.transactionHistoryByMonth(data);
       } else {
@@ -46,6 +48,7 @@ class TransactionController extends GetxController {
           'endDate': endDate.value,
           'id_kios': kios,
           'id_cabang': cabang,
+          'id_kasir': kasir,
         };
         result = await RemoteDataSource.transactionHistoryByDateRange(data);
       }
@@ -162,9 +165,6 @@ class TransactionController extends GetxController {
         initYear.value--;
       }
     }
-    // monthYear.value =
-    //     "${startMonth.value.month.toString()}-${startMonth.value.year.toString()}";
-    // fetchData();
   }
 
   void showDialogDateRangePicker() async {
