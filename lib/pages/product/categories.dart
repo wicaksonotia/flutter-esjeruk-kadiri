@@ -83,9 +83,6 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
           onValueChanged: (value) {
             setState(() {
               productCategoryController.idProductCategory.value = value!;
-              if (value == 1) {
-                // productCategoryController.idProductCategory.value = 1;
-              }
               productCategoryController.fetchProduct();
             });
           },

@@ -99,10 +99,10 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   _SliverAppBarDelegate(this._widget);
 
   @override
-  double get minExtent => 80;
+  double get minExtent => 78;
 
   @override
-  double get maxExtent => 80;
+  double get maxExtent => 78;
 
   @override
   Widget build(

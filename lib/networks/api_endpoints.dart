@@ -9,6 +9,7 @@ class _AuthEndPoints {
   final String product = 'products';
   final String saveTransaction = 'savetransaction';
   final String getDetailTransaction = 'getdetailtransaction';
+  final String updateFavorite = 'updatefavorite';
   final String deleteTransaction = 'deletetransaction';
   final String transactionHistoryByMonth = 'transactionhistorybymonth';
   final String transactionHistoryByDateRange = 'transactionhistorybydaterange';

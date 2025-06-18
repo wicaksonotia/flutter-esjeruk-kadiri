@@ -68,6 +68,7 @@ class RemoteDataSource {
     Map<String, dynamic> rawFormat,
   ) async {
     try {
+      print(rawFormat.toString());
       Dio dio = Dio();
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.product;
       Response response = await dio.post(
@@ -107,6 +108,28 @@ class RemoteDataSource {
         if (response.data['status'] == 'ok') {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setInt('transaction_id', response.data['transaction_id']);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // UPDATE TO FAVORITE
+  static Future<bool> updateFavorite(Map<String, dynamic> rawFormat) async {
+    try {
+      Dio dio = Dio();
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateFavorite;
+      Response response = await dio.post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
           return true;
         }
       }

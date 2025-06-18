@@ -56,4 +56,21 @@ class ProductCategoryController extends GetxController {
   toggleShowListGrid() {
     showListGrid(!showListGrid.value);
   }
+
+  void toggleFavorite(int index) async {
+    var product = productItems[index];
+    product.favorite = !(product.favorite ?? false);
+    productItems[index] = product;
+    // print(productItems[index].toJson());
+    try {
+      await RemoteDataSource.updateFavorite(productItems[index].toJson());
+    } catch (error) {
+      Get.snackbar(
+        'Notification',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
 }

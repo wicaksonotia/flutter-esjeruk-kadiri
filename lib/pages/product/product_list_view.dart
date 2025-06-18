@@ -113,10 +113,10 @@ class ProductListView extends StatelessWidget {
                       productCategoryController
                           .productItems[index]
                           .productName!;
-                  var dataDescription =
-                      productCategoryController
-                          .productItems[index]
-                          .description!;
+                  // var dataDescription =
+                  //     productCategoryController
+                  //         .productItems[index]
+                  //         .description!;
                   var dataPrice =
                       productCategoryController.productItems[index].price!;
                   var dataPhoto =
@@ -145,24 +145,49 @@ class ProductListView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                dataProductName,
-                                style: const TextStyle(
-                                  fontSize: MySizes.fontSizeLg,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    dataProductName,
+                                    style: const TextStyle(
+                                      fontSize: MySizes.fontSizeLg,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    icon: Icon(
+                                      productCategoryController
+                                                  .productItems[index]
+                                                  .favorite ==
+                                              true
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color:
+                                          productCategoryController
+                                                      .productItems[index]
+                                                      .favorite ==
+                                                  true
+                                              ? Colors.red
+                                              : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      productCategoryController.toggleFavorite(
+                                        index,
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                              const Gap(5),
-                              Text(
-                                dataDescription,
-                                style: const TextStyle(
-                                  fontSize: MySizes.fontSizeSm,
-                                  color: Colors.black54,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const Gap(10),
+                              // Text(
+                              //   dataDescription,
+                              //   style: const TextStyle(
+                              //     fontSize: MySizes.fontSizeSm,
+                              //     color: Colors.black54,
+                              //   ),
+                              //   maxLines: 2,
+                              //   overflow: TextOverflow.ellipsis,
+                              // ),
                               Row(
                                 children: [
                                   ProductPrice(dataPrice: dataPrice),
