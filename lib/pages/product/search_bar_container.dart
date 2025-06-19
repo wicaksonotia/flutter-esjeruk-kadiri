@@ -19,7 +19,7 @@ class SearchBarContainer extends StatelessWidget {
                 child: TextField(
                   decoration: InputDecoration(
                     fillColor: Colors.white,
-                    hintText: "Search produk ...",
+                    hintText: "Cari produk ...",
                     prefixIcon: const Icon(Icons.search),
                     filled: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -50,6 +50,7 @@ class SearchBarContainer extends StatelessWidget {
                     if (value.isNotEmpty) {
                       productController.isEmptyValue.value = false;
                       productController.fetchProduct();
+                      productController.idProductCategory.value = 0;
                     }
                   },
                 ),
