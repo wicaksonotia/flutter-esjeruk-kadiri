@@ -217,10 +217,29 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                         color: Colors.white,
                         child: ExpansionTile(
                           leading: const Icon(Icons.receipt),
-                          title: Text(
-                            items.numerator.toString().padLeft(4, '0'),
-                            style: const TextStyle(
-                              fontSize: MySizes.fontSizeMd,
+                          title: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: items.numerator.toString().padLeft(
+                                    4,
+                                    '0',
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: MySizes.fontSizeMd,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const TextSpan(text: '  '),
+                                TextSpan(
+                                  text: '(${items.paymentMethod})',
+                                  style: const TextStyle(
+                                    fontSize: MySizes.fontSizeSm,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           subtitle: Text(
