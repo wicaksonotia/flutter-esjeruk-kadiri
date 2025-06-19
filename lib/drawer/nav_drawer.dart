@@ -3,7 +3,9 @@ import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/cart_controller.dart';
 import 'package:esjerukkadiri/controllers/login_controller.dart';
 import 'package:esjerukkadiri/navigation/app_navigation.dart';
+import 'package:esjerukkadiri/pages/change_outlet_page.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +27,7 @@ class NavigationDrawer extends StatelessWidget {
             buildDrawerHeader(),
             buildDrawerItem(
               icon: Icons.shopping_cart,
-              text: "Layanan",
+              text: "Katalog Menu",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.product);
@@ -38,14 +40,27 @@ class NavigationDrawer extends StatelessWidget {
             ),
             buildDrawerItem(
               icon: Icons.history,
-              text: "Riwayat Transaksi",
+              text: "Transaksi Harian",
               onTap: () {
                 Navigator.of(context).pop();
-                Get.toNamed(RouterClass.reporttransaction);
+                Get.toNamed(RouterClass.dailytransactions);
               },
               tileColor: Colors.black,
               textIconColor:
-                  Get.currentRoute == RouterClass.reporttransaction
+                  Get.currentRoute == RouterClass.dailytransactions
+                      ? MyColors.primary
+                      : Colors.black,
+            ),
+            buildDrawerItem(
+              icon: Icons.edit_document,
+              text: "Riwayat Transaksi",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.transactionhistories);
+              },
+              tileColor: Colors.black,
+              textIconColor:
+                  Get.currentRoute == RouterClass.transactionhistories
                       ? MyColors.primary
                       : Colors.black,
             ),
@@ -110,12 +125,41 @@ class NavigationDrawer extends StatelessWidget {
               fontSize: MySizes.fontSizeLg,
             ),
           ),
-          accountEmail: Text(
-            '${prefs.getString('kios') ?? ''} - Cab. ${prefs.getString('cabang') ?? ''}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: MySizes.fontSizeMd,
-            ),
+          accountEmail: Row(
+            children: [
+              Text(
+                '${prefs.getString('kios') ?? ''} - ${prefs.getString('cabang') ?? ''}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: MySizes.fontSizeMd,
+                ),
+              ),
+              const Gap(10),
+              GestureDetector(
+                onTap: () {
+                  Get.back();
+                  showModalBottomSheet(
+                    context: context,
+                    constraints: const BoxConstraints(
+                      minWidth: double.infinity,
+                    ),
+                    builder: (context) => const ChangeOutletPage(),
+                    isScrollControlled: true,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                  );
+                },
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: MySizes.iconSm,
+                ),
+              ),
+            ],
           ),
           currentAccountPicture: const CircleAvatar(
             backgroundImage: AssetImage('assets/images/clerk.png'),

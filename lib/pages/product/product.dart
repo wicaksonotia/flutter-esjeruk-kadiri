@@ -1,6 +1,7 @@
 import 'package:esjerukkadiri/commons/containers/box_container.dart';
+import 'package:esjerukkadiri/controllers/cart_controller.dart';
 import 'package:esjerukkadiri/controllers/login_controller.dart';
-import 'package:esjerukkadiri/controllers/product_category_controller.dart';
+import 'package:esjerukkadiri/controllers/product_controller.dart';
 import 'package:esjerukkadiri/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:esjerukkadiri/pages/product/categories.dart';
 import 'package:esjerukkadiri/pages/product/footer.dart';
@@ -19,8 +20,8 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final ProductCategoryController productCategoryController =
-      Get.find<ProductCategoryController>();
+  final ProductController productController = Get.find<ProductController>();
+  final CartController cartController = Get.find<CartController>();
   final LoginController loginController = Get.find<LoginController>();
 
   @override
@@ -28,11 +29,11 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: Colors.grey.shade50,
-      bottomNavigationBar: const FooterProduct(),
+      bottomNavigationBar: FooterProduct(cartController: cartController),
       body: RefreshIndicator(
         onRefresh: () async {
-          productCategoryController.fetchProductCategory();
-          productCategoryController.fetchProduct();
+          productController.fetchProductCategory();
+          productController.fetchProduct();
         },
         child: CustomScrollView(
           slivers: [
@@ -65,9 +66,7 @@ class _ProductPageState extends State<ProductPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SearchBarContainer(
-                      productCategoryController: productCategoryController,
-                    ),
+                    SearchBarContainer(productController: productController),
                     const BoxContainer(
                       shadow: true,
                       radius: 0,
@@ -81,7 +80,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
             SliverToBoxAdapter(
               child: Obx(() {
-                return productCategoryController.showListGrid.value
+                return productController.showListGrid.value
                     ? ProductListView()
                     : ProductGridView();
               }),

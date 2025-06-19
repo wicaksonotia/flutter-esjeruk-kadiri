@@ -21,13 +21,13 @@ class _FooterReportState extends State<FooterReport> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       height: MediaQuery.of(context).size.height * .07,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: MyColors.notionBgGrey,
             spreadRadius: 0,
             blurRadius: 7,
-          )
+          ),
         ],
         color: Colors.white,
       ),
@@ -65,7 +65,9 @@ class _FooterReportState extends State<FooterReport> {
                     children: [
                       TextSpan(
                         text: CurrencyFormat.convertToIdr(
-                            _transactionController.total.value, 0),
+                          _transactionController.total.value,
+                          0,
+                        ),
                         style: const TextStyle(
                           fontSize: MySizes.fontSizeXl,
                           color: MyColors.primary,

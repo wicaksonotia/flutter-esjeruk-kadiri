@@ -13,4 +13,5 @@ class _AuthEndPoints {
   final String deleteTransaction = 'deletetransaction';
   final String transactionHistoryByMonth = 'transactionhistorybymonth';
   final String transactionHistoryByDateRange = 'transactionhistorybydaterange';
+  final String listoutlet = 'listbranchoutlet';
 }

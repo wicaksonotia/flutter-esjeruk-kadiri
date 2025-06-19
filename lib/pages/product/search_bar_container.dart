@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SearchBarContainer extends StatelessWidget {
-  final dynamic productCategoryController;
-  const SearchBarContainer({
-    super.key,
-    required this.productCategoryController,
-  });
+  final dynamic productController;
+  const SearchBarContainer({super.key, required this.productController});
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +24,15 @@ class SearchBarContainer extends StatelessWidget {
                     filled: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     suffixIcon:
-                        productCategoryController.isEmptyValue.value
+                        productController.isEmptyValue.value
                             ? null
                             : IconButton(
                               icon: const Icon(Icons.clear),
                               onPressed: () {
-                                productCategoryController
-                                    .searchTextFieldController
+                                productController.searchTextFieldController
                                     .clear();
-                                productCategoryController.isEmptyValue.value =
-                                    true;
-                                productCategoryController.fetchProduct();
+                                productController.isEmptyValue.value = true;
+                                productController.fetchProduct();
                               },
                             ),
                     border: OutlineInputBorder(
@@ -45,17 +40,16 @@ class SearchBarContainer extends StatelessWidget {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  controller:
-                      productCategoryController.searchTextFieldController,
+                  controller: productController.searchTextFieldController,
                   onChanged: (value) {
                     value.isEmpty
-                        ? productCategoryController.isEmptyValue.value = true
-                        : productCategoryController.isEmptyValue.value = false;
+                        ? productController.isEmptyValue.value = true
+                        : productController.isEmptyValue.value = false;
                   },
                   onSubmitted: (value) {
                     if (value.isNotEmpty) {
-                      productCategoryController.isEmptyValue.value = false;
-                      productCategoryController.fetchProduct();
+                      productController.isEmptyValue.value = false;
+                      productController.fetchProduct();
                     }
                   },
                 ),
@@ -66,11 +60,11 @@ class SearchBarContainer extends StatelessWidget {
             //   width: 40, // Fixed width for the icon button
             //   child: GestureDetector(
             //     onTap: () {
-            //       productCategoryController.showListGrid.value =
-            //           !productCategoryController.showListGrid.value;
+            //       productController.showListGrid.value =
+            //           !productController.showListGrid.value;
             //     },
             //     child: Icon(
-            //       (productCategoryController.showListGrid.value)
+            //       (productController.showListGrid.value)
             //           ? Icons.grid_view_rounded
             //           : Icons.format_list_bulleted_rounded,
             //       color: Colors.black54,

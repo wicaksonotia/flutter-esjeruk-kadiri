@@ -30,7 +30,6 @@ class CartController extends GetxController {
         (element) => element.idProduct == dataProduct.idProduct,
       );
       cartList[index].quantity++;
-      // print("totalQuantity: ${cartList[index].quantity}");
     } else {
       cartList.add(
         CartModel(
@@ -39,7 +38,6 @@ class CartController extends GetxController {
           quantity: 1,
         ),
       );
-      // print("totalQuantity: ${cartList.last.quantity}");
     }
     totalAllQuantity++;
     subTotal.value += dataProduct.price!;
@@ -56,7 +54,6 @@ class CartController extends GetxController {
         cartList[index].quantity--;
         totalAllQuantity--;
         subTotal.value -= dataProduct.price!;
-        // print("totalQuantity: ${cartList[index].quantity}");
       } else {
         cartList.removeAt(index);
       }
@@ -170,7 +167,7 @@ class CartController extends GetxController {
 
   void clearCart() {
     cartList.clear();
-    isButtonDisabled.value = true;
+    buttonCheckhoutDisable();
     totalAllQuantity.value = 0;
     subTotal.value = 0;
     discountController.clear();

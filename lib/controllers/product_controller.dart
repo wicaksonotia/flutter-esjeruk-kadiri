@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProductCategoryController extends GetxController {
+class ProductController extends GetxController {
   var productCategoryItems = <ProductCategoryModel>[].obs;
   var productItems = <ProductModel>[].obs;
   var idProductCategory = 0.obs;
@@ -61,7 +61,6 @@ class ProductCategoryController extends GetxController {
     var product = productItems[index];
     product.favorite = !(product.favorite ?? false);
     productItems[index] = product;
-    // print(productItems[index].toJson());
     try {
       await RemoteDataSource.updateFavorite(productItems[index].toJson());
     } catch (error) {
@@ -71,6 +70,9 @@ class ProductCategoryController extends GetxController {
         icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
+    }
+    if (idProductCategory.value == 1) {
+      productItems.removeAt(index);
     }
   }
 }

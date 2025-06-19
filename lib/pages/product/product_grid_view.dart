@@ -1,7 +1,7 @@
 // import 'dart:convert';
 // import 'dart:typed_data';
 
-import 'package:esjerukkadiri/controllers/product_category_controller.dart';
+import 'package:esjerukkadiri/controllers/product_controller.dart';
 import 'package:esjerukkadiri/pages/product/increment_and_decrement.dart';
 import 'package:esjerukkadiri/pages/product/product_price.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +13,13 @@ import 'package:shimmer/shimmer.dart';
 
 class ProductGridView extends StatelessWidget {
   ProductGridView({super.key});
-  final ProductCategoryController productCategoryController =
-      Get.find<ProductCategoryController>();
+  final ProductController productController = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () =>
-          productCategoryController.isLoadingProduct.value
+          productController.isLoadingProduct.value
               ? GridView.builder(
                 padding: const EdgeInsets.all(10),
                 scrollDirection: Axis.vertical,
@@ -109,7 +108,7 @@ class ProductGridView extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),
-                itemCount: productCategoryController.productItems.length,
+                itemCount: productController.productItems.length,
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -120,15 +119,10 @@ class ProductGridView extends StatelessWidget {
                 ),
                 itemBuilder: (_, index) {
                   var dataProductName =
-                      productCategoryController
-                          .productItems[index]
-                          .productName!;
+                      productController.productItems[index].productName!;
                   var dataDescription =
-                      productCategoryController
-                          .productItems[index]
-                          .description!;
-                  var dataPrice =
-                      productCategoryController.productItems[index].price!;
+                      productController.productItems[index].description!;
+                  var dataPrice = productController.productItems[index].price!;
                   // Uint8List decodePhoto;
                   // decodePhoto = const Base64Decoder()
                   //     .convert(controller.productItems[index].photo1!);
@@ -186,8 +180,7 @@ class ProductGridView extends StatelessWidget {
                             Center(
                               child: IncrementAndDecrement(
                                 dataProduct:
-                                    productCategoryController
-                                        .productItems[index],
+                                    productController.productItems[index],
                               ),
                             ),
                           ],

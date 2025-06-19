@@ -1,5 +1,5 @@
 import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/controllers/product_category_controller.dart';
+import 'package:esjerukkadiri/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -13,13 +13,12 @@ class CategoriesMenu extends StatefulWidget {
 }
 
 class _CategoriesMenuState extends State<CategoriesMenu> {
-  final ProductCategoryController productCategoryController =
-      Get.find<ProductCategoryController>();
+  final ProductController productController = Get.find<ProductController>();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (productCategoryController.isLoadingProductCategory.value) {
+      if (productController.isLoadingProductCategory.value) {
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Shimmer.fromColors(
@@ -28,7 +27,7 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: List.generate(
-                productCategoryController.productCategoryItems.length,
+                productController.productCategoryItems.length,
                 (index) => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 6),
                   height: 32,
@@ -48,7 +47,7 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
       final items = [
         {'id': 0, 'name': 'All'},
         {'id': 1, 'name': 'Favorite'},
-        ...productCategoryController.productCategoryItems.map(
+        ...productController.productCategoryItems.map(
           (item) => {
             'id': item.categoryId ?? 0,
             'name': item.categoryName ?? "",
@@ -62,7 +61,7 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
           backgroundColor: Colors.transparent,
           thumbColor: MyColors.primary,
           padding: const EdgeInsets.all(5),
-          groupValue: productCategoryController.idProductCategory.value,
+          groupValue: productController.idProductCategory.value,
           children: Map<int, Widget>.fromEntries(
             items.map(
               (item) => MapEntry(
@@ -71,8 +70,7 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
                   item['name'] as String,
                   style: TextStyle(
                     color:
-                        productCategoryController.idProductCategory.value ==
-                                item['id']
+                        productController.idProductCategory.value == item['id']
                             ? Colors.white
                             : Colors.black,
                   ),
@@ -82,8 +80,8 @@ class _CategoriesMenuState extends State<CategoriesMenu> {
           ),
           onValueChanged: (value) {
             setState(() {
-              productCategoryController.idProductCategory.value = value!;
-              productCategoryController.fetchProduct();
+              productController.idProductCategory.value = value!;
+              productController.fetchProduct();
             });
           },
         ),

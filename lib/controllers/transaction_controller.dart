@@ -1,15 +1,17 @@
 import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
-import 'package:esjerukkadiri/models/transaction_model.dart';
+import 'package:esjerukkadiri/models/transaction_history_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
+  var dailyTransactionItems = <TransactionModel>[].obs;
   var transactionItems = <TransactionModel>[].obs;
   List<CartModel> cartList = <CartModel>[].obs;
-  var isLoading = true.obs;
+  var isLoadingDailyTransaction = true.obs;
+  var isLoadingTransactionHistory = true.obs;
   var isLoadingDetail = true.obs;
   var total = 0.obs;
   var startDate = DateTime.now().obs;
@@ -20,15 +22,45 @@ class TransactionController extends GetxController {
   var isSideBarOpen = false.obs;
   var totalCup = 0.obs;
 
-  @override
-  void onInit() {
-    fetchTransaction();
-    super.onInit();
+  Future<void> fetchDailyTransactions() async {
+    try {
+      isLoadingDailyTransaction(true);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      var kios = prefs.getInt('id_kios');
+      var cabang = prefs.getInt('id_cabang');
+      var kasir = prefs.getInt('id_kasir');
+      TransactionHistoryModel? result;
+      var data = {
+        'startDate': DateTime.now().toString(),
+        'endDate': DateTime.now().toString(),
+        'id_kios': kios,
+        'id_cabang': cabang,
+        'id_kasir': kasir,
+      };
+      result = await RemoteDataSource.transactionHistoryByDateRange(data);
+      if (result != null && result.data != null) {
+        totalCup.value = result.totalCup ?? 0;
+        dailyTransactionItems.assignAll(result.data!);
+        total.value = dailyTransactionItems.fold(
+          0,
+          (sum, item) => sum + (item.grandTotal ?? 0),
+        );
+      }
+    } catch (error) {
+      Get.snackbar(
+        'Error',
+        error.toString(),
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      isLoadingDailyTransaction(false);
+    }
   }
 
-  void fetchTransaction() async {
+  Future<void> fetchTransaction() async {
     try {
-      isLoading(true);
+      isLoadingTransactionHistory(true);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       var kios = prefs.getInt('id_kios');
       var cabang = prefs.getInt('id_cabang');
@@ -44,8 +76,8 @@ class TransactionController extends GetxController {
         result = await RemoteDataSource.transactionHistoryByMonth(data);
       } else {
         var data = {
-          'startDate': startDate.value,
-          'endDate': endDate.value,
+          'startDate': startDate.value.toString(),
+          'endDate': endDate.value.toString(),
           'id_kios': kios,
           'id_cabang': cabang,
           'id_kasir': kasir,
@@ -67,9 +99,9 @@ class TransactionController extends GetxController {
         icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
-      isLoading(false);
+      isLoadingTransactionHistory(false);
     } finally {
-      isLoading(false);
+      isLoadingTransactionHistory(false);
     }
   }
 
@@ -123,7 +155,7 @@ class TransactionController extends GetxController {
       }
 
       try {
-        isLoading(true);
+        isLoadingDailyTransaction(true);
         var rawFormat = {'id_transaction': transactionId, 'reason': reason};
         var result = await RemoteDataSource.deleteTransaction(rawFormat);
         if (result) {
@@ -143,7 +175,7 @@ class TransactionController extends GetxController {
           );
         }
       } finally {
-        isLoading(false);
+        isLoadingDailyTransaction(false);
       }
     }
   }

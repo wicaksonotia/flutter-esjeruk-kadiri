@@ -9,15 +9,14 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class FooterProduct extends StatefulWidget {
-  const FooterProduct({super.key});
+  final CartController cartController;
+  const FooterProduct({super.key, required this.cartController});
 
   @override
   State<FooterProduct> createState() => _FooterProductState();
 }
 
 class _FooterProductState extends State<FooterProduct> {
-  final CartController _cartController = Get.find<CartController>();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,7 +40,7 @@ class _FooterProductState extends State<FooterProduct> {
               children: [
                 badges.Badge(
                   badgeContent: Text(
-                    _cartController.totalAllQuantity.value.toString(),
+                    widget.cartController.totalAllQuantity.value.toString(),
                     style: const TextStyle(color: Colors.white),
                   ),
                   badgeAnimation: const badges.BadgeAnimation.fade(
@@ -65,7 +64,7 @@ class _FooterProductState extends State<FooterProduct> {
                     children: [
                       TextSpan(
                         text: CurrencyFormat.convertToIdr(
-                          _cartController.subTotal.value,
+                          widget.cartController.subTotal.value,
                           0,
                         ),
                         style: const TextStyle(
@@ -82,16 +81,16 @@ class _FooterProductState extends State<FooterProduct> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                if (_cartController.isButtonDisabled.value) return;
+                if (widget.cartController.isButtonDisabled.value) return;
                 Get.toNamed(RouterClass.checkoutPage);
-                _cartController.applyDiscount();
+                widget.cartController.applyDiscount();
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // <-- Radius
                 ),
                 backgroundColor:
-                    _cartController.isButtonDisabled.value
+                    widget.cartController.isButtonDisabled.value
                         ? Colors.grey
                         : MyColors.primary,
                 padding: const EdgeInsets.symmetric(

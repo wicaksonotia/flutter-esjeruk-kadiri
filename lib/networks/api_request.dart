@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:esjerukkadiri/models/kasir_model.dart';
 import 'package:esjerukkadiri/models/product_category_model.dart';
 import 'dart:convert';
 import 'package:esjerukkadiri/models/product_model.dart';
-import 'package:esjerukkadiri/models/transaction_model.dart';
+import 'package:esjerukkadiri/models/transaction_history_model.dart';
 import 'package:esjerukkadiri/networks/api_endpoints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,7 +69,6 @@ class RemoteDataSource {
     Map<String, dynamic> rawFormat,
   ) async {
     try {
-      print(rawFormat.toString());
       Dio dio = Dio();
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.product;
       Response response = await dio.post(
@@ -184,12 +184,9 @@ class RemoteDataSource {
   }
 
   static Future<TransactionHistoryModel?> transactionHistoryByDateRange(
-    Map<String, dynamic> data,
+    rawFormat,
   ) async {
     try {
-      var rawFormat = Map<String, dynamic>.from(data);
-      rawFormat['startDate'] = data['startDate'].toString();
-      rawFormat['endDate'] = data['endDate'].toString();
       var url =
           ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.transactionHistoryByDateRange;
@@ -211,16 +208,15 @@ class RemoteDataSource {
   }
 
   static Future<TransactionHistoryModel?> transactionHistoryByMonth(
-    Map<String, dynamic> data,
+    rawFormat,
   ) async {
     try {
-      var rawFormat = jsonEncode(data);
       var url =
           ApiEndPoints.baseUrl +
           ApiEndPoints.authEndpoints.transactionHistoryByMonth;
       Response response = await Dio().post(
         url,
-        data: rawFormat,
+        data: jsonEncode(rawFormat),
         options: Options(contentType: Headers.jsonContentType),
       );
       if (response.statusCode == 200) {
@@ -228,6 +224,26 @@ class RemoteDataSource {
           response.data,
         );
         return res;
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<KasirModel>?> getListOutlet(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listoutlet;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => KasirModel.fromJson(e)).toList();
       }
       return null;
     } catch (e) {

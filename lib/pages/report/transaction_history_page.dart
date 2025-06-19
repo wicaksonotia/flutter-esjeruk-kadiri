@@ -3,8 +3,6 @@ import 'package:esjerukkadiri/commons/colors.dart';
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/lists.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/login_controller.dart';
-import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
 import 'package:esjerukkadiri/pages/report/filter_date_range.dart';
 import 'package:esjerukkadiri/pages/report/filter_month.dart';
 import 'package:esjerukkadiri/pages/report/footer.dart';
@@ -15,69 +13,59 @@ import 'package:esjerukkadiri/controllers/transaction_controller.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:esjerukkadiri/drawer/nav_drawer.dart' as custom_drawer;
 
-class TransactionPage extends StatefulWidget {
-  const TransactionPage({super.key});
+class TransactionHistoryPage extends StatefulWidget {
+  const TransactionHistoryPage({super.key});
 
   @override
-  TransactionPageState createState() => TransactionPageState();
+  TransactionHistoryPageState createState() => TransactionHistoryPageState();
 }
 
-class TransactionPageState extends State<TransactionPage> {
+class TransactionHistoryPageState extends State<TransactionHistoryPage> {
   int? groupValue = 1;
   final TransactionController _transactionController = Get.put(
     TransactionController(),
   );
-  final PrintNotaController _printNotaController =
-      Get.find<PrintNotaController>();
-  final LoginController _loginController = Get.find<LoginController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _transactionController.fetchTransaction();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.notionBgGrey,
       bottomNavigationBar: const FooterReport(),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
-          title: const Text('Report', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'Transaksi Harian',
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: MyColors.primary,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Get.back();
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
             },
           ),
-          actions: [
-            PopupMenuButton(
-              color: Colors.white,
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (dynamic value) {},
-              itemBuilder:
-                  (BuildContext context) => <PopupMenuEntry>[
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.bluetooth_searching),
-                        title: const Text('Setting Bluetooth'),
-                        onTap: () {
-                          Get.back();
-                          Get.toNamed('/bluetooth_setting');
-                        },
-                      ),
-                    ),
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        onTap: () {
-                          _loginController.logout();
-                        },
-                      ),
-                    ),
-                  ],
-            ),
-          ],
+          // leading: IconButton(
+          //   icon: const Icon(Icons.arrow_back, color: Colors.white),
+          //   onPressed: () {
+          //     Get.back();
+          //   },
+          // ),
         ),
       ),
       body: SafeArea(
@@ -132,7 +120,7 @@ class TransactionPageState extends State<TransactionPage> {
             ),
             Expanded(
               child: Obx(() {
-                if (_transactionController.isLoading.value) {
+                if (_transactionController.isLoadingTransactionHistory.value) {
                   return Shimmer.fromColors(
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
@@ -225,154 +213,123 @@ class TransactionPageState extends State<TransactionPage> {
                       var items =
                           resultDataMap.values.toList()[index.section][index
                               .index];
-                      print(items);
-                      return Slidable(
-                        key: Key('${items.id}'),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                _transactionController.removeTransaction(
-                                  items.id,
-                                );
-                              },
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
+                      return Container(
+                        color: Colors.white,
+                        child: ExpansionTile(
+                          leading: const Icon(Icons.receipt),
+                          title: Text(
+                            items.numerator.toString().padLeft(4, '0'),
+                            style: const TextStyle(
+                              fontSize: MySizes.fontSizeMd,
                             ),
-                            SlidableAction(
-                              onPressed: (context) {
-                                _printNotaController.printTransaction(
-                                  items.transactionId,
-                                );
-                              },
-                              backgroundColor: const Color(0xFF21B7CA),
-                              foregroundColor: Colors.white,
-                              icon: Icons.print,
-                              label: 'Print',
+                          ),
+                          subtitle: Text(
+                            DateFormat(
+                              'dd MMM yyyy HH:mm',
+                            ).format(DateTime.parse(items.transactionDate)),
+                            style: const TextStyle(
+                              color: MyColors.grey,
+                              fontSize: MySizes.fontSizeSm,
                             ),
-                          ],
-                        ),
-                        child: Container(
-                          color: Colors.white,
-                          child: ExpansionTile(
-                            leading: const Icon(Icons.receipt),
-                            title: Text(
-                              items.numerator.toString().padLeft(4, '0'),
-                              style: const TextStyle(
-                                fontSize: MySizes.fontSizeMd,
-                              ),
-                            ),
-                            subtitle: Text(
-                              DateFormat(
-                                'dd MMM yyyy HH:mm',
-                              ).format(DateTime.parse(items.transactionDate)),
-                              style: const TextStyle(
-                                color: MyColors.grey,
-                                fontSize: MySizes.fontSizeSm,
-                              ),
-                            ),
-                            trailing: Column(
-                              children: [
-                                Text(
-                                  CurrencyFormat.convertToIdr(
-                                    items.grandTotal,
-                                    0,
-                                  ),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: MySizes.fontSizeMd,
-                                    color: MyColors.primary,
-                                  ),
-                                ),
-                                if (items.deleteStatus!) ...[
-                                  const Text(
-                                    'Deleted',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                  Text(
-                                    '( ${items.deleteReason} )',
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                      fontSize: MySizes.fontSizeXsm,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            iconColor: MyColors.primary,
+                          ),
+                          trailing: Column(
                             children: [
-                              ListTile(
-                                title: const Text(
-                                  'Transaction Details',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                              Text(
+                                CurrencyFormat.convertToIdr(
+                                  items.grandTotal,
+                                  0,
                                 ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: items.details!.length,
-                                      itemBuilder: (context, detailIndex) {
-                                        return Row(
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.centerLeft,
-                                              width:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.5,
-                                              child: Text(
-                                                items
-                                                        .details[detailIndex]
-                                                        .productName ??
-                                                    'Unknown Product',
-                                              ),
-                                            ),
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.1,
-                                              child: Text(
-                                                '${items.details[detailIndex].quantity}',
-                                              ),
-                                            ),
-                                            Container(
-                                              width:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.25,
-                                              alignment: Alignment.centerRight,
-                                              child: Text(
-                                                CurrencyFormat.convertToIdr(
-                                                  items
-                                                      .details[detailIndex]
-                                                      .totalPrice,
-                                                  0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: MySizes.fontSizeMd,
+                                  color: MyColors.primary,
                                 ),
                               ),
+                              if (items.deleteStatus!) ...[
+                                const Text(
+                                  'Deleted',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: MySizes.fontSizeSm,
+                                  ),
+                                ),
+                                Text(
+                                  '( ${items.deleteReason} )',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: MySizes.fontSizeXsm,
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
+                          iconColor: MyColors.primary,
+                          children: [
+                            ListTile(
+                              title: const Text(
+                                'Transaction Details',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: items.details!.length,
+                                    itemBuilder: (context, detailIndex) {
+                                      return Row(
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.centerLeft,
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.5,
+                                            child: Text(
+                                              items
+                                                      .details[detailIndex]
+                                                      .productName ??
+                                                  'Unknown Product',
+                                            ),
+                                          ),
+                                          Container(
+                                            alignment: Alignment.center,
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.1,
+                                            child: Text(
+                                              '${items.details[detailIndex].quantity}',
+                                            ),
+                                          ),
+                                          Container(
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.25,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(
+                                              CurrencyFormat.convertToIdr(
+                                                items
+                                                    .details[detailIndex]
+                                                    .totalPrice,
+                                                0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },

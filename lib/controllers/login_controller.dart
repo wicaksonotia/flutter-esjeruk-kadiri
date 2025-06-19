@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:esjerukkadiri/commons/sizes.dart';
+import 'package:esjerukkadiri/controllers/kasir_controller.dart';
+import 'package:esjerukkadiri/controllers/product_controller.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -32,8 +34,11 @@ class LoginController extends GetxController {
       });
       bool result = await RemoteDataSource.login(formData);
       if (result) {
-        // await prefs.setBool('statusLogin', true);
-        // await prefs.setString('username', emailController.text.trim());
+        ProductController productController = Get.put(ProductController());
+        productController.fetchProductCategory();
+        productController.fetchProduct();
+        KasirController kasirController = Get.put(KasirController());
+        kasirController.fetchDataListOutlet();
         Get.offNamed('/product');
       } else {
         throw "Kios is not regsitered";
@@ -62,8 +67,8 @@ class LoginController extends GetxController {
 
   void logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('statusLogin', false);
-    isLogin.value = prefs.getBool('statusLogin') ?? false;
+    prefs.clear();
+    isLogin.value = false;
     Get.offAllNamed('/login');
   }
 
