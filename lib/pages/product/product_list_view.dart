@@ -158,9 +158,10 @@ class ProductListView extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         ProductPrice(dataPrice: dataPrice),
-                                        const Spacer(),
                                         IncrementAndDecrement(
                                           dataProduct:
                                               productController

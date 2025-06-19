@@ -5,6 +5,6 @@ List<Map<String, String>> filterKategori = [
 ];
 
 List<Map<String, dynamic>> paymentCategory = [
-  {"value": 'cash', "nama": "Cash"},
-  {"value": 'qris', "nama": "QRIS"},
+  {"value": 'Cash', "nama": "Cash"},
+  {"value": 'QRIS', "nama": "QRIS"},
 ];

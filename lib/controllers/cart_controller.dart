@@ -1,3 +1,4 @@
+import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
 import 'package:esjerukkadiri/models/cart_model.dart';
 import 'package:esjerukkadiri/models/product_model.dart';
@@ -101,6 +102,7 @@ class CartController extends GetxController {
       calculatedDiscount = subTotal.value;
     }
     totalBayar.value = subTotal.value - calculatedDiscount;
+    bayarTunai.text = CurrencyFormat.convertToIdr(totalBayar.value, 0);
     update();
   }
 
@@ -133,6 +135,7 @@ class CartController extends GetxController {
         'sub_total': subTotal.value,
         'discount': calculatedDiscount,
         'total_bayar': totalBayar.value,
+        'payment_method': paymentMethod.value,
       };
       var resultSave = await RemoteDataSource.saveTransaction(
         dataTransaction,

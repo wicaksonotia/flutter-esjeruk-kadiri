@@ -5,10 +5,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 class IncrementAndDecrement extends StatefulWidget {
-  const IncrementAndDecrement({
-    super.key,
-    required this.dataProduct,
-  });
+  const IncrementAndDecrement({super.key, required this.dataProduct});
 
   final ProductModel dataProduct;
 
@@ -25,18 +22,17 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
     return Obx(
       () => BoxContainer(
         height: 35,
-        width: MediaQuery.of(context).size.width * 0.3,
         radius: 5,
         showBorder: true,
         borderColor: Colors.grey.shade200,
         shadow: true,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              iconSize: 20.0, // desired size
+              iconSize: 20,
               onPressed: () {
                 cartController.decrementProductQuantity(widget.dataProduct);
                 setState(() {
@@ -46,17 +42,14 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
                   }
                 });
               },
-              icon: const Icon(
-                Icons.remove,
-                color: Colors.black,
-              ),
+              icon: const Icon(Icons.remove, color: Colors.black),
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.05,
+              width: 30,
               child: Center(
                 child: Text(
                   '${cartController.getProductQuantity(widget.dataProduct)}',
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -68,17 +61,14 @@ class _IncrementAndDecrementState extends State<IncrementAndDecrement> {
             IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              iconSize: 20.0, // desired size
+              iconSize: 20,
               onPressed: () {
                 cartController.incrementProductQuantity(widget.dataProduct);
                 setState(() {
                   quantity++;
                 });
               },
-              icon: const Icon(
-                Icons.add,
-                color: Colors.black,
-              ),
+              icon: const Icon(Icons.add, color: Colors.black),
             ),
           ],
         ),

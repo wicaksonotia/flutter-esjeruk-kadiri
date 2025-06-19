@@ -5,7 +5,6 @@ import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/commons/lists.dart';
 import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/cart_controller.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gap/gap.dart';
@@ -20,6 +19,45 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   final CartController _cartController = Get.find<CartController>();
+  // Suggested payment options
+  List<int> suggestions = [];
+
+  void generateSuggestions() {
+    final total = _cartController.totalBayar.value;
+    suggestions.clear();
+
+    // Index 0: closest multiple of 5000 (rounded up)
+    int closest5000 = ((total + 4999) ~/ 5000) * 5000;
+    suggestions.add(closest5000);
+
+    // Index > 0: next multiples of 50000 (rounded up)
+    int closest50000 = ((total + 49999) ~/ 50000) * 50000;
+
+    // If closest5000 == closest50000, skip adding closest50000 again
+    if (closest5000 != closest50000) {
+      suggestions.add(closest50000);
+      suggestions.add(closest50000 + 50000);
+    } else {
+      suggestions.add(closest50000 + 50000);
+      suggestions.add(closest50000 + 100000);
+    }
+  }
+
+  void updateInput(int value) {
+    setState(() {
+      _cartController.bayarTunai.text = CurrencyFormat.convertToIdr(
+        _cartController.totalBayar.value,
+        0,
+      );
+      _cartController.bayarTunai.text = CurrencyFormat.convertToIdr(value, 0);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    generateSuggestions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +127,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     child: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
-                        Get.toNamed(RouterClass.product);
+                        Get.back();
                       },
                     ),
                   ),
@@ -462,12 +500,88 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 const EdgeInsets.all(8),
                                             isDense: true,
                                           ),
-                                          onChanged: (value) {
-                                            setState(() {});
+                                          onFieldSubmitted: (value) {
+                                            final numericValue =
+                                                int.tryParse(
+                                                  value.replaceAll(
+                                                    RegExp('[^0-9]'),
+                                                    '',
+                                                  ),
+                                                ) ??
+                                                0;
+                                            final maxBayarTunai =
+                                                _cartController
+                                                    .totalBayar
+                                                    .value;
+                                            if (numericValue < maxBayarTunai) {
+                                              _cartController.bayarTunai.text =
+                                                  CurrencyFormat.convertToIdr(
+                                                    maxBayarTunai,
+                                                    0,
+                                                  );
+                                              _cartController
+                                                      .bayarTunai
+                                                      .selection =
+                                                  TextSelection.fromPosition(
+                                                    TextPosition(
+                                                      offset:
+                                                          _cartController
+                                                              .bayarTunai
+                                                              .text
+                                                              .length,
+                                                    ),
+                                                  );
+                                            }
                                           },
                                         ),
                                       ),
                                     ],
+                                  ),
+                                  ChipsChoice.single(
+                                    wrapped: false,
+                                    value: suggestions.indexWhere(
+                                      (amount) =>
+                                          CurrencyFormat.convertToIdr(
+                                            amount,
+                                            0,
+                                          ) ==
+                                          _cartController.bayarTunai.text,
+                                    ),
+                                    onChanged: (index) {
+                                      if (index == -1) {
+                                        updateInput(
+                                          _cartController.totalBayar.value,
+                                        );
+                                      } else if (index >= 0 &&
+                                          index < suggestions.length) {
+                                        updateInput(suggestions[index]);
+                                      }
+                                    },
+                                    choiceItems: [
+                                      const C2Choice(
+                                        value: -1,
+                                        label: "Uang Pas",
+                                      ),
+                                      ...suggestions.asMap().entries.map(
+                                        (entry) => C2Choice(
+                                          value: entry.key,
+                                          label: CurrencyFormat.convertToIdr(
+                                            entry.value,
+                                            0,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    choiceStyle: C2ChipStyle.filled(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: MyColors.notionBgGrey,
+                                      selectedStyle: const C2ChipStyle(
+                                        backgroundColor: Colors.green,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   const Gap(10),
                                   // Kembalian
