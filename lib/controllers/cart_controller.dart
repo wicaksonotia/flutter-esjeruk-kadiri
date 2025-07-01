@@ -17,7 +17,7 @@ class CartController extends GetxController {
   var numberOfItems = 1.obs;
   var subTotal = 0.obs;
   var totalAllQuantity = 0.obs;
-  var paymentMethod = 'cash'.obs;
+  var paymentMethod = 'Cash'.obs;
   TextEditingController discountController = TextEditingController();
   var totalBayar = 0.obs;
   TextEditingController bayarTunai = TextEditingController();
@@ -136,6 +136,7 @@ class CartController extends GetxController {
         'discount': calculatedDiscount,
         'total_bayar': totalBayar.value,
         'payment_method': paymentMethod.value,
+        'total_quantity': totalAllQuantity.value,
       };
       var resultSave = await RemoteDataSource.saveTransaction(
         dataTransaction,

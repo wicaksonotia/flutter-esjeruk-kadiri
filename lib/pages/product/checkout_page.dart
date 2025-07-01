@@ -446,7 +446,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           // Pembayaran (Bayar Tunai)
                           Obx(() {
                             // Show Bayar Tunai & Kembalian only if payment method is 'cash'
-                            if (_cartController.paymentMethod.value == 'cash') {
+                            if (_cartController.paymentMethod.value == 'Cash') {
                               return Column(
                                 children: [
                                   const Gap(10),

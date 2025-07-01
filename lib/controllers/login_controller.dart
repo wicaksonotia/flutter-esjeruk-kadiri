@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' as Dio;
 import 'package:esjerukkadiri/commons/sizes.dart';
 import 'package:esjerukkadiri/controllers/kasir_controller.dart';
 import 'package:esjerukkadiri/controllers/product_controller.dart';
+import 'package:esjerukkadiri/navigation/app_navigation.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -39,7 +40,7 @@ class LoginController extends GetxController {
         productController.fetchProduct();
         KasirController kasirController = Get.put(KasirController());
         kasirController.fetchDataListOutlet();
-        Get.offNamed('/product');
+        Get.offNamed(RouterClass.product);
       } else {
         throw "Kios is not regsitered";
       }
@@ -59,9 +60,9 @@ class LoginController extends GetxController {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     isLogin.value = prefs.getBool('statusLogin') ?? false;
     if (isLogin.value == true) {
-      Get.offAllNamed('/product');
+      Get.offAllNamed(RouterClass.product);
     } else {
-      Get.offAllNamed('/login');
+      Get.offAllNamed(RouterClass.login);
     }
   }
 
@@ -69,7 +70,7 @@ class LoginController extends GetxController {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
     isLogin.value = false;
-    Get.offAllNamed('/login');
+    Get.offAllNamed(RouterClass.login);
   }
 
   void openBottomSheet() {

@@ -11,9 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RemoteDataSource {
   static Future<bool> login(FormData data) async {
     try {
-      Dio dio = Dio();
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.login;
-      Response response = await dio.post(
+      Response response = await Dio().post(
         url,
         data: data,
         options: Options(contentType: Headers.jsonContentType),
@@ -47,9 +46,8 @@ class RemoteDataSource {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       var rawFormat = jsonEncode({'id_kios': prefs.getInt('id_kios') ?? 0});
-      Dio dio = Dio();
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.categories;
-      Response response = await dio.post(
+      Response response = await Dio().post(
         url,
         data: rawFormat,
         options: Options(contentType: Headers.jsonContentType),
@@ -69,9 +67,8 @@ class RemoteDataSource {
     Map<String, dynamic> rawFormat,
   ) async {
     try {
-      Dio dio = Dio();
       var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.product;
-      Response response = await dio.post(
+      Response response = await Dio().post(
         url,
         data: rawFormat,
         options: Options(contentType: Headers.jsonContentType),
@@ -96,10 +93,9 @@ class RemoteDataSource {
         'transaction': dataTransaction,
         'details': dataDetail,
       });
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveTransaction;
-      Response response = await dio.post(
+      Response response = await Dio().post(
         url,
         data: rawFormat,
         options: Options(contentType: Headers.jsonContentType),
@@ -120,10 +116,9 @@ class RemoteDataSource {
   // UPDATE TO FAVORITE
   static Future<bool> updateFavorite(Map<String, dynamic> rawFormat) async {
     try {
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateFavorite;
-      Response response = await dio.post(
+      Response response = await Dio().post(
         url,
         data: rawFormat,
         options: Options(contentType: Headers.jsonContentType),
@@ -142,10 +137,9 @@ class RemoteDataSource {
   // DELETE TRANSACTION
   static Future<bool> deleteTransaction(Map<String, dynamic> rawFormat) async {
     try {
-      Dio dio = Dio();
       var url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.deleteTransaction;
-      Response response = await dio.delete(
+      Response response = await Dio().delete(
         url,
         data: rawFormat,
         options: Options(contentType: Headers.jsonContentType),
