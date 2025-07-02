@@ -83,8 +83,8 @@ class PrintNotaController extends GetxController {
       '$kiosName',
       styles: const PosStyles(
         align: PosAlign.center,
-        height: PosTextSize.size3,
-        width: PosTextSize.size3,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
         bold: true,
       ),
     );
@@ -93,8 +93,8 @@ class PrintNotaController extends GetxController {
       'cabang - $cabangKios',
       styles: const PosStyles(
         align: PosAlign.center,
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
         bold: true,
       ),
     );

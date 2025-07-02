@@ -181,9 +181,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                             ),
                             SlidableAction(
                               onPressed: (context) {
-                                _printNotaController.printTransaction(
-                                  items.transactionId,
-                                );
+                                _printNotaController.printTransaction(items.id);
                               },
                               backgroundColor: const Color(0xFF21B7CA),
                               foregroundColor: Colors.white,
@@ -355,6 +353,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                               DateFormat('dd').format(
                                 DateFormat(
                                   'dd MMMM yyyy',
+                                  'id_ID',
                                 ).parse(resultDataMap.keys.toList()[section]),
                               ),
                               style: const TextStyle(
@@ -369,7 +368,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                               children: [
                                 Text(
                                   DateFormat('EEEE', 'id_ID').format(
-                                    DateFormat('dd MMMM yyyy').parse(
+                                    DateFormat('dd MMMM yyyy', 'id_ID').parse(
                                       resultDataMap.keys.toList()[section],
                                     ),
                                   ),
@@ -380,7 +379,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                                 ),
                                 Text(
                                   DateFormat('MMMM yyyy', 'id_ID').format(
-                                    DateFormat('dd MMMM yyyy').parse(
+                                    DateFormat('dd MMMM yyyy', 'id_ID').parse(
                                       resultDataMap.keys.toList()[section],
                                     ),
                                   ),
@@ -406,7 +405,10 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                                   _transactionController.dailyTransactionItems
                                       .where(
                                         (element) =>
-                                            DateFormat('dd MMMM yyyy').format(
+                                            DateFormat(
+                                                  'dd MMMM yyyy',
+                                                  'id_ID',
+                                                ).format(
                                                   DateTime.parse(
                                                     element.transactionDate!,
                                                   ),
