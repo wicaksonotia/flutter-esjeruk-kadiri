@@ -23,7 +23,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: .5,
+      initialChildSize: .3,
       maxChildSize: 0.9,
       minChildSize: .2,
       builder: (context, scrollController) {

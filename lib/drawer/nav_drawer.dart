@@ -134,7 +134,7 @@ class NavigationDrawer extends StatelessWidget {
                   fontSize: MySizes.fontSizeMd,
                 ),
               ),
-              const Gap(10),
+              const Spacer(),
               GestureDetector(
                 onTap: () {
                   Get.back();
@@ -154,11 +154,12 @@ class NavigationDrawer extends StatelessWidget {
                   );
                 },
                 child: const Icon(
-                  Icons.edit,
+                  Icons.keyboard_arrow_down_rounded,
                   color: Colors.white,
-                  size: MySizes.iconSm,
+                  size: MySizes.iconMd,
                 ),
               ),
+              const Gap(10),
             ],
           ),
           currentAccountPicture: const CircleAvatar(
