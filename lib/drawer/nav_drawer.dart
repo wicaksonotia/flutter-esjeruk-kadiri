@@ -67,7 +67,7 @@ class NavigationDrawer extends StatelessWidget {
             Divider(color: Colors.grey.shade300),
             buildDrawerItem(
               icon: Icons.bluetooth,
-              text: "Setting Bluetooth",
+              text: "Bluetooth Setting",
               onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
               tileColor: Colors.black,
               textIconColor: Colors.black,

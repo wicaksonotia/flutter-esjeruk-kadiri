@@ -143,6 +143,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                 for (var item in _transactionController.dailyTransactionItems) {
                   String formattedDate = DateFormat(
                     'dd MMMM yyyy',
+                    'id_ID',
                   ).format(DateTime.parse(item.transactionDate!));
                   if (!resultDataMap.containsKey(formattedDate)) {
                     resultDataMap[formattedDate] = [];
@@ -223,6 +224,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                             subtitle: Text(
                               DateFormat(
                                 'dd MMM yyyy HH:mm',
+                                'id_ID',
                               ).format(DateTime.parse(items.transactionDate)),
                               style: const TextStyle(
                                 color: MyColors.grey,
@@ -366,7 +368,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  DateFormat('EEEE').format(
+                                  DateFormat('EEEE', 'id_ID').format(
                                     DateFormat('dd MMMM yyyy').parse(
                                       resultDataMap.keys.toList()[section],
                                     ),
@@ -377,7 +379,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                                   ),
                                 ),
                                 Text(
-                                  DateFormat('MMMM yyyy').format(
+                                  DateFormat('MMMM yyyy', 'id_ID').format(
                                     DateFormat('dd MMMM yyyy').parse(
                                       resultDataMap.keys.toList()[section],
                                     ),

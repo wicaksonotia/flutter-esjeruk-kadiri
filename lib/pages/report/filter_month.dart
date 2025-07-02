@@ -62,7 +62,7 @@ class _FilterMonthState extends State<FilterMonth> {
                 );
               },
               child: Text(
-                "${DateFormat('MMMM').format(DateTime(0, widget.transactionController.initMonth.value))} ${widget.transactionController.initYear.value}",
+                "${DateFormat('MMMM', 'id_ID').format(DateTime(0, widget.transactionController.initMonth.value))} ${widget.transactionController.initYear.value}",
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeMd,
                   fontWeight: FontWeight.bold,

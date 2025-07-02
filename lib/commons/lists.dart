@@ -1,6 +1,6 @@
 List<Map<String, String>> filterKategori = [
-  {"value": "hari", "nama": "Date"},
-  {"value": "bulan", "nama": "Month"},
+  {"value": "hari", "nama": "Tanggal"},
+  {"value": "bulan", "nama": "Bulan"},
   // {"value": "tahun", "nama": "Year"},
 ];
 

@@ -245,6 +245,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                           subtitle: Text(
                             DateFormat(
                               'dd MMM yyyy HH:mm',
+                              'id_ID',
                             ).format(DateTime.parse(items.transactionDate)),
                             style: const TextStyle(
                               color: MyColors.grey,
@@ -386,19 +387,31 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  DateFormat('EEEE').format(
-                                    DateFormat('dd MMMM yyyy').parse(
-                                      resultDataMap.keys.toList()[section],
+                                Row(
+                                  children: [
+                                    Text(
+                                      DateFormat('EEEE', 'id_ID').format(
+                                        DateFormat('dd MMMM yyyy').parse(
+                                          resultDataMap.keys.toList()[section],
+                                        ),
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: MySizes.fontSizeMd,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: MySizes.fontSizeMd,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                    const Gap(5),
+                                    Text(
+                                      '[${_transactionController.transactionItems.where((element) => DateFormat('dd MMMM yyyy').format(DateTime.parse(element.transactionDate!)) == resultDataMap.keys.toList()[section] && !element.deleteStatus!).fold<int>(0, (sum, element) => sum + (element.details?.fold<int>(0, (dSum, d) => dSum + (d.quantity ?? 0)) ?? 0)).toString()} items]',
+                                      style: const TextStyle(
+                                        fontSize: MySizes.fontSizeSm,
+                                        color: MyColors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Text(
-                                  DateFormat('MMMM yyyy').format(
+                                  DateFormat('MMMM yyyy', 'id_ID').format(
                                     DateFormat('dd MMMM yyyy').parse(
                                       resultDataMap.keys.toList()[section],
                                     ),
