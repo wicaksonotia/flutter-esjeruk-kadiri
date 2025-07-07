@@ -41,10 +41,10 @@ class TransactionController extends GetxController {
       if (result != null && result.data != null) {
         totalCup.value = result.totalCup ?? 0;
         dailyTransactionItems.assignAll(result.data!);
-        total.value = dailyTransactionItems.fold(
-          0,
-          (sum, item) => sum + (item.grandTotal ?? 0),
-        );
+
+        total.value = dailyTransactionItems
+            .where((item) => item.deleteStatus == false)
+            .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
       }
     } catch (error) {
       Get.snackbar(

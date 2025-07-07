@@ -46,7 +46,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           title: const Text(
-            'Transaksi Harian',
+            'Riwayat Transaksi',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: MyColors.primary,
@@ -253,6 +253,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             ),
                           ),
                           trailing: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 CurrencyFormat.convertToIdr(

@@ -1,6 +1,7 @@
 import 'package:esjerukkadiri/commons/currency.dart';
 import 'package:esjerukkadiri/models/transaction_history_model.dart';
 import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 // import 'package:image/image.dart' as img;
@@ -25,40 +26,46 @@ class PrintNotaController extends GetxController {
       //       icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       // }
     } else {
-      var macPrinterAddress = "86:67:7A:49:4E:11";
-      PrintBluetoothThermal.pairedBluetooths.then((devices) {
-        PrintBluetoothThermal.connect(
-          macPrinterAddress: macPrinterAddress,
-        ).then((connected) {
-          // if (!connected) {
-          //   Get.snackbar('Notification', 'Failed to connect to printer',
-          //       icon: const Icon(Icons.error),
-          //       snackPosition: SnackPosition.TOP);
-          // } else {
-          PrintBluetoothThermal.writeBytes(nota);
-          // PrintBluetoothThermal.writeBytes(nota).then((result) {
-          //   if (!result) {
-          //     Get.snackbar('Notification', 'Failed to print',
-          //         icon: const Icon(Icons.error),
-          //         snackPosition: SnackPosition.TOP);
-          //   }
-          // });
-          // }
-        });
-        // for (var device in devices) {
-        //   if (device.name == macPrinterAddress) {
-        //     PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
-        //         .then((connected) {
-        //       if (connected) {
-        //         PrintBluetoothThermal.writeBytes(nota);
-        //       } else {
-        //         print('Failed to connect to printer');
-        //       }
-        //     });
-        //     break;
-        //   }
-        // }
-      });
+      Get.snackbar(
+        'Notification',
+        'Printer not connected',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+      // var macPrinterAddress = "86:67:7A:49:4E:11";
+      // PrintBluetoothThermal.pairedBluetooths.then((devices) {
+      //   PrintBluetoothThermal.connect(
+      //     macPrinterAddress: macPrinterAddress,
+      //   ).then((connected) {
+      //     // if (!connected) {
+      //     //   Get.snackbar('Notification', 'Failed to connect to printer',
+      //     //       icon: const Icon(Icons.error),
+      //     //       snackPosition: SnackPosition.TOP);
+      //     // } else {
+      //     PrintBluetoothThermal.writeBytes(nota);
+      //     // PrintBluetoothThermal.writeBytes(nota).then((result) {
+      //     //   if (!result) {
+      //     //     Get.snackbar('Notification', 'Failed to print',
+      //     //         icon: const Icon(Icons.error),
+      //     //         snackPosition: SnackPosition.TOP);
+      //     //   }
+      //     // });
+      //     // }
+      //   });
+      //   // for (var device in devices) {
+      //   //   if (device.name == macPrinterAddress) {
+      //   //     PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
+      //   //         .then((connected) {
+      //   //       if (connected) {
+      //   //         PrintBluetoothThermal.writeBytes(nota);
+      //   //       } else {
+      //   //         print('Failed to connect to printer');
+      //   //       }
+      //   //     });
+      //   //     break;
+      //   //   }
+      //   // }
+      // });
     }
   }
 
