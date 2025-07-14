@@ -155,7 +155,7 @@ class CartController extends GetxController {
         // CLEAR TRANSACTION
         clearCart();
         update();
-        Get.toNamed(RouterClass.product);
+        Get.offNamed(RouterClass.product);
       }
     } catch (e) {
       Get.snackbar(
