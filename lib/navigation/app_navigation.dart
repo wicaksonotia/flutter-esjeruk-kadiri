@@ -1,12 +1,13 @@
-import 'package:esjerukkadiri/controllers/cart_controller.dart';
-import 'package:esjerukkadiri/controllers/product_controller.dart';
-import 'package:esjerukkadiri/login_page.dart';
-import 'package:esjerukkadiri/bluetooth_setting.dart';
-import 'package:esjerukkadiri/pages/product/checkout_page.dart';
-import 'package:esjerukkadiri/pages/report/transaction_daily_page.dart';
-import 'package:esjerukkadiri/pages/report/transaction_history_page.dart';
+import 'package:cashier/controllers/cart_controller.dart';
+import 'package:cashier/controllers/kasir_controller.dart';
+import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/login_page.dart';
+import 'package:cashier/bluetooth_setting.dart';
+import 'package:cashier/pages/product/checkout_page.dart';
+import 'package:cashier/pages/report/transaction_daily_page.dart';
+import 'package:cashier/pages/report/transaction_history_page.dart';
 import 'package:get/get.dart';
-import 'package:esjerukkadiri/pages/product/product.dart';
+import 'package:cashier/pages/product/product.dart';
 
 class RouterClass {
   static String login = "/login";
@@ -24,6 +25,7 @@ class RouterClass {
       binding: BindingsBuilder(() {
         Get.put<ProductController>(ProductController());
         Get.put<CartController>(CartController());
+        Get.put<KasirController>(KasirController());
       }),
     ),
     GetPage(page: () => const TransactionDailyPage(), name: dailytransactions),

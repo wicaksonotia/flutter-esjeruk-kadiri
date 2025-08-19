@@ -1,9 +1,9 @@
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
-import 'package:esjerukkadiri/models/cart_model.dart';
-import 'package:esjerukkadiri/models/product_model.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
-import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/controllers/print_nota_controller.dart';
+import 'package:cashier/models/cart_model.dart';
+import 'package:cashier/models/product_model.dart';
+import 'package:cashier/navigation/app_navigation.dart';
+import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';

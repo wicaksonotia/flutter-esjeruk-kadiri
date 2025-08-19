@@ -1,4 +1,4 @@
-package com.esjerukkadiri
+package com.cashier
 
 import io.flutter.embedding.android.FlutterActivity
 

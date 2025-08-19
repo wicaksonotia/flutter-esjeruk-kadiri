@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart' as Dio;
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/kasir_controller.dart';
-import 'package:esjerukkadiri/controllers/product_controller.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
-import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/kasir_controller.dart';
+import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/navigation/app_navigation.dart';
+import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';

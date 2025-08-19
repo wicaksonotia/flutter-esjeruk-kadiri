@@ -1,9 +1,9 @@
-import 'package:esjerukkadiri/commons/colors.dart' show MyColors;
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/cart_controller.dart';
-import 'package:esjerukkadiri/controllers/login_controller.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
-import 'package:esjerukkadiri/pages/change_outlet_page.dart';
+import 'package:cashier/commons/colors.dart' show MyColors;
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/cart_controller.dart';
+import 'package:cashier/controllers/login_controller.dart';
+import 'package:cashier/navigation/app_navigation.dart';
+import 'package:cashier/pages/change_outlet_page.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';

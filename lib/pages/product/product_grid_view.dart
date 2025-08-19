@@ -1,14 +1,14 @@
 // import 'dart:convert';
 // import 'dart:typed_data';
 
-import 'package:esjerukkadiri/controllers/product_controller.dart';
-import 'package:esjerukkadiri/pages/product/increment_and_decrement.dart';
-import 'package:esjerukkadiri/pages/product/product_price.dart';
+import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/pages/product/increment_and_decrement.dart';
+import 'package:cashier/pages/product/product_price.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:esjerukkadiri/commons/containers/box_container.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
+import 'package:cashier/commons/containers/box_container.dart';
+import 'package:cashier/commons/sizes.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductGridView extends StatelessWidget {

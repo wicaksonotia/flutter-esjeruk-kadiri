@@ -1,5 +1,5 @@
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/controllers/product_controller.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';

@@ -1,9 +1,9 @@
 import 'package:badges/badges.dart' as badges;
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/cart_controller.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/cart_controller.dart';
+import 'package:cashier/navigation/app_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';

@@ -1,6 +1,6 @@
-import 'package:esjerukkadiri/bindings/initial_binding.dart';
+import 'package:cashier/bindings/initial_binding.dart';
 import 'package:flutter/material.dart';
-import 'package:esjerukkadiri/navigation/app_navigation.dart';
+import 'package:cashier/navigation/app_navigation.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 

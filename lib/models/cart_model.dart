@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:esjerukkadiri/models/product_model.dart';
+import 'package:cashier/models/product_model.dart';
 
 class CartModel {
   final ProductModel productModel;
@@ -23,8 +23,9 @@ class CartModel {
 
   factory CartModel.fromMap(Map<String, dynamic> map) {
     return CartModel(
-      productModel:
-          ProductModel.fromJson(map['productModel'] as Map<String, dynamic>),
+      productModel: ProductModel.fromJson(
+        map['productModel'] as Map<String, dynamic>,
+      ),
       idProduct: map['idProduct'] as int,
       quantity: map['quantity'] as int,
     );

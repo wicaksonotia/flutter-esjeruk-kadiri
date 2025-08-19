@@ -1,17 +1,17 @@
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/print_nota_controller.dart';
-import 'package:esjerukkadiri/pages/report/footer.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/print_nota_controller.dart';
+import 'package:cashier/pages/report/footer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:esjerukkadiri/controllers/transaction_controller.dart';
+import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:esjerukkadiri/drawer/nav_drawer.dart' as custom_drawer;
+import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 
 class TransactionDailyPage extends StatefulWidget {
   const TransactionDailyPage({super.key});

@@ -1,10 +1,10 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/commons/lists.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/cart_controller.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/commons/lists.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gap/gap.dart';

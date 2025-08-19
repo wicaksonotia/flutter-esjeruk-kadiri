@@ -1,6 +1,6 @@
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/models/transaction_history_model.dart';
-import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/models/transaction_history_model.dart';
+import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:get/get.dart';

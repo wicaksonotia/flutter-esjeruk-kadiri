@@ -1,5 +1,5 @@
-import 'package:esjerukkadiri/models/kasir_model.dart';
-import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:cashier/models/kasir_model.dart';
+import 'package:cashier/networks/api_request.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,6 +28,8 @@ class KasirController extends GetxController {
       idKios.value = prefs.getInt('id_kios')!;
       idKasir.value = prefs.getInt('id_kasir')!;
       idCabang.value = prefs.getInt('id_cabang')!;
+      namaKios.value = prefs.getString('kios')!;
+      namaCabang.value = prefs.getString('cabang')!;
       var rawFormat = {'id_kios': idKios.value, 'id_kasir': idKasir.value};
       var result = await RemoteDataSource.getListOutlet(rawFormat);
       if (result != null) {

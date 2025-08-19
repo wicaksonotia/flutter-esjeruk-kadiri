@@ -1,5 +1,5 @@
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/kasir_controller.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/kasir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -1,4 +1,4 @@
-import 'package:esjerukkadiri/controllers/login_controller.dart';
+import 'package:cashier/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:gap/gap.dart';

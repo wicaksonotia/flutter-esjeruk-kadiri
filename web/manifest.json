@@ -1,6 +1,6 @@
 {
-  "name": "esjerukkadiri",
-  "short_name": "esjerukkadiri",
+  "name": "cashier",
+  "short_name": "cashier",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",

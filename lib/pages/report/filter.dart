@@ -1,12 +1,12 @@
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/commons/lists.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/pages/report/filter_date_range.dart';
-import 'package:esjerukkadiri/pages/report/filter_month.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/commons/lists.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/pages/report/filter_date_range.dart';
+import 'package:cashier/pages/report/filter_month.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:esjerukkadiri/controllers/transaction_controller.dart';
+import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:chips_choice/chips_choice.dart';
 
 class FilterReport extends StatefulWidget {
@@ -37,8 +37,8 @@ class _FilterReportState extends State<FilterReport> {
                   wrapped: true,
                   padding: EdgeInsets.zero,
                   value: _transactionController.filterBy.value,
-                  onChanged: (val) =>
-                      _transactionController.filterBy.value = val,
+                  onChanged:
+                      (val) => _transactionController.filterBy.value = val,
                   choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
                     source: filterKategori,
                     value: (i, v) => v['value'] as String,
@@ -63,12 +63,16 @@ class _FilterReportState extends State<FilterReport> {
               color: Colors.white,
               height: context.height * 0.05,
               child: Obx(
-                () => _transactionController.filterBy.value == 'bulan'
-                    ? FilterMonth(transactionController: _transactionController)
-                    : FilterDateRange(
-                        transactionController: _transactionController),
+                () =>
+                    _transactionController.filterBy.value == 'bulan'
+                        ? FilterMonth(
+                          transactionController: _transactionController,
+                        )
+                        : FilterDateRange(
+                          transactionController: _transactionController,
+                        ),
               ),
-            )
+            ),
           ],
         );
       },

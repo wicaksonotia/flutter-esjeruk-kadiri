@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:esjerukkadiri/models/kasir_model.dart';
-import 'package:esjerukkadiri/models/product_category_model.dart';
+import 'package:cashier/models/kasir_model.dart';
+import 'package:cashier/models/product_category_model.dart';
 import 'dart:convert';
-import 'package:esjerukkadiri/models/product_model.dart';
-import 'package:esjerukkadiri/models/transaction_history_model.dart';
-import 'package:esjerukkadiri/networks/api_endpoints.dart';
+import 'package:cashier/models/product_model.dart';
+import 'package:cashier/models/transaction_history_model.dart';
+import 'package:cashier/networks/api_endpoints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoteDataSource {

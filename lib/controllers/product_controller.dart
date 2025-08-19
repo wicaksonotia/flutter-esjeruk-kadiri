@@ -1,6 +1,6 @@
-import 'package:esjerukkadiri/models/product_category_model.dart';
-import 'package:esjerukkadiri/models/product_model.dart';
-import 'package:esjerukkadiri/networks/api_request.dart';
+import 'package:cashier/models/product_category_model.dart';
+import 'package:cashier/models/product_model.dart';
+import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +26,7 @@ class ProductController extends GetxController {
       isLoadingProductCategory(true);
       var result = await RemoteDataSource.getProductCategories();
       if (result != null) {
-        idProductCategory.value = result.first.categoryId ?? 0;
+        // idProductCategory.value = result.first.categoryId ?? 0;
         productCategoryItems.assignAll(result);
         fetchProduct();
       }

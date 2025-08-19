@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "esjerukkadiri",
+      "name": "cashier",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "esjerukkadiri (profile mode)",
+      "name": "cashier (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "esjerukkadiri (release mode)",
+      "name": "cashier (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

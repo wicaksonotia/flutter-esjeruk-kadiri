@@ -1,7 +1,7 @@
-import 'package:esjerukkadiri/commons/colors.dart';
-import 'package:esjerukkadiri/commons/currency.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
-import 'package:esjerukkadiri/controllers/transaction_controller.dart';
+import 'package:cashier/commons/colors.dart';
+import 'package:cashier/commons/currency.dart';
+import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

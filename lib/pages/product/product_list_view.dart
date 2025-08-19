@@ -1,13 +1,13 @@
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
-import 'package:esjerukkadiri/controllers/product_controller.dart';
-import 'package:esjerukkadiri/pages/product/increment_and_decrement.dart';
-import 'package:esjerukkadiri/pages/product/product_price.dart';
+import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/pages/product/increment_and_decrement.dart';
+import 'package:cashier/pages/product/product_price.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:esjerukkadiri/commons/containers/box_container.dart';
-import 'package:esjerukkadiri/commons/sizes.dart';
+import 'package:cashier/commons/containers/box_container.dart';
+import 'package:cashier/commons/sizes.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductListView extends StatelessWidget {
@@ -113,7 +113,7 @@ class ProductListView extends StatelessWidget {
                   var dataDescription =
                       productController.productItems[index].description!;
                   var dataPrice = productController.productItems[index].price!;
-                  var dataPhoto = productController.productItems[index].photo1;
+                  // var dataPhoto = productController.productItems[index].photo1;
 
                   return BoxContainer(
                     margin: const EdgeInsets.only(top: 10),
@@ -127,11 +127,16 @@ class ProductListView extends StatelessWidget {
                               margin: const EdgeInsets.only(left: 5, right: 5),
                               width: 70,
                               height: 80,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: MemoryImage(dataPhoto ?? Uint8List(0)),
-                                  fit: BoxFit.fitHeight,
-                                ),
+                              // decoration: BoxDecoration(
+                              // image: DecorationImage(
+                              //   image: MemoryImage(dataPhoto ?? Uint8List(0)),
+                              //   fit: BoxFit.fitHeight,
+                              // ),
+                              // ),
+                              child: Icon(
+                                Icons.local_drink_outlined,
+                                size: 45,
+                                color: Colors.grey[350],
                               ),
                             ),
                             Expanded(
