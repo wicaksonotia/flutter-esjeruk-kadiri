@@ -244,14 +244,32 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
       _msjprogress = "Connecting...";
       connected = false;
     });
-    final bool result = await PrintBluetoothThermal.connect(
-      macPrinterAddress: mac,
-    );
-    print("state connected $result");
-    if (result) connected = true;
-    setState(() {
-      _progress = false;
-    });
+    try {
+      final bool result = await PrintBluetoothThermal.connect(
+        macPrinterAddress: mac,
+      );
+      if (result) {
+        connected = true;
+      } else {
+        Get.snackbar(
+          'Notification',
+          'Failed to connect to the printer',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
+    } on PlatformException catch (e) {
+      Get.snackbar(
+        'Notification',
+        'PlatformException: ${e.message}',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      setState(() {
+        _progress = false;
+      });
+    }
   }
 
   Future<void> autoConnectToRPP02N() async {
@@ -349,21 +367,21 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
     //bytes += generator.setGlobalFont(PosFontType.fontA);
     bytes += generator.reset();
 
-    final ByteData data = await rootBundle.load('assets/images/logo.png');
-    final Uint8List bytesImg = data.buffer.asUint8List();
-    img.Image? image = img.decodeImage(bytesImg);
+    // final ByteData data = await rootBundle.load('assets/images/logo.png');
+    // final Uint8List bytesImg = data.buffer.asUint8List();
+    // img.Image? image = img.decodeImage(bytesImg);
 
-    if (Platform.isIOS) {
-      // Resizes the image to half its original size and reduces the quality to 80%
-      final resizedImage = img.copyResize(
-        image!,
-        width: image.width ~/ 1.3,
-        height: image.height ~/ 1.3,
-        interpolation: img.Interpolation.nearest,
-      );
-      Uint8List.fromList(img.encodeJpg(resizedImage));
-      //image = img.decodeImage(bytesimg);
-    }
+    // if (Platform.isIOS) {
+    //   // Resizes the image to half its original size and reduces the quality to 80%
+    //   final resizedImage = img.copyResize(
+    //     image!,
+    //     width: image.width ~/ 1.3,
+    //     height: image.height ~/ 1.3,
+    //     interpolation: img.Interpolation.nearest,
+    //   );
+    //   Uint8List.fromList(img.encodeJpg(resizedImage));
+    //   //image = img.decodeImage(bytesimg);
+    // }
 
     //Using `ESC *`
     //bytes += generator.image(image!);

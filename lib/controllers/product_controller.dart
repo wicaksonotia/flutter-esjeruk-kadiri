@@ -3,6 +3,7 @@ import 'package:cashier/models/product_model.dart';
 import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductController extends GetxController {
@@ -22,6 +23,25 @@ class ProductController extends GetxController {
   }
 
   void fetchProductCategory() async {
+    var bluetoothStatus = await Permission.bluetoothConnect.status;
+    var locationStatus = await Permission.location.status;
+
+    if (!bluetoothStatus.isGranted || !locationStatus.isGranted) {
+      Map<Permission, PermissionStatus> statuses =
+          await [Permission.bluetoothConnect, Permission.location].request();
+
+      if (!statuses[Permission.bluetoothConnect]!.isGranted ||
+          !statuses[Permission.location]!.isGranted) {
+        Get.snackbar(
+          'Permission Required',
+          'Bluetooth and Location permissions are needed to print.',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+        return;
+      }
+    }
+
     try {
       isLoadingProductCategory(true);
       var result = await RemoteDataSource.getProductCategories();

@@ -2,12 +2,12 @@ import 'package:cashier/commons/currency.dart';
 import 'package:cashier/models/transaction_history_model.dart';
 import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 // import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 // import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
-import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrintNotaController extends GetxController {
@@ -26,51 +26,46 @@ class PrintNotaController extends GetxController {
       //       icon: const Icon(Icons.error), snackPosition: SnackPosition.TOP);
       // }
     } else {
-      Get.snackbar(
-        'Notification',
-        'Printer not connected',
-        icon: const Icon(Icons.error),
-        snackPosition: SnackPosition.TOP,
-      );
-      // var macPrinterAddress = "86:67:7A:49:4E:11";
-      // PrintBluetoothThermal.pairedBluetooths.then((devices) {
-      //   PrintBluetoothThermal.connect(
-      //     macPrinterAddress: macPrinterAddress,
-      //   ).then((connected) {
-      //     // if (!connected) {
-      //     //   Get.snackbar('Notification', 'Failed to connect to printer',
-      //     //       icon: const Icon(Icons.error),
-      //     //       snackPosition: SnackPosition.TOP);
-      //     // } else {
-      //     PrintBluetoothThermal.writeBytes(nota);
-      //     // PrintBluetoothThermal.writeBytes(nota).then((result) {
-      //     //   if (!result) {
-      //     //     Get.snackbar('Notification', 'Failed to print',
-      //     //         icon: const Icon(Icons.error),
-      //     //         snackPosition: SnackPosition.TOP);
-      //     //   }
-      //     // });
-      //     // }
-      //   });
-      //   // for (var device in devices) {
-      //   //   if (device.name == macPrinterAddress) {
-      //   //     PrintBluetoothThermal.connect(macPrinterAddress: device.macAdress)
-      //   //         .then((connected) {
-      //   //       if (connected) {
-      //   //         PrintBluetoothThermal.writeBytes(nota);
-      //   //       } else {
-      //   //         print('Failed to connect to printer');
-      //   //       }
-      //   //     });
-      //   //     break;
-      //   //   }
-      //   // }
-      // });
+      // Get.snackbar(
+      //   'Notification',
+      //   'Printer not connected',
+      //   icon: const Icon(Icons.error),
+      //   snackPosition: SnackPosition.TOP,
+      // );
+      var printerName = "RPP02N";
+      // Get all paired devices with the name "RPP02N"
+      final pairedDevices = await PrintBluetoothThermal.pairedBluetooths;
+      final rpp02nDevices =
+          pairedDevices.where((device) => device.name == printerName).toList();
+
+      // Try to connect to the first available/active device
+      bool connected = false;
+      for (var device in rpp02nDevices) {
+        connected = await PrintBluetoothThermal.connect(
+          macPrinterAddress: device.macAdress,
+        );
+        if (connected) {
+          PrintBluetoothThermal.writeBytes(nota);
+          break;
+        }
+      }
+
+      if (!connected) {
+        Get.snackbar(
+          'Notification',
+          'No active RPP02N printer found or unable to connect.',
+          icon: const Icon(Icons.error),
+          snackPosition: SnackPosition.TOP,
+        );
+      }
     }
   }
 
   Future<List<int>> printPurchaseOrder(int transactionId) async {
     List<int> bytes = [];
+    var result = await RemoteDataSource.getDetailTransaction({
+      "id_transaction": transactionId,
+    });
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // Using default profile
     final profile = await CapabilityProfile.load();
@@ -85,9 +80,24 @@ class PrintNotaController extends GetxController {
     // bytes += generator.image(resizedImage);
 
     // HEADER
-    String? kiosName = prefs.getString('kios')?.replaceAll(r'\n', '\n');
+    String? kiosName = prefs
+        .getString('kios')
+        ?.toUpperCase()
+        .replaceAll(r'\n', '\n');
     bytes += generator.text(
       '$kiosName',
+      styles: const PosStyles(
+        align: PosAlign.center,
+        height: PosTextSize.size2,
+        width: PosTextSize.size2,
+        bold: true,
+      ),
+    );
+    String? keteranganPrint = prefs
+        .getString('keterangan_print')
+        ?.replaceAll(r'\n', '\n');
+    bytes += generator.text(
+      '$keteranganPrint',
       styles: const PosStyles(
         align: PosAlign.center,
         height: PosTextSize.size1,
@@ -102,7 +112,7 @@ class PrintNotaController extends GetxController {
         align: PosAlign.center,
         height: PosTextSize.size1,
         width: PosTextSize.size1,
-        bold: true,
+        bold: false,
       ),
     );
     bytes += generator.feed(1);
@@ -115,16 +125,51 @@ class PrintNotaController extends GetxController {
       '$kiosAddress',
       styles: const PosStyles(align: PosAlign.center),
     );
-    bytes += generator.feed(1);
+    bytes += generator.feed(2);
 
-    var result = await RemoteDataSource.getDetailTransaction({
-      "id_transaction": transactionId,
-    });
-    transactionDetailItems.value = result!.details ?? [];
+    bytes += generator.row([
+      PosColumn(
+        text: 'Numerator',
+        width: 4,
+        styles: const PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: result!.numerator.toString().padLeft(4, '0'),
+        width: 8,
+        styles: const PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Waktu',
+        width: 4,
+        styles: const PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()),
+        width: 8,
+        styles: const PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Operator',
+        width: 4,
+        styles: const PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: prefs.getString('nama_kasir') ?? '-',
+        width: 8,
+        styles: const PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.hr();
+
+    transactionDetailItems.value = result.details ?? [];
     for (var cartItem in transactionDetailItems) {
       bytes += generator.row([
         PosColumn(
-          text: cartItem.productName ?? 'Unknown Product',
+          text: cartItem.productName ?? '-',
           width: 7,
           styles: const PosStyles(align: PosAlign.left),
         ),
@@ -181,10 +226,13 @@ class PrintNotaController extends GetxController {
       PosColumn(
         text: CurrencyFormat.convertToIdr((result.grandTotal ?? 0), 0),
         width: 6,
-        styles: const PosStyles(align: PosAlign.right),
+        styles: const PosStyles(
+          align: PosAlign.right,
+          bold: true,
+          height: PosTextSize.size2,
+        ),
       ),
     ]);
-    bytes += generator.feed(1);
     //barcode
     // final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
     // bytes += generator.barcode(Barcode.upcA(barData));
@@ -192,16 +240,24 @@ class PrintNotaController extends GetxController {
     //QR code
     // bytes += generator.qrcode('https://www.instagram.com/esjeruk.kadiri/');
     bytes += generator.hr();
+    bytes += generator.feed(1);
     bytes += generator.text(
-      DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()),
-      styles: const PosStyles(align: PosAlign.center),
+      'Pendapat Anda sangat penting',
+      styles: const PosStyles(align: PosAlign.left),
     );
     bytes += generator.text(
-      'Kasir: ${prefs.getString('nama_kasir')}',
-      styles: const PosStyles(align: PosAlign.center),
+      'bagi kami. Untuk kritik & saran',
+      styles: const PosStyles(align: PosAlign.left),
     );
-
-    bytes += generator.feed(2);
+    bytes += generator.text(
+      'silakan hubungi :',
+      styles: const PosStyles(align: PosAlign.left),
+    );
+    bytes += generator.text(
+      '0857-5512-4535',
+      styles: const PosStyles(align: PosAlign.left),
+    );
+    bytes += generator.feed(3);
 
     // IMAGE
     // final ByteData dataHastag = await rootBundle.load(

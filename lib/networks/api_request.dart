@@ -32,6 +32,10 @@ class RemoteDataSource {
             response.data['alamat_cabang'],
           );
           await prefs.setString('phone_cabang', response.data['phone_cabang']);
+          await prefs.setString(
+            'keterangan_print',
+            response.data['keterangan'],
+          );
           return true;
         }
       }

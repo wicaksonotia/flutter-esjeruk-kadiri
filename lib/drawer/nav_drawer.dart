@@ -125,43 +125,75 @@ class NavigationDrawer extends StatelessWidget {
               fontSize: MySizes.fontSizeLg,
             ),
           ),
-          accountEmail: Row(
+          accountEmail: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${prefs.getString('kios') ?? ''} - ${prefs.getString('cabang') ?? ''}',
+                prefs.getString('kios') ?? '',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: MySizes.fontSizeMd,
                 ),
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  Get.back();
-                  showModalBottomSheet(
-                    context: context,
-                    constraints: const BoxConstraints(
-                      minWidth: double.infinity,
-                    ),
-                    builder: (context) => const ChangeOutletPage(),
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      showModalBottomSheet(
+                        context: context,
+                        constraints: const BoxConstraints(
+                          minWidth: double.infinity,
+                        ),
+                        builder: (context) => const ChangeOutletPage(),
+                        isScrollControlled: true,
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Cabang ${prefs.getString('cabang') ?? ''}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: MySizes.fontSizeMd,
                       ),
                     ),
-                  );
-                },
-                child: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white,
-                  size: MySizes.iconMd,
-                ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      showModalBottomSheet(
+                        context: context,
+                        constraints: const BoxConstraints(
+                          minWidth: double.infinity,
+                        ),
+                        builder: (context) => const ChangeOutletPage(),
+                        isScrollControlled: true,
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.white,
+                      size: MySizes.iconMd,
+                    ),
+                  ),
+                  const Gap(10),
+                ],
               ),
-              const Gap(10),
             ],
           ),
+          currentAccountPictureSize: const Size(60, 60),
           currentAccountPicture: const CircleAvatar(
             backgroundImage: AssetImage('assets/images/clerk.png'),
             backgroundColor: Colors.white,

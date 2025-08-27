@@ -114,49 +114,74 @@ class _ProductPageState extends State<ProductPage> {
               ),
               pinned: true,
               expandedHeight: 100,
-              collapsedHeight: 80,
-              toolbarHeight: 30,
+              collapsedHeight: 100,
+              toolbarHeight: 50,
               title: Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() {
-                      final kios = kasirController.namaKios.value;
-                      final cabang = kasirController.namaCabang.value;
                       return Text(
-                        '$kios - $cabang',
+                        kasirController.namaKios.value,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: MySizes.fontSizeMd,
                         ),
                       );
                     }),
-                    const Gap(10),
-                    GestureDetector(
-                      onTap: () {
-                        Get.back();
-                        showModalBottomSheet(
-                          context: context,
-                          constraints: const BoxConstraints(
-                            minWidth: double.infinity,
-                          ),
-                          builder: (context) => const ChangeOutletPage(),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
+                    Row(
+                      children: [
+                        Obx(() {
+                          final cabang = kasirController.namaCabang.value;
+                          return GestureDetector(
+                            onTap: () {
+                              Get.back();
+                              showModalBottomSheet(
+                                context: context,
+                                constraints: const BoxConstraints(
+                                  minWidth: double.infinity,
+                                ),
+                                builder: (context) => const ChangeOutletPage(),
+                              );
+                            },
+                            child: Text(
+                              'Cabang $cabang',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
+                          );
+                        }),
+                        const Gap(10),
+                        GestureDetector(
+                          onTap: () {
+                            Get.back();
+                            showModalBottomSheet(
+                              context: context,
+                              constraints: const BoxConstraints(
+                                minWidth: double.infinity,
+                              ),
+                              builder: (context) => const ChangeOutletPage(),
+                              isScrollControlled: true,
+                              backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.white,
+                            size: MySizes.iconMd,
                           ),
-                        );
-                      },
-                      child: const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Colors.white,
-                        size: MySizes.iconMd,
-                      ),
+                        ),
+                        const Gap(10),
+                      ],
                     ),
-                    const Gap(10),
                   ],
                 ),
               ),
