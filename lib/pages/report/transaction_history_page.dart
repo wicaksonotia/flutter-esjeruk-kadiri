@@ -60,12 +60,6 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
               );
             },
           ),
-          // leading: IconButton(
-          //   icon: const Icon(Icons.arrow_back, color: Colors.white),
-          //   onPressed: () {
-          //     Get.back();
-          //   },
-          // ),
         ),
       ),
       body: SafeArea(
@@ -216,41 +210,73 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       return Container(
                         color: Colors.white,
                         child: ExpansionTile(
-                          leading: const Icon(Icons.receipt),
-                          title: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: items.numerator.toString().padLeft(
-                                    4,
-                                    '0',
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: MySizes.fontSizeMd,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const TextSpan(text: '  '),
-                                TextSpan(
-                                  text: '(${items.paymentMethod})',
-                                  style: const TextStyle(
-                                    fontSize: MySizes.fontSizeSm,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                          title: Text(
+                            "HIMALAYA/${items.branchCode}/${items.numerator.toString().padLeft(4, '0')}",
+                            style: const TextStyle(
+                              fontSize: MySizes.fontSizeMd,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: Text(
-                            DateFormat(
-                              'dd MMM yyyy HH:mm',
-                              'id_ID',
-                            ).format(DateTime.parse(items.transactionDate)),
-                            style: const TextStyle(
-                              color: MyColors.grey,
-                              fontSize: MySizes.fontSizeSm,
-                            ),
+                          subtitle: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.shopping_cart,
+                                    size: 16,
+                                    color: MyColors.grey,
+                                  ),
+                                  const Gap(5),
+                                  Text(
+                                    'Total Item: ${items.totalItem}',
+                                    style: const TextStyle(
+                                      color: MyColors.grey,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_month,
+                                    size: 16,
+                                    color: MyColors.grey,
+                                  ),
+                                  const Gap(5),
+                                  Text(
+                                    DateFormat(
+                                      'dd MMM yyyy HH:mm',
+                                      'id_ID',
+                                    ).format(
+                                      DateTime.parse(items.transactionDate),
+                                    ),
+                                    style: const TextStyle(
+                                      color: MyColors.grey,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.person,
+                                    size: 16,
+                                    color: MyColors.grey,
+                                  ),
+                                  const Gap(5),
+                                  Text(
+                                    items.cashierName ?? 'Unknown Cashier',
+                                    style: const TextStyle(
+                                      color: MyColors.grey,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                           trailing: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -260,95 +286,120 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                                   items.grandTotal,
                                   0,
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: MySizes.fontSizeMd,
-                                  color: MyColors.primary,
+                                  color:
+                                      items.deleteStatus!
+                                          ? MyColors.red
+                                          : MyColors.primary,
                                 ),
                               ),
-                              if (items.deleteStatus!) ...[
-                                const Text(
-                                  'Deleted',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: MySizes.fontSizeSm,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    items.paymentMethod ?? 'Cash',
+                                    style: const TextStyle(
+                                      color: MyColors.grey,
+                                      fontSize: MySizes.fontSizeSm,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '( ${items.deleteReason} )',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: MySizes.fontSizeXsm,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ],
                           ),
                           iconColor: MyColors.primary,
                           children: [
-                            ListTile(
-                              title: const Text(
-                                'Transaction Details',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: items.details!.length,
-                                    itemBuilder: (context, detailIndex) {
-                                      return Row(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            width:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width *
-                                                0.5,
-                                            child: Text(
-                                              items
-                                                      .details[detailIndex]
-                                                      .productName ??
-                                                  'Unknown Product',
-                                            ),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            width:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width *
-                                                0.1,
-                                            child: Text(
-                                              '${items.details[detailIndex].quantity}',
-                                            ),
-                                          ),
-                                          Container(
-                                            width:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width *
-                                                0.25,
-                                            alignment: Alignment.centerRight,
-                                            child: Text(
-                                              CurrencyFormat.convertToIdr(
-                                                items
-                                                    .details[detailIndex]
-                                                    .totalPrice,
-                                                0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  title: const Text(
+                                    'Transaction Details',
+                                    style: TextStyle(
+                                      fontSize: MySizes.fontSizeMd,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ],
-                              ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: items.details!.length,
+                                        itemBuilder: (context, detailIndex) {
+                                          return Row(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                width:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.width *
+                                                    0.5,
+                                                child: Text(
+                                                  items
+                                                          .details[detailIndex]
+                                                          .productName ??
+                                                      'Unknown Product',
+                                                ),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.width *
+                                                    0.1,
+                                                child: Text(
+                                                  '${items.details[detailIndex].quantity}',
+                                                ),
+                                              ),
+                                              Container(
+                                                width:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.width *
+                                                    0.25,
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(
+                                                  CurrencyFormat.convertToIdr(
+                                                    items
+                                                        .details[detailIndex]
+                                                        .totalPrice,
+                                                    0,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                      Text(
+                                        items.deleteStatus!
+                                            ? 'Transaksi ini telah dibatalkan\nAlasan: ${items.deleteReason}'
+                                            : '',
+                                        style: TextStyle(
+                                          fontSize: MySizes.fontSizeSm,
+                                          color:
+                                              items.deleteStatus!
+                                                  ? MyColors.red
+                                                  : MyColors.grey,
+                                          fontWeight:
+                                              items.deleteStatus!
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

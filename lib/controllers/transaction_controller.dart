@@ -21,6 +21,18 @@ class TransactionController extends GetxController {
   var initYear = DateTime.now().year.obs;
   var isSideBarOpen = false.obs;
   var totalCup = 0.obs;
+  var namaKasir = ''.obs;
+
+  @override
+  void onInit() {
+    getNamaKasir();
+    super.onInit();
+  }
+
+  void getNamaKasir() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    namaKasir.value = prefs.getString('nama_kasir')!;
+  }
 
   Future<void> fetchDailyTransactions() async {
     try {
@@ -87,10 +99,9 @@ class TransactionController extends GetxController {
       if (result != null && result.data != null) {
         totalCup.value = result.totalCup ?? 0;
         transactionItems.assignAll(result.data!);
-        total.value = transactionItems.fold(
-          0,
-          (sum, item) => sum + (item.grandTotal ?? 0),
-        );
+        total.value = transactionItems
+            .where((item) => item.deleteStatus == false)
+            .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
       }
     } catch (error) {
       Get.snackbar(

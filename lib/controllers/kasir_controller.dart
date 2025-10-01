@@ -25,7 +25,6 @@ class KasirController extends GetxController {
     try {
       isLoading(true);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      print(prefs);
       idKios.value = prefs.getInt('id_kios')!;
       idKasir.value = prefs.getInt('id_kasir')!;
       idCabang.value = prefs.getInt('id_cabang')!;

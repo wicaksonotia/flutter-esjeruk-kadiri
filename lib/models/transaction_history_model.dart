@@ -49,6 +49,9 @@ class TransactionModel {
   String? deleteReason;
   int? idCabang;
   String? paymentMethod;
+  int? totalItem;
+  String? cashierName;
+  String? branchCode;
   List<ListDetailTransactionModel>? details;
 
   TransactionModel({
@@ -65,6 +68,9 @@ class TransactionModel {
     this.deleteReason,
     this.idCabang,
     this.paymentMethod,
+    this.totalItem,
+    this.cashierName,
+    this.branchCode,
     this.details,
   });
 
@@ -82,6 +88,9 @@ class TransactionModel {
     deleteReason = json['delete_reason'];
     idCabang = json['id_cabang'];
     paymentMethod = json['payment_method'];
+    totalItem = json['total_item'];
+    cashierName = json['nama_kasir'];
+    branchCode = json['kode_cabang'];
     if (json['details'] != null) {
       details = <ListDetailTransactionModel>[];
       json['details'].forEach((v) {
@@ -105,6 +114,9 @@ class TransactionModel {
     data['delete_reason'] = deleteReason;
     data['id_cabang'] = idCabang;
     data['payment_method'] = paymentMethod;
+    data['total_item'] = totalItem;
+    data['nama_kasir'] = cashierName;
+    data['kode_cabang'] = branchCode;
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();
     }
