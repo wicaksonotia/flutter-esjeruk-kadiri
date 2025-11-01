@@ -27,7 +27,7 @@ class NavigationDrawer extends StatelessWidget {
             buildDrawerHeader(),
             buildDrawerItem(
               icon: Icons.shopping_cart,
-              text: "Katalog Menu",
+              text: "Menu",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.product);
@@ -40,7 +40,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             buildDrawerItem(
               icon: Icons.history,
-              text: "Transaksi Harian",
+              text: "Daily Transactions",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.dailytransactions);
@@ -53,7 +53,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             buildDrawerItem(
               icon: Icons.edit_document,
-              text: "Riwayat Transaksi",
+              text: "Transaction History",
               onTap: () {
                 Navigator.of(context).pop();
                 Get.toNamed(RouterClass.transactionhistories);
@@ -66,15 +66,22 @@ class NavigationDrawer extends StatelessWidget {
             ),
             Divider(color: Colors.grey.shade300),
             buildDrawerItem(
-              icon: Icons.bluetooth,
-              text: "Bluetooth Setting",
-              onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
+              icon: Icons.manage_accounts,
+              text: "Setting",
+              onTap: () => Get.toNamed(RouterClass.userSetting),
               tileColor: Colors.black,
               textIconColor: Colors.black,
             ),
+            // buildDrawerItem(
+            //   icon: Icons.bluetooth,
+            //   text: "Bluetooth Setting",
+            //   onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
+            //   tileColor: Colors.black,
+            //   textIconColor: Colors.black,
+            // ),
             buildDrawerItem(
               icon: Icons.logout,
-              text: "Log Out",
+              text: "Logout",
               onTap: () {
                 loginController.logout();
                 cartController.clearCart();

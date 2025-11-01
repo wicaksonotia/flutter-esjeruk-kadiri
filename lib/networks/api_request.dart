@@ -20,9 +20,12 @@ class RemoteDataSource {
       if (response.statusCode == 200) {
         if (response.data['status'] == 'ok') {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('username', response.data['username']);
+          await prefs.setString('password', response.data['password']);
           await prefs.setBool('statusLogin', true);
           await prefs.setInt('id_kasir', response.data['id_kasir']);
           await prefs.setString('nama_kasir', response.data['nama_kasir']);
+          await prefs.setString('phone_kasir', response.data['phone_kasir']);
           await prefs.setInt('id_kios', response.data['id_kios']);
           await prefs.setString('kios', response.data['kios']);
           await prefs.setInt('id_cabang', response.data['id_cabang']);
@@ -36,6 +39,47 @@ class RemoteDataSource {
             'keterangan_print',
             response.data['keterangan'],
           );
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> changePasswordProcess(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      var url =
+          ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.changePassword;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> updateProfile(Map<String, dynamic> rawFormat) async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.updateProfile;
+      Response response = await Dio().post(
+        url,
+        data: rawFormat,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        if (response.data['status'] == 'ok') {
           return true;
         }
       }

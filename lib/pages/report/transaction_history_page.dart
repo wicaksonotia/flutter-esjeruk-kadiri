@@ -46,7 +46,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           title: const Text(
-            'Riwayat Transaksi',
+            'Transaction History',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: MyColors.primary,

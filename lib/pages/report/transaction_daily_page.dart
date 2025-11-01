@@ -46,7 +46,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
         preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           title: const Text(
-            'Transaksi Harian',
+            'Daily Transactions',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: MyColors.primary,
