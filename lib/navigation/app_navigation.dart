@@ -6,6 +6,7 @@ import 'package:cashier/bluetooth_setting.dart';
 import 'package:cashier/pages/product/checkout_page.dart';
 import 'package:cashier/pages/report/transaction_daily_page.dart';
 import 'package:cashier/pages/report/transaction_history_page.dart';
+import 'package:cashier/pages/sop/sop_page.dart';
 import 'package:cashier/pages/user/change_password_page.dart';
 import 'package:cashier/pages/user/profile_page.dart';
 import 'package:cashier/pages/user/user_setting.dart';
@@ -23,6 +24,7 @@ class RouterClass {
   static String userSetting = "/user_setting";
   static String changePassword = "/change_password";
   static String profile = "/profile";
+  static String sopDocument = "/sop_document";
 
   static List<GetPage> routes = [
     GetPage(page: () => const LoginPage(), name: login),
@@ -46,5 +48,6 @@ class RouterClass {
     GetPage(page: () => const UserSetting(), name: userSetting),
     GetPage(page: () => const ChangePassword(), name: changePassword),
     GetPage(page: () => const ProfilePage(), name: profile),
+    GetPage(page: () => const SopPage(), name: sopDocument),
   ];
 }

@@ -68,17 +68,23 @@ class NavigationDrawer extends StatelessWidget {
             buildDrawerItem(
               icon: Icons.manage_accounts,
               text: "Setting",
-              onTap: () => Get.toNamed(RouterClass.userSetting),
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.userSetting);
+              },
               tileColor: Colors.black,
               textIconColor: Colors.black,
             ),
-            // buildDrawerItem(
-            //   icon: Icons.bluetooth,
-            //   text: "Bluetooth Setting",
-            //   onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
-            //   tileColor: Colors.black,
-            //   textIconColor: Colors.black,
-            // ),
+            buildDrawerItem(
+              icon: Icons.description,
+              text: "SOP Document",
+              onTap: () {
+                Navigator.of(context).pop();
+                Get.toNamed(RouterClass.sopDocument);
+              },
+              tileColor: Colors.black,
+              textIconColor: Colors.black,
+            ),
             buildDrawerItem(
               icon: Icons.logout,
               text: "Logout",

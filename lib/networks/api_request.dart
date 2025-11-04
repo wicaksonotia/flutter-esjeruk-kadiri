@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cashier/models/sop_model.dart';
 import 'package:dio/dio.dart';
 import 'package:cashier/models/kasir_model.dart';
 import 'package:cashier/models/product_category_model.dart';
@@ -277,7 +278,7 @@ class RemoteDataSource {
     Map<String, dynamic> rawFormat,
   ) async {
     try {
-      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listoutlet;
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listOutlet;
       Response response = await Dio().post(
         url,
         data: rawFormat,
@@ -286,6 +287,23 @@ class RemoteDataSource {
       if (response.statusCode == 200) {
         List<dynamic> jsonData = response.data;
         return jsonData.map((e) => KasirModel.fromJson(e)).toList();
+      }
+      return null;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<SopModel>?> getListSop() async {
+    try {
+      var url = ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.listSop;
+      Response response = await Dio().post(
+        url,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = response.data;
+        return jsonData.map((e) => SopModel.fromJson(e)).toList();
       }
       return null;
     } catch (e) {

@@ -1,6 +1,7 @@
 class ApiEndPoints {
   // static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
-  static const String baseUrl = 'http://36.93.148.82/pkbsurabaya/apiGlobal/';
+  static const String ipPublic = 'http://36.93.148.82/pkbsurabaya/';
+  static const String baseUrl = '${ipPublic}apiGlobal/';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 
@@ -16,5 +17,6 @@ class _AuthEndPoints {
   final String deleteTransaction = 'deletetransaction';
   final String transactionHistoryByMonth = 'transactionhistorybymonth';
   final String transactionHistoryByDateRange = 'transactionhistorybydaterange';
-  final String listoutlet = 'listbranchoutlet';
+  final String listOutlet = 'listbranchoutlet';
+  final String listSop = 'listsop';
 }

@@ -121,17 +121,17 @@ class BoxCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
       padding: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        // borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 100),
+            color: Colors.grey.withValues(alpha: .3),
             spreadRadius: 0,
-            blurRadius: 3,
-            // offset: Offset(0, 3), // changes position of shadow
+            blurRadius: 7,
+            offset: const Offset(0, 3), // changes position of shadow
           ),
         ],
       ),
