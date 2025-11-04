@@ -40,7 +40,7 @@ class CardCategories extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: MySizes.fontSizeSm,
+                fontSize: MySizes.fontSizeMd,
               ),
             ),
           ),

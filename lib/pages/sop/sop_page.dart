@@ -103,7 +103,7 @@ class _SopPageState extends State<SopPage> {
 
                   Container(
                     margin: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.only(top: 16),
                     width: double.infinity,
                     decoration: const BoxDecoration(
                       color: Colors.white,
