@@ -1,2 +1,0 @@
-/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/cashier/android/app/.cxx/Debug/5w3g4y1v/armeabi-v7a/CMakeFiles/edit_cache.dir
-/Users/tiawicaksono/Documents/DEVELOPMENT/FLUTTER/cashier/android/app/.cxx/Debug/5w3g4y1v/armeabi-v7a/CMakeFiles/rebuild_cache.dir

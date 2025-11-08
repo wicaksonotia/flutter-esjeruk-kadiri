@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Ignore native build cache (CMake / NDK)
+android/app/.cxx/
+android/app/**/configure_fingerprint.bin
+android/**/.cxx/
