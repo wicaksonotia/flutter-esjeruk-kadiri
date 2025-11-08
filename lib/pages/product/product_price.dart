@@ -15,7 +15,7 @@ class ProductPrice extends StatelessWidget {
         children: [
           const TextSpan(
             text: 'Rp ',
-            style: const TextStyle(
+            style: TextStyle(
               color: MyColors.primary,
               fontSize: MySizes.fontSizeMd,
             ),

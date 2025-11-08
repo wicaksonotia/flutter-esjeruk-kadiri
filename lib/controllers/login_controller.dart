@@ -192,7 +192,6 @@ class LoginController extends GetxController {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     namaController.text = prefs.getString('nama_kasir') ?? '';
     noTelponController.text = prefs.getString('phone_kasir') ?? '';
-    noTelponController.text = prefs.getString('phone_kasir') ?? '';
     namaCabang.value = prefs.getString('cabang') ?? '';
   }
 

@@ -69,8 +69,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                     localPath = null;
                   });
                 },
-                onRender: (_pages) {
-                  print("PDF rendered with $_pages pages");
+                onRender: (pages) {
+                  print("PDF rendered with $pages pages");
                 },
               ),
     );

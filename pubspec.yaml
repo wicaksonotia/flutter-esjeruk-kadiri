@@ -55,7 +55,7 @@ dependencies:
 # animate_do,badges,bottom_navbar_with_indicator,cupertino_icons,currency_text_input_formatter,dio,flutter_esc_pos_utils,flutter_slidable,gap,get,http,iconly,intl,permission_handler,print_bluetooth_thermal,scrollable_positioned_list,shared_preferences,shimmer,carousel_slider
 dev_dependencies:
   flutter_launcher_icons: "^0.14.3"
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
 
