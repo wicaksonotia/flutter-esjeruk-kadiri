@@ -1,29 +1,24 @@
-import 'package:chips_choice/chips_choice.dart';
 import 'package:cashier/commons/colors.dart';
-import 'package:cashier/commons/currency.dart';
 import 'package:cashier/commons/lists.dart';
 import 'package:cashier/commons/sizes.dart';
+import 'package:cashier/controllers/transaction_controller.dart';
+import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:cashier/pages/report/filter_date_range.dart';
 import 'package:cashier/pages/report/filter_month.dart';
 import 'package:cashier/pages/report/footer.dart';
+import 'package:cashier/widgets/transaction_grouped_list.dart';
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:cashier/controllers/transaction_controller.dart';
-import 'package:group_list_view/group_list_view.dart';
-import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
 
   @override
-  TransactionHistoryPageState createState() => TransactionHistoryPageState();
+  State<TransactionHistoryPage> createState() => TransactionHistoryPageState();
 }
 
 class TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  int? groupValue = 1;
   final TransactionController _transactionController = Get.put(
     TransactionController(),
   );
@@ -31,9 +26,14 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _transactionController.fetchTransaction();
     });
+  }
+
+  Future<void> _refresh() async {
+    await _transactionController.fetchTransaction();
   }
 
   @override
@@ -42,492 +42,84 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.notionBgGrey,
       bottomNavigationBar: const FooterReport(),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50.0),
-        child: AppBar(
-          title: const Text(
-            'Transaction History',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: MyColors.primary,
-          leading: Builder(
-            builder: (context) {
-              return IconButton(
+      appBar: AppBar(
+        backgroundColor: MyColors.primary,
+        title: const Text(
+          'Transaction History',
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: Builder(
+          builder:
+              (context) => IconButton(
                 icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              );
-            },
-          ),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
       ),
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.only(top: 10, left: 15, right: 20),
-              color: Colors.white,
-              width: double.infinity,
+            _buildFilterCategory(),
+            _buildFilterDate(),
+            Expanded(
               child: Obx(
-                () => ChipsChoice.single(
-                  wrapped: true,
-                  padding: EdgeInsets.zero,
-                  value: _transactionController.filterBy.value,
-                  onChanged: (val) {
-                    _transactionController.filterBy.value = val;
-                    _transactionController.fetchTransaction();
-                  },
-                  choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
-                    source: filterKategori,
-                    value: (i, v) => v['value'] as String,
-                    label: (i, v) => v['nama'] as String,
-                  ),
-                  choiceStyle: C2ChipStyle.filled(
-                    foregroundStyle: const TextStyle(
-                      fontSize: MySizes.fontSizeSm,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                    color: MyColors.notionBgGrey,
-                    selectedStyle: const C2ChipStyle(
-                      backgroundColor: MyColors.red,
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
-                    ),
-                  ),
+                () => TransactionGroupedList(
+                  items: _transactionController.transactionItems,
+                  isLoading:
+                      _transactionController.isLoadingTransactionHistory.value,
+                  showSummary: true,
+                  onRefresh: _refresh,
                 ),
               ),
-            ),
-            Container(
-              color: Colors.white,
-              height: context.height * 0.05,
-              child: Obx(
-                () =>
-                    _transactionController.filterBy.value == 'bulan'
-                        ? FilterMonth(
-                          transactionController: _transactionController,
-                        )
-                        : FilterDateRange(
-                          transactionController: _transactionController,
-                        ),
-              ),
-            ),
-            Expanded(
-              child: Obx(() {
-                if (_transactionController.isLoadingTransactionHistory.value) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: ListView.builder(
-                      itemCount: _transactionController.transactionItems.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                color: Colors.grey[300],
-                              ),
-                              const Gap(16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      width: double.infinity,
-                                      height: 16,
-                                      color: Colors.grey[300],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Container(
-                                      width: double.infinity,
-                                      height: 16,
-                                      color: Colors.grey[300],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Container(
-                                      width: double.infinity,
-                                      height: 16,
-                                      color: Colors.grey[300],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }
-                if (_transactionController.transactionItems.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/empty_cart.png',
-                          height: 100,
-                        ),
-                        const Gap(16),
-                        const Text(
-                          'No transaction yet',
-                          style: TextStyle(
-                            fontSize: MySizes.fontSizeXl,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                Map<String, List<dynamic>> resultDataMap = {};
-                for (var item in _transactionController.transactionItems) {
-                  String formattedDate = DateFormat(
-                    'dd MMMM yyyy',
-                  ).format(DateTime.parse(item.transactionDate!));
-                  if (!resultDataMap.containsKey(formattedDate)) {
-                    resultDataMap[formattedDate] = [];
-                  }
-                  resultDataMap[formattedDate]!.add(item);
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    _transactionController.fetchTransaction();
-                  },
-                  child: GroupListView(
-                    sectionsCount: resultDataMap.keys.toList().length,
-                    countOfItemInSection: (int section) {
-                      return resultDataMap.values.toList()[section].length;
-                    },
-                    itemBuilder: (BuildContext context, IndexPath index) {
-                      var items =
-                          resultDataMap.values.toList()[index.section][index
-                              .index];
-                      return Container(
-                        color: Colors.white,
-                        child: ExpansionTile(
-                          title: Text(
-                            "HIMALAYA/${items.branchCode}/${items.numerator.toString().padLeft(4, '0')}",
-                            style: const TextStyle(
-                              fontSize: MySizes.fontSizeMd,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.shopping_cart,
-                                    size: 16,
-                                    color: MyColors.grey,
-                                  ),
-                                  const Gap(5),
-                                  Text(
-                                    'Total Item: ${items.totalItem}',
-                                    style: const TextStyle(
-                                      color: MyColors.grey,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_month,
-                                    size: 16,
-                                    color: MyColors.grey,
-                                  ),
-                                  const Gap(5),
-                                  Text(
-                                    DateFormat(
-                                      'dd MMM yyyy HH:mm',
-                                      'id_ID',
-                                    ).format(
-                                      DateTime.parse(items.transactionDate),
-                                    ),
-                                    style: const TextStyle(
-                                      color: MyColors.grey,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.person,
-                                    size: 16,
-                                    color: MyColors.grey,
-                                  ),
-                                  const Gap(5),
-                                  Text(
-                                    items.cashierName ?? 'Unknown Cashier',
-                                    style: const TextStyle(
-                                      color: MyColors.grey,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          trailing: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                CurrencyFormat.convertToIdr(
-                                  items.grandTotal,
-                                  0,
-                                ),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: MySizes.fontSizeMd,
-                                  color:
-                                      items.deleteStatus!
-                                          ? MyColors.red
-                                          : MyColors.primary,
-                                ),
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    items.paymentMethod ?? 'Cash',
-                                    style: const TextStyle(
-                                      color: MyColors.grey,
-                                      fontSize: MySizes.fontSizeSm,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          iconColor: MyColors.primary,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                  title: const Text(
-                                    'Transaction Details',
-                                    style: TextStyle(
-                                      fontSize: MySizes.fontSizeMd,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: items.details!.length,
-                                        itemBuilder: (context, detailIndex) {
-                                          return Row(
-                                            children: [
-                                              Container(
-                                                alignment: Alignment.centerLeft,
-                                                width:
-                                                    MediaQuery.of(
-                                                      context,
-                                                    ).size.width *
-                                                    0.5,
-                                                child: Text(
-                                                  items
-                                                          .details[detailIndex]
-                                                          .productName ??
-                                                      'Unknown Product',
-                                                ),
-                                              ),
-                                              Container(
-                                                alignment: Alignment.center,
-                                                width:
-                                                    MediaQuery.of(
-                                                      context,
-                                                    ).size.width *
-                                                    0.1,
-                                                child: Text(
-                                                  '${items.details[detailIndex].quantity}',
-                                                ),
-                                              ),
-                                              Container(
-                                                width:
-                                                    MediaQuery.of(
-                                                      context,
-                                                    ).size.width *
-                                                    0.25,
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: Text(
-                                                  CurrencyFormat.convertToIdr(
-                                                    items
-                                                        .details[detailIndex]
-                                                        .totalPrice,
-                                                    0,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                      Text(
-                                        items.deleteStatus!
-                                            ? 'Transaksi ini telah dibatalkan\nAlasan: ${items.deleteReason}'
-                                            : '',
-                                        style: TextStyle(
-                                          fontSize: MySizes.fontSizeSm,
-                                          color:
-                                              items.deleteStatus!
-                                                  ? MyColors.red
-                                                  : MyColors.grey,
-                                          fontWeight:
-                                              items.deleteStatus!
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    groupHeaderBuilder: (BuildContext context, int section) {
-                      return Container(
-                        width: double.infinity,
-                        height: 60,
-                        padding: const EdgeInsets.only(left: 16, right: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                            top: BorderSide(color: Colors.grey[100]!, width: 1),
-                            bottom: BorderSide(
-                              color: Colors.grey[100]!,
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              DateFormat('dd').format(
-                                DateFormat(
-                                  'dd MMMM yyyy',
-                                ).parse(resultDataMap.keys.toList()[section]),
-                              ),
-                              style: const TextStyle(
-                                fontSize: 33,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Gap(10),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      DateFormat('EEEE', 'id_ID').format(
-                                        DateFormat('dd MMMM yyyy').parse(
-                                          resultDataMap.keys.toList()[section],
-                                        ),
-                                      ),
-                                      style: const TextStyle(
-                                        fontSize: MySizes.fontSizeMd,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Gap(5),
-                                    Text(
-                                      '[${_transactionController.transactionItems.where((element) => DateFormat('dd MMMM yyyy').format(DateTime.parse(element.transactionDate!)) == resultDataMap.keys.toList()[section] && !element.deleteStatus!).fold<int>(0, (sum, element) => sum + (element.details?.fold<int>(0, (dSum, d) => dSum + (d.quantity ?? 0)) ?? 0)).toString()} items]',
-                                      style: const TextStyle(
-                                        fontSize: MySizes.fontSizeSm,
-                                        color: MyColors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  DateFormat('MMMM yyyy', 'id_ID').format(
-                                    DateFormat('dd MMMM yyyy').parse(
-                                      resultDataMap.keys.toList()[section],
-                                    ),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: MySizes.fontSizeSm,
-                                    color: MyColors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 5,
-                                horizontal: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: MyColors.primary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                CurrencyFormat.convertToIdr(
-                                  _transactionController.transactionItems
-                                      .where(
-                                        (element) =>
-                                            DateFormat('dd MMMM yyyy').format(
-                                                  DateTime.parse(
-                                                    element.transactionDate!,
-                                                  ),
-                                                ) ==
-                                                resultDataMap.keys
-                                                    .toList()[section] &&
-                                            !element.deleteStatus!,
-                                      )
-                                      .fold<int>(
-                                        0,
-                                        (sum, element) =>
-                                            sum + element.grandTotal!,
-                                      ),
-                                  0,
-                                ),
-                                style: const TextStyle(
-                                  fontSize: MySizes.fontSizeLg,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    separatorBuilder:
-                        (context, index) => const SizedBox(height: 2),
-                    sectionSeparatorBuilder:
-                        (context, section) => const SizedBox(height: 20),
-                  ),
-                );
-              }),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFilterCategory() {
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      padding: const EdgeInsets.only(top: 10, left: 15, right: 20),
+      child: Obx(
+        () => ChipsChoice<String>.single(
+          value: _transactionController.filterBy.value,
+          wrapped: true,
+          padding: EdgeInsets.zero,
+          onChanged: (value) {
+            _transactionController.filterBy.value = value;
+            _transactionController.fetchTransaction();
+          },
+          choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
+            source: filterKategori,
+            value: (_, item) => item['value'] as String,
+            label: (_, item) => item['nama'] as String,
+          ),
+          choiceStyle: C2ChipStyle.filled(
+            foregroundStyle: const TextStyle(fontSize: MySizes.fontSizeSm),
+            color: MyColors.notionBgGrey,
+            borderRadius: BorderRadius.circular(25),
+            selectedStyle: const C2ChipStyle(
+              backgroundColor: MyColors.red,
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterDate() {
+    return Container(
+      height: Get.height * .05,
+      color: Colors.white,
+      child: Obx(() {
+        return _transactionController.filterBy.value == 'bulan'
+            ? FilterMonth(transactionController: _transactionController)
+            : FilterDateRange(transactionController: _transactionController);
+      }),
     );
   }
 }

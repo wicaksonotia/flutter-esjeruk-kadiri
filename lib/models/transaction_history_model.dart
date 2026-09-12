@@ -77,22 +77,23 @@ class TransactionModel {
   TransactionModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     numerator = json['numerator'];
-    transactionDate = json['transaction_date'];
+    transactionDate =
+        json['transaction_date'] ?? DateTime.now().toIso8601String();
     idKios = json['id_kios'];
     idKasir = json['id_kasir'];
-    subTotal = json['sub_total'];
-    discount = json['discount'];
-    grandTotal = json['grand_total'];
+    subTotal = json['sub_total'] ?? 0;
+    discount = json['discount'] ?? 0;
+    grandTotal = json['grand_total'] ?? 0;
     orderType = json['order_type'];
-    deleteStatus = json['delete_status'];
-    deleteReason = json['delete_reason'];
+    deleteStatus = json['delete_status'] ?? false;
+    deleteReason = json['delete_reason'] ?? '';
     idCabang = json['id_cabang'];
-    paymentMethod = json['payment_method'];
-    totalItem = json['total_item'];
-    cashierName = json['nama_kasir'];
+    paymentMethod = json['payment_method'] ?? 'Cash';
+    totalItem = json['total_item'] ?? 0;
+    cashierName = json['nama_kasir'] ?? 'Unknown Cashier';
     branchCode = json['kode_cabang'];
+    details = <ListDetailTransactionModel>[];
     if (json['details'] != null) {
-      details = <ListDetailTransactionModel>[];
       json['details'].forEach((v) {
         details!.add(ListDetailTransactionModel.fromJson(v));
       });
