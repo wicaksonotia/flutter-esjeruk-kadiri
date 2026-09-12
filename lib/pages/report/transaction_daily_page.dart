@@ -121,8 +121,13 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
                           _transactionController
                               .isLoadingDailyTransaction
                               .value,
-                      enableSlidable: true,
+
+                      enableDelete: true,
+                      enablePrint: true,
+                      showSummary: false,
+
                       cashierName: _transactionController.namaKasir.value,
+
                       onRefresh:
                           () => _transactionController.fetchDailyTransactions(),
                     ),

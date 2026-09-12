@@ -123,7 +123,13 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                   items: _transactionController.transactionItems,
                   isLoading:
                       _transactionController.isLoadingTransactionHistory.value,
+
+                  enableDelete: false,
+                  enablePrint: true,
                   showSummary: true,
+
+                  cashierName: _transactionController.namaKasir.value,
+
                   onRefresh: _refresh,
                 ),
               ),
