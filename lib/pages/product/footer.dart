@@ -25,7 +25,7 @@ class _FooterProductState extends State<FooterProduct> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: .3),
             spreadRadius: 0,
             blurRadius: 7,
           ),

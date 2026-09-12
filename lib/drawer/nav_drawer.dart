@@ -1,4 +1,4 @@
-import 'package:cashier/commons/colors.dart' show MyColors;
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/controllers/login_controller.dart';
@@ -14,86 +14,63 @@ class NavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController loginController = Get.find<LoginController>();
-    final CartController cartController = Get.find<CartController>();
+    final loginController = Get.find<LoginController>();
+    final cartController = Get.find<CartController>();
+
     return Drawer(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(0.0)),
-      ),
-      child: Container(
-        color: Colors.white,
-        child: ListView(
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      child: SafeArea(
+        child: Column(
           children: [
-            buildDrawerHeader(),
-            buildDrawerItem(
-              icon: Icons.shopping_cart,
-              text: "Menu",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.product);
-              },
-              tileColor: Colors.black,
-              textIconColor:
-                  Get.currentRoute == RouterClass.product
-                      ? MyColors.primary
-                      : Colors.black,
-            ),
-            buildDrawerItem(
-              icon: Icons.history,
-              text: "Daily Transactions",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.dailytransactions);
-              },
-              tileColor: Colors.black,
-              textIconColor:
-                  Get.currentRoute == RouterClass.dailytransactions
-                      ? MyColors.primary
-                      : Colors.black,
-            ),
-            buildDrawerItem(
-              icon: Icons.edit_document,
-              text: "Transaction History",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.transactionhistories);
-              },
-              tileColor: Colors.black,
-              textIconColor:
-                  Get.currentRoute == RouterClass.transactionhistories
-                      ? MyColors.primary
-                      : Colors.black,
-            ),
-            Divider(color: Colors.grey.shade300),
-            buildDrawerItem(
-              icon: Icons.manage_accounts,
-              text: "Setting",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.userSetting);
-              },
-              tileColor: Colors.black,
-              textIconColor: Colors.black,
-            ),
-            buildDrawerItem(
-              icon: Icons.description,
-              text: "SOP Document",
-              onTap: () {
-                Navigator.of(context).pop();
-                Get.toNamed(RouterClass.sopDocument);
-              },
-              tileColor: Colors.black,
-              textIconColor: Colors.black,
-            ),
-            buildDrawerItem(
-              icon: Icons.logout,
-              text: "Logout",
-              onTap: () {
-                loginController.logout();
-                cartController.clearCart();
-              },
-              tileColor: Colors.black,
-              textIconColor: Colors.black,
+            buildDrawerHeader(context),
+
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  buildDrawerItem(
+                    icon: Icons.shopping_cart,
+                    text: 'Menu',
+                    route: RouterClass.product,
+                  ),
+
+                  buildDrawerItem(
+                    icon: Icons.history,
+                    text: 'Daily Transactions',
+                    route: RouterClass.dailytransactions,
+                  ),
+
+                  buildDrawerItem(
+                    icon: Icons.edit_document,
+                    text: 'Transaction History',
+                    route: RouterClass.transactionhistories,
+                  ),
+
+                  const Divider(height: 24),
+
+                  buildDrawerItem(
+                    icon: Icons.manage_accounts,
+                    text: 'Setting',
+                    route: RouterClass.userSetting,
+                  ),
+
+                  buildDrawerItem(
+                    icon: Icons.description,
+                    text: 'SOP Document',
+                    route: RouterClass.sopDocument,
+                  ),
+
+                  buildDrawerItem(
+                    icon: Icons.logout,
+                    text: 'Logout',
+                    onTap: () {
+                      loginController.logout();
+                      cartController.clearCart();
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -101,38 +78,61 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildDrawerHeader() {
+  Widget buildDrawerItem({
+    required IconData icon,
+    required String text,
+    String? route,
+    VoidCallback? onTap,
+  }) {
+    final bool isActive = route != null && Get.currentRoute == route;
+
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: isActive ? MyColors.primary : Colors.black87,
+        ),
+        title: Text(
+          text,
+          style: TextStyle(
+            color: isActive ? MyColors.primary : Colors.black87,
+            fontSize: MySizes.fontSizeMd,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: isActive ? MyColors.primary : Colors.black54,
+          size: MySizes.iconXs,
+        ),
+        onTap:
+            onTap ??
+            () {
+              Get.back();
+
+              if (route != null) {
+                Get.toNamed(route);
+              }
+            },
+      ),
+    );
+  }
+
+  Widget buildDrawerHeader(BuildContext context) {
     return FutureBuilder<SharedPreferences>(
       future: SharedPreferences.getInstance(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: MyColors.primary),
-            accountName: Text(
-              '',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: MySizes.fontSizeLg,
-              ),
-            ),
-            accountEmail: Text(
-              '',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: MySizes.fontSizeMd,
-              ),
-            ),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/images/clerk.png'),
-              backgroundColor: Colors.white,
-            ),
-          );
-        }
-        final prefs = snapshot.data!;
+        final prefs = snapshot.data;
+
+        final namaKasir = prefs?.getString('nama_kasir') ?? '';
+        final kios = prefs?.getString('kios') ?? '';
+        final cabang = prefs?.getString('cabang') ?? '';
+
         return UserAccountsDrawerHeader(
           decoration: const BoxDecoration(color: MyColors.primary),
           accountName: Text(
-            prefs.getString('nama_kasir') ?? '',
+            namaKasir,
             style: const TextStyle(
               color: Colors.white,
               fontSize: MySizes.fontSizeLg,
@@ -142,67 +142,36 @@ class NavigationDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                prefs.getString('kios') ?? '',
+                kios,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: MySizes.fontSizeMd,
                 ),
               ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Get.back();
-                      showModalBottomSheet(
-                        context: context,
-                        constraints: const BoxConstraints(
-                          minWidth: double.infinity,
-                        ),
-                        builder: (context) => const ChangeOutletPage(),
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Cabang ${prefs.getString('cabang') ?? ''}',
+              const Gap(4),
+              InkWell(
+                onTap: () {
+                  Get.back();
+                  _showChangeOutlet(context);
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      'Cabang $cabang',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: MySizes.fontSizeMd,
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      Get.back();
-                      showModalBottomSheet(
-                        context: context,
-                        constraints: const BoxConstraints(
-                          minWidth: double.infinity,
-                        ),
-                        builder: (context) => const ChangeOutletPage(),
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Icon(
+                    const Spacer(),
+                    const Icon(
                       Icons.keyboard_arrow_down_rounded,
                       color: Colors.white,
                       size: MySizes.iconMd,
                     ),
-                  ),
-                  const Gap(10),
-                ],
+                    const Gap(10),
+                  ],
+                ),
               ),
             ],
           ),
@@ -216,23 +185,16 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildDrawerItem({
-    required String text,
-    required IconData icon,
-    required Color textIconColor,
-    required Color? tileColor,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: textIconColor),
-      title: Text(text, style: TextStyle(color: textIconColor)),
-      tileColor: tileColor,
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: textIconColor,
-        size: MySizes.iconXs,
+  void _showChangeOutlet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      constraints: const BoxConstraints(minWidth: double.infinity),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      onTap: onTap,
+      builder: (_) => const ChangeOutletPage(),
     );
   }
 }

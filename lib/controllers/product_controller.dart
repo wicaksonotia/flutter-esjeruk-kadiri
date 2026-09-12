@@ -73,7 +73,7 @@ class ProductController extends GetxController {
     }
   }
 
-  toggleShowListGrid() {
+  void toggleShowListGrid() {
     showListGrid(!showListGrid.value);
   }
 

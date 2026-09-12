@@ -76,7 +76,7 @@ class CartController extends GetxController {
     applyDiscount();
   }
 
-  getProductQuantity(ProductModel dataProduct) {
+  int getProductQuantity(ProductModel dataProduct) {
     var index = cartList.indexWhere(
       (element) => element.idProduct == dataProduct.idProduct,
     );

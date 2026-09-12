@@ -45,7 +45,7 @@ class CardCategoriesContainer extends StatelessWidget {
                   width: 170,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: .2),
                   ),
                 ),
               ),

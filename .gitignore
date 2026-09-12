@@ -47,3 +47,5 @@ app.*.map.json
 android/app/.cxx/
 android/app/**/configure_fingerprint.bin
 android/**/.cxx/
+# Widget Preview related
+.widget_preview/

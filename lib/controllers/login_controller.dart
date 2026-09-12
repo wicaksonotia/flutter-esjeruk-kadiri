@@ -28,19 +28,19 @@ class LoginController extends GetxController {
   var phoneCabang = ''.obs;
   var isLogin = false.obs;
 
-  showPassword() {
+  void showPassword() {
     isPasswordVisible(!isPasswordVisible.value);
   }
 
-  showCurrentPassword() {
+  void showCurrentPassword() {
     isPasswordCurrentVisible(!isPasswordCurrentVisible.value);
   }
 
-  showNewPassword() {
+  void showNewPassword() {
     isPasswordNewVisible(!isPasswordNewVisible.value);
   }
 
-  showConfirmPassword() {
+  void showConfirmPassword() {
     isPasswordConfirmVisible(!isPasswordConfirmVisible.value);
   }
 
