@@ -6,7 +6,6 @@ import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSetting extends StatelessWidget {
@@ -44,7 +43,6 @@ class UserSetting extends StatelessWidget {
           return FutureBuilder<Map<String, String?>>(
             future: _loadPrinterInfo(),
             builder: (context, bluetooth) {
-              final connected = bluetooth.data ?? false;
               final printer = bluetooth.data!;
               return ListView(
                 padding: const EdgeInsets.all(16),

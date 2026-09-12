@@ -12,7 +12,7 @@ class SopController extends GetxController {
     super.onInit();
   }
 
-  void fetchDataListSop() async {
+  Future<void> fetchDataListSop() async {
     try {
       isLoading(true);
       var result = await RemoteDataSource.getListSop();
