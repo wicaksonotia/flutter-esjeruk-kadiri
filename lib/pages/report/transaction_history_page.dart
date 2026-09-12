@@ -6,10 +6,12 @@ import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:cashier/pages/report/filter_date_range.dart';
 import 'package:cashier/pages/report/filter_month.dart';
 import 'package:cashier/pages/report/footer.dart';
+import 'package:cashier/pages/report/transaction_report_pdf_service.dart';
 import 'package:cashier/widgets/transaction_grouped_list.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:printing/printing.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
@@ -36,6 +38,53 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
     await _transactionController.fetchTransaction();
   }
 
+  Future<void> _printPdf() async {
+    try {
+      final controller = _transactionController;
+
+      if (controller.transactionItems.isEmpty) {
+        Get.snackbar(
+          'Report',
+          'Tidak ada transaksi untuk dicetak',
+          icon: const Icon(Icons.info),
+          snackPosition: SnackPosition.TOP,
+        );
+        return;
+      }
+
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+
+      final pdf = await TransactionReportPdfService.generate(
+        transactions: controller.transactionItems.toList(),
+        filterBy: controller.filterBy.value,
+        month: controller.initMonth.value,
+        year: controller.initYear.value,
+        startDate: controller.startDate.value,
+        endDate: controller.endDate.value,
+      );
+
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      Get.snackbar(
+        'Error',
+        'Gagal membuat PDF: $e',
+        icon: const Icon(Icons.error),
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +104,13 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Cetak PDF',
+            icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
+            onPressed: _printPdf,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
