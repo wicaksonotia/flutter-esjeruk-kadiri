@@ -14,252 +14,306 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final LoginController loginController = Get.put(LoginController());
+  final LoginController controller = Get.put(LoginController());
 
   @override
   void initState() {
     super.initState();
-    loginController.checkProfile();
+    controller.checkProfile();
+  }
+
+  void _changeOutlet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const UserChangeOutletPage(),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: MyColors.primary, width: 1.5),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.grey.shade50, // Set your desired background color here
-        child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: ListView(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 300,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                      gradient: LinearGradient(
-                        colors: [MyColors.primary, MyColors.secondary],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomLeft,
-                      ),
-                    ),
+      backgroundColor: MyColors.notionBgGrey,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 220,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: MyColors.primary,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Get.back(),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [MyColors.primary, MyColors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  Positioned(
-                    top: -100,
-                    left: -50,
-                    child: Container(
-                      height: 200,
-                      width: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.white.withAlpha((0.2 * 255).toInt()),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 50,
-                    right: -60,
-                    child: Container(
-                      height: 120,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.white.withAlpha((0.2 * 255).toInt()),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 70,
-                    right: -40,
-                    child: Container(
-                      height: 80,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: MyColors.primary,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 50,
-                    left: 20,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        Get.back();
-                      },
-                    ),
-                  ),
-                  const Positioned(
-                    top: 60,
-                    left: 80,
-                    right: 0,
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        const CircleAvatar(
+                          radius: 42,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            Icons.person,
+                            size: 48,
+                            color: MyColors.primary,
+                          ),
+                        ),
+                        const Gap(12),
                         Text(
-                          'Profile',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          controller.namaController.text.isEmpty
+                              ? "Cashier"
+                              : controller.namaController.text,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Gap(4),
+                        Obx(
+                          () => Text(
+                            controller.namaCabang.value,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _SectionCard(
+                    title: "Account Information",
+                    child: Column(
+                      children: [
+                        Obx(
+                          () => _infoTile(
+                            Icons.store,
+                            "Store Name",
+                            controller.namaCabang.value,
+                          ),
+                        ),
+                        const Divider(),
+                        _infoTile(
+                          Icons.phone,
+                          "Phone Number",
+                          controller.noTelponController.text.isEmpty
+                              ? "-"
+                              : controller.noTelponController.text,
                         ),
                       ],
                     ),
                   ),
 
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-                    padding: const EdgeInsets.all(16),
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
+                  const Gap(16),
+
+                  _SectionCard(
+                    title: "Edit Profile",
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Ubah Profil",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Gap(8),
-                        const Text("Ubah informasi profil anda di bawah ini."),
-                        const Gap(25),
                         TextField(
-                          controller: loginController.namaController,
-                          decoration: InputDecoration(
-                            labelText: "Nama Pengguna *",
-                            border: const OutlineInputBorder(),
-                            labelStyle: const TextStyle(color: Colors.black54),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ),
+                          controller: controller.namaController,
+                          decoration: _inputDecoration("Full Name"),
                         ),
                         const Gap(16),
+
                         TextField(
-                          controller: loginController.noTelponController,
-                          decoration: InputDecoration(
-                            labelText: "Nomor Telepon *",
-                            border: const OutlineInputBorder(),
-                            labelStyle: const TextStyle(color: Colors.black54),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ),
+                          controller: controller.noTelponController,
+                          keyboardType: TextInputType.phone,
+                          decoration: _inputDecoration("Phone Number"),
                         ),
                         const Gap(16),
+
                         InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              constraints: const BoxConstraints(
-                                minWidth: double.infinity,
-                              ),
-                              builder:
-                                  (context) => const UserChangeOutletPage(),
-                              isScrollControlled: true,
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                            );
-                          },
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: _changeOutlet,
                           child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: 'Set Default Cabang',
-                              labelStyle: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                              border: const OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 14,
-                              ),
-                            ),
+                            decoration: _inputDecoration("Default Store"),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Obx(
-                                  () => Text(
-                                    loginController.namaCabang.value,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black87,
+                                const Icon(
+                                  Icons.location_on,
+                                  color: MyColors.primary,
+                                  size: 20,
+                                ),
+                                const Gap(10),
+                                Expanded(
+                                  child: Obx(
+                                    () => Text(
+                                      controller.namaCabang.value,
+                                      style: const TextStyle(fontSize: 15),
                                     ),
                                   ),
                                 ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: MyColors.primary,
-                                ),
+                                const Icon(Icons.chevron_right),
                               ],
-                            ),
-                          ),
-                        ),
-                        const Gap(50),
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                loginController.updateProfileProcess();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: MyColors.primary,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                              ),
-                              child: const Text(
-                                'Simpan',
-                                style: TextStyle(
-                                  fontSize: MySizes.fontSizeMd,
-                                  color: Colors.white,
-                                ),
-                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
+
+                  const Gap(28),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed:
+                            controller.isLoading.value
+                                ? null
+                                : controller.updateProfileProcess,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MyColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child:
+                            controller.isLoading.value
+                                ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Text(
+                                  "Save Changes",
+                                  style: TextStyle(
+                                    fontSize: MySizes.fontSizeMd,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                      ),
+                    ),
+                  ),
+
+                  const Gap(24),
                 ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoTile(IconData icon, String title, String value) {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 20,
+          backgroundColor: MyColors.primary.withValues(alpha: .1),
+          child: Icon(icon, color: MyColors.primary, size: 20),
+        ),
+        const Gap(12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              const Gap(2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _SectionCard({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const Gap(16),
+          child,
+        ],
       ),
     );
   }

@@ -10,64 +10,115 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
+  // ============================================================
+  // STATE
+  // ============================================================
+
   var isPasswordVisible = false.obs;
   var isPasswordCurrentVisible = false.obs;
   var isPasswordNewVisible = false.obs;
   var isPasswordConfirmVisible = false.obs;
+
   var isLoading = false.obs;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController currentController = TextEditingController();
-  TextEditingController newController = TextEditingController();
-  TextEditingController confirmController = TextEditingController();
-  TextEditingController namaController = TextEditingController();
-  TextEditingController noTelponController = TextEditingController();
+  var isLogin = false.obs;
+
+  // ============================================================
+  // TEXT CONTROLLERS
+  // ============================================================
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController currentController = TextEditingController();
+  final TextEditingController newController = TextEditingController();
+  final TextEditingController confirmController = TextEditingController();
+
+  final TextEditingController namaController = TextEditingController();
+  final TextEditingController noTelponController = TextEditingController();
+
+  // ============================================================
+  // PROFILE
+  // ============================================================
+
   var idCabang = 0.obs;
   var namaCabang = ''.obs;
   var alamatCabang = ''.obs;
   var phoneCabang = ''.obs;
-  var isLogin = false.obs;
 
-  void showPassword() {
-    isPasswordVisible(!isPasswordVisible.value);
-  }
-
-  void showCurrentPassword() {
-    isPasswordCurrentVisible(!isPasswordCurrentVisible.value);
-  }
-
-  void showNewPassword() {
-    isPasswordNewVisible(!isPasswordNewVisible.value);
-  }
-
-  void showConfirmPassword() {
-    isPasswordConfirmVisible(!isPasswordConfirmVisible.value);
-  }
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
 
   @override
   void onInit() {
-    checkLoginStatus();
     super.onInit();
+    checkLoginStatus();
   }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+
+    currentController.dispose();
+    newController.dispose();
+    confirmController.dispose();
+
+    namaController.dispose();
+    noTelponController.dispose();
+
+    super.onClose();
+  }
+
+  // ============================================================
+  // PASSWORD VISIBILITY
+  // ============================================================
+
+  void showPassword() {
+    isPasswordVisible.toggle();
+  }
+
+  void showCurrentPassword() {
+    isPasswordCurrentVisible.toggle();
+  }
+
+  void showNewPassword() {
+    isPasswordNewVisible.toggle();
+  }
+
+  void showConfirmPassword() {
+    isPasswordConfirmVisible.toggle();
+  }
+
+  // ============================================================
+  // LOGIN
+  // ============================================================
 
   Future<void> loginWithEmail() async {
     try {
       isLoading(true);
-      Dio.FormData formData = Dio.FormData.fromMap({
+
+      final Dio.FormData formData = Dio.FormData.fromMap({
         "username": emailController.text.trim(),
         "password": passwordController.text,
       });
-      bool result = await RemoteDataSource.login(formData);
-      if (result) {
-        ProductController productController = Get.put(ProductController());
-        productController.fetchProductCategory();
-        productController.fetchProduct();
-        KasirController kasirController = Get.put(KasirController());
-        kasirController.fetchDataListOutlet();
-        Get.offNamed(RouterClass.product);
-      } else {
-        throw "Kios is not regsitered";
+
+      final bool result = await RemoteDataSource.login(formData);
+
+      if (!result) {
+        throw "Kios is not registered";
       }
+
+      final ProductController productController = Get.put(ProductController());
+
+      productController.fetchProductCategory();
+      productController.fetchProduct();
+
+      final KasirController kasirController = Get.put(KasirController());
+
+      kasirController.fetchDataListOutlet();
+
+      Get.offNamed(RouterClass.product);
     } catch (error) {
       Get.snackbar(
         'Notification',
@@ -80,47 +131,69 @@ class LoginController extends GetxController {
     }
   }
 
+  // ============================================================
+  // CHANGE PASSWORD
+  // ============================================================
+
   Future<void> changePasswordProcess() async {
     try {
       isLoading(true);
+
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       if (currentController.text.isEmpty ||
           newController.text.isEmpty ||
           confirmController.text.isEmpty) {
         throw "All fields are required";
-      } else if (newController.text.contains(' ')) {
-        throw "Password cannot contain spaces";
-      } else if (confirmController.text.contains(' ')) {
-        throw "Password cannot contain spaces";
-      } else if (currentController.text.contains(' ')) {
-        throw "Password cannot contain spaces";
-      } else {
-        String savedPassword = prefs.getString('password') ?? '';
-        if (currentController.text != savedPassword) {
-          throw "Current password is incorrect";
-        } else if (newController.text.length < 6 ||
-            confirmController.text.length < 6) {
-          throw "Password must be at least 6 characters";
-        } else if (newController.text != confirmController.text) {
-          throw "New password and confirm password do not match";
-        } else if (currentController.text == newController.text) {
-          throw "New password must be different from current password";
-        }
       }
 
-      var rawFormat = {
+      if (newController.text.contains(' ') ||
+          confirmController.text.contains(' ') ||
+          currentController.text.contains(' ')) {
+        throw "Password cannot contain spaces";
+      }
+
+      final String savedPassword = prefs.getString('password') ?? '';
+
+      if (currentController.text != savedPassword) {
+        throw "Current password is incorrect";
+      }
+
+      if (newController.text.length < 6 || confirmController.text.length < 6) {
+        throw "Password must be at least 6 characters";
+      }
+
+      if (newController.text != confirmController.text) {
+        throw "New password and confirm password do not match";
+      }
+
+      if (currentController.text == newController.text) {
+        throw "New password must be different from current password";
+      }
+
+      final rawFormat = {
         "username": prefs.getString('username') ?? '',
         "new_password": newController.text,
       };
-      bool result = await RemoteDataSource.changePasswordProcess(rawFormat);
-      if (result) {
-        prefs.setString('password', newController.text);
-        clearChangePasswordControllers();
-        throw "Password changed successfully";
-      } else {
+
+      final bool result = await RemoteDataSource.changePasswordProcess(
+        rawFormat,
+      );
+
+      if (!result) {
         throw "Failed to change password";
       }
+
+      await prefs.setString('password', newController.text);
+
+      clearChangePasswordControllers();
+
+      Get.snackbar(
+        'Notification',
+        'Password changed successfully',
+        icon: const Icon(Icons.check),
+        snackPosition: SnackPosition.TOP,
+      );
     } catch (error) {
       Get.snackbar(
         'Notification',
@@ -132,34 +205,97 @@ class LoginController extends GetxController {
       isLoading(false);
     }
   }
+
+  // ============================================================
+  // UPDATE PROFILE
+  // ============================================================
 
   Future<void> updateProfileProcess() async {
     try {
       isLoading(true);
+
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var rawFormat = {
+
+      // --------------------------------------------------------
+      // Ambil id cabang dari SharedPreferences sebagai fallback.
+      // --------------------------------------------------------
+
+      final int savedIdCabang = prefs.getInt('id_cabang') ?? 0;
+
+      // --------------------------------------------------------
+      // Prioritas:
+      // 1. Cabang yang sedang dipilih di controller
+      // 2. Cabang yang tersimpan di SharedPreferences
+      // --------------------------------------------------------
+
+      final int selectedIdCabang =
+          idCabang.value != 0 ? idCabang.value : savedIdCabang;
+
+      // --------------------------------------------------------
+      // Jangan kirim id_cabang = 0
+      // --------------------------------------------------------
+
+      if (selectedIdCabang == 0) {
+        throw "Cabang belum dipilih";
+      }
+
+      // --------------------------------------------------------
+      // Request
+      // --------------------------------------------------------
+
+      final rawFormat = {
         "username": prefs.getString('username') ?? '',
-        "nama_kasir": namaController.text,
-        "phone_kasir": noTelponController.text,
-        "id_cabang": idCabang.value,
+        "nama_kasir": namaController.text.trim(),
+        "phone_kasir": noTelponController.text.trim(),
+        "id_cabang": selectedIdCabang,
       };
-      bool result = await RemoteDataSource.updateProfile(rawFormat);
-      if (result) {
-        prefs.setString('nama_kasir', namaController.text);
-        prefs.setString('phone_kasir', noTelponController.text);
-        prefs.setInt('id_cabang', idCabang.value);
-        prefs.setString('cabang', namaCabang.value);
-        prefs.setString('alamat_cabang', alamatCabang.value);
-        prefs.setString('phone_cabang', phoneCabang.value);
-        Get.snackbar(
-          'Notification',
-          'Profile updated successfully',
-          icon: const Icon(Icons.check),
-          snackPosition: SnackPosition.TOP,
-        );
-      } else {
+
+      // debugPrint('========================================');
+      // debugPrint('UPDATE PROFILE');
+      // debugPrint('username    : ${rawFormat["username"]}');
+      // debugPrint('nama_kasir  : ${rawFormat["nama_kasir"]}');
+      // debugPrint('phone_kasir : ${rawFormat["phone_kasir"]}');
+      // debugPrint('id_cabang   : ${rawFormat["id_cabang"]}');
+      // debugPrint('========================================');
+
+      final bool result = await RemoteDataSource.updateProfile(rawFormat);
+
+      if (!result) {
         throw "Failed to update profile";
       }
+
+      // --------------------------------------------------------
+      // Update state controller
+      // --------------------------------------------------------
+
+      idCabang.value = selectedIdCabang;
+
+      // --------------------------------------------------------
+      // Simpan profile ke SharedPreferences
+      // --------------------------------------------------------
+
+      await prefs.setString('nama_kasir', namaController.text.trim());
+
+      await prefs.setString('phone_kasir', noTelponController.text.trim());
+
+      await prefs.setInt('id_cabang', selectedIdCabang);
+
+      await prefs.setString('cabang', namaCabang.value);
+
+      await prefs.setString('alamat_cabang', alamatCabang.value);
+
+      await prefs.setString('phone_cabang', phoneCabang.value);
+
+      // --------------------------------------------------------
+      // Success
+      // --------------------------------------------------------
+
+      Get.snackbar(
+        'Notification',
+        'Profile updated successfully',
+        icon: const Icon(Icons.check),
+        snackPosition: SnackPosition.TOP,
+      );
     } catch (error) {
       Get.snackbar(
         'Notification',
@@ -172,15 +308,67 @@ class LoginController extends GetxController {
     }
   }
 
-  void checkLoginStatus() async {
+  // ============================================================
+  // CHECK LOGIN STATUS
+  // ============================================================
+
+  Future<void> checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     isLogin.value = prefs.getBool('statusLogin') ?? false;
-    if (isLogin.value == true) {
+
+    if (isLogin.value) {
       Get.offAllNamed(RouterClass.product);
     } else {
       Get.offAllNamed(RouterClass.login);
     }
   }
+
+  // ============================================================
+  // LOAD PROFILE
+  // ============================================================
+
+  Future<void> checkProfile() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // ----------------------------------------------------------
+    // Data kasir
+    // ----------------------------------------------------------
+
+    namaController.text = prefs.getString('nama_kasir') ?? '';
+
+    noTelponController.text = prefs.getString('phone_kasir') ?? '';
+
+    // ----------------------------------------------------------
+    // Data cabang
+    // ----------------------------------------------------------
+
+    idCabang.value = prefs.getInt('id_cabang') ?? 0;
+
+    namaCabang.value = prefs.getString('cabang') ?? '';
+
+    alamatCabang.value = prefs.getString('alamat_cabang') ?? '';
+
+    phoneCabang.value = prefs.getString('phone_cabang') ?? '';
+
+    // ----------------------------------------------------------
+    // Debug
+    // ----------------------------------------------------------
+
+    // debugPrint('========================================');
+    // debugPrint('CHECK PROFILE');
+    // debugPrint('nama_kasir   : ${namaController.text}');
+    // debugPrint('phone_kasir  : ${noTelponController.text}');
+    // debugPrint('id_cabang    : ${idCabang.value}');
+    // debugPrint('cabang       : ${namaCabang.value}');
+    // debugPrint('alamat       : ${alamatCabang.value}');
+    // debugPrint('phone cabang : ${phoneCabang.value}');
+    // debugPrint('========================================');
+  }
+
+  // ============================================================
+  // CLEAR CHANGE PASSWORD
+  // ============================================================
 
   void clearChangePasswordControllers() {
     currentController.clear();
@@ -188,31 +376,29 @@ class LoginController extends GetxController {
     confirmController.clear();
   }
 
-  void checkProfile() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    namaController.text = prefs.getString('nama_kasir') ?? '';
-    noTelponController.text = prefs.getString('phone_kasir') ?? '';
-    namaCabang.value = prefs.getString('cabang') ?? '';
-  }
+  // ============================================================
+  // LOGOUT
+  // ============================================================
 
-  void logout() async {
+  Future<void> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+
+    await prefs.clear();
+
     isLogin.value = false;
+
     Get.offAllNamed(RouterClass.login);
   }
+
+  // ============================================================
+  // LOGOUT BOTTOM SHEET
+  // ============================================================
 
   void openBottomSheet() {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(20),
         height: 120,
-        // decoration: const BoxDecoration(
-        //   borderRadius: BorderRadius.only(
-        //     topRight: Radius.circular(10),
-        //     topLeft: Radius.circular(10),
-        //   ),
-        // ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -239,7 +425,7 @@ class LoginController extends GetxController {
                     ),
                   ),
                   icon: const Icon(Icons.thumb_up),
-                  onPressed: () => logout(),
+                  onPressed: logout,
                   label: const Text('yes'),
                 ),
                 ElevatedButton.icon(
