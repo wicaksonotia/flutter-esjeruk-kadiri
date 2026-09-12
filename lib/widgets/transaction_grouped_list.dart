@@ -14,33 +14,10 @@ import 'package:shimmer/shimmer.dart';
 class TransactionGroupedList extends StatelessWidget {
   final List<dynamic> items;
   final bool isLoading;
-
-  /// Mengaktifkan aksi hapus transaksi.
-  ///
-  /// Biasanya:
-  /// - Daily = true
-  /// - History = false
   final bool enableDelete;
-
-  /// Mengaktifkan aksi print transaksi.
-  ///
-  /// Biasanya:
-  /// - Daily = true
-  /// - History = true
   final bool enablePrint;
-
-  /// Menampilkan jumlah item dan omzet pada header tanggal.
-  ///
-  /// Biasanya:
-  /// - Daily = false
-  /// - History = true
   final bool showSummary;
-
-  /// Nama kasir yang sedang login.
-  ///
-  /// Digunakan untuk menentukan apakah transaksi boleh dihapus.
   final String cashierName;
-
   final Future<void> Function() onRefresh;
 
   const TransactionGroupedList({
@@ -55,16 +32,16 @@ class TransactionGroupedList extends StatelessWidget {
   });
 
   // ==============================================================
-  // GROUP DATA
+  // GROUP
   // ==============================================================
 
   Map<String, List<dynamic>> _groupData() {
     final Map<String, List<dynamic>> grouped = {};
 
     for (final item in items) {
-      final transactionDate = DateTime.parse(item.transactionDate);
+      final date = DateTime.parse(item.transactionDate);
 
-      final key = DateFormat('dd MMMM yyyy', 'id_ID').format(transactionDate);
+      final key = DateFormat('dd MMMM yyyy', 'id_ID').format(date);
 
       grouped.putIfAbsent(key, () => []).add(item);
     }
@@ -104,61 +81,64 @@ class TransactionGroupedList extends StatelessWidget {
       highlightColor: Colors.grey.shade100,
       child: ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
         itemCount: 5,
         itemBuilder: (_, index) {
-          return _buildLoadingItem(index);
+          return _buildLoadingCard(index);
         },
       ),
     );
   }
 
-  Widget _buildLoadingItem(int index) {
+  Widget _buildLoadingCard(int index) {
     return Container(
-      margin: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-
-          const Gap(12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: index.isEven ? 180 : 140,
-                  height: 14,
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
                   color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-
-                const Gap(10),
-
-                Container(width: 120, height: 11, color: Colors.white),
-
-                const Gap(7),
-
-                Container(width: 160, height: 11, color: Colors.white),
-              ],
-            ),
+              ),
+              const Gap(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: index.isEven ? 170 : 130,
+                      height: 14,
+                      color: Colors.white,
+                    ),
+                    const Gap(8),
+                    Container(width: 110, height: 10, color: Colors.white),
+                  ],
+                ),
+              ),
+              Container(width: 75, height: 15, color: Colors.white),
+            ],
           ),
-
-          const Gap(10),
-
-          Container(width: 80, height: 14, color: Colors.white),
+          const Gap(16),
+          Container(width: double.infinity, height: 1, color: Colors.white),
+          const Gap(12),
+          Row(
+            children: [
+              Container(width: 100, height: 10, color: Colors.white),
+              const Gap(15),
+              Container(width: 90, height: 10, color: Colors.white),
+            ],
+          ),
         ],
       ),
     );
@@ -175,24 +155,39 @@ class TransactionGroupedList extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           SizedBox(
-            height: Get.height * .70,
+            height: Get.height * .68,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/empty_cart.png', height: 100),
+                Container(
+                  width: 120,
+                  height: 120,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Image.asset('assets/images/empty_cart.png'),
+                ),
 
-                const Gap(16),
+                const Gap(20),
 
                 const Text(
                   'No transaction yet',
-                  style: TextStyle(fontSize: MySizes.fontSizeXl),
+                  style: TextStyle(
+                    fontSize: MySizes.fontSizeXl,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
 
-                const Gap(8),
+                const Gap(6),
 
                 const Text(
                   'Pull down to refresh',
-                  style: TextStyle(color: MyColors.grey),
+                  style: TextStyle(
+                    color: MyColors.grey,
+                    fontSize: MySizes.fontSizeSm,
+                  ),
                 ),
               ],
             ),
@@ -219,28 +214,14 @@ class TransactionGroupedList extends StatelessWidget {
         },
 
         // ==========================================================
-        // GROUP HEADER
+        // HEADER
         // ==========================================================
         groupHeaderBuilder: (_, section) {
           final date = DateFormat('dd MMMM yyyy', 'id_ID').parse(keys[section]);
 
           final dayItems = values[section];
 
-          return _buildDateHeader(date: date, dayItems: dayItems);
-        },
-
-        // ==========================================================
-        // ITEM SEPARATOR
-        // ==========================================================
-        separatorBuilder: (_, _) {
-          return const SizedBox(height: 2);
-        },
-
-        // ==========================================================
-        // SECTION SEPARATOR
-        // ==========================================================
-        sectionSeparatorBuilder: (_, _) {
-          return const SizedBox(height: 20);
+          return _buildDateHeader(date, dayItems);
         },
 
         // ==========================================================
@@ -251,6 +232,14 @@ class TransactionGroupedList extends StatelessWidget {
 
           return _buildTransactionItem(item);
         },
+
+        separatorBuilder: (_, _) {
+          return const Gap(8);
+        },
+
+        sectionSeparatorBuilder: (_, _) {
+          return const Gap(16);
+        },
       ),
     );
   }
@@ -259,93 +248,106 @@ class TransactionGroupedList extends StatelessWidget {
   // DATE HEADER
   // ==============================================================
 
-  Widget _buildDateHeader({
-    required DateTime date,
-    required List<dynamic> dayItems,
-  }) {
-    final int totalItem = _calculateTotalItem(dayItems);
+  Widget _buildDateHeader(DateTime date, List<dynamic> transactions) {
+    final totalItem = _calculateTotalItem(transactions);
+    final totalOmzet = _calculateTotalOmzet(transactions);
 
-    final int totalOmzet = _calculateTotalOmzet(dayItems);
-
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // --------------------------------------------------------
-          // DATE NUMBER
-          // --------------------------------------------------------
-
-          Text(
-            DateFormat('dd').format(date),
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          ),
-
-          const Gap(10),
-
-          // --------------------------------------------------------
-          // DAY + MONTH
-          // --------------------------------------------------------
-          Expanded(
+          // DATE BADGE
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: MyColors.primary,
+              borderRadius: BorderRadius.circular(14),
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      DateFormat('EEEE', 'id_ID').format(date),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-
-                    if (showSummary) ...[
-                      const Gap(5),
-
-                      Text(
-                        '[$totalItem items]',
-                        style: const TextStyle(
-                          color: MyColors.grey,
-                          fontSize: MySizes.fontSizeSm,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-
                 Text(
-                  DateFormat('MMMM yyyy', 'id_ID').format(date),
+                  DateFormat('dd').format(date),
                   style: const TextStyle(
-                    color: MyColors.grey,
-                    fontSize: MySizes.fontSizeSm,
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  DateFormat('MMM', 'id_ID').format(date).toUpperCase(),
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    height: 1,
                   ),
                 ),
               ],
             ),
           ),
 
-          // --------------------------------------------------------
-          // OMZET
-          // --------------------------------------------------------
-          if (showSummary) _buildOmzetBadge(totalOmzet),
-        ],
-      ),
-    );
-  }
+          const SizedBox(width: 12),
 
-  Widget _buildOmzetBadge(int totalOmzet) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: MyColors.primary,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        CurrencyFormat.convertToIdr(totalOmzet, 0),
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
+          // DATE INFO
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat('EEEE', 'id_ID').format(date),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: MyColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  DateFormat('d MMMM yyyy', 'id_ID').format(date),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: MyColors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$totalItem item',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: MyColors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // DAILY TOTAL
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                CurrencyFormat.convertToIdr(totalOmzet, 0),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: MyColors.textDark,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Total hari ini',
+                style: TextStyle(fontSize: 10, color: MyColors.grey),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -361,8 +363,8 @@ class TransactionGroupedList extends StatelessWidget {
     ) {
       final details = item.details as List<dynamic>? ?? [];
 
-      final int detailQty = details.fold<int>(0, (detailSum, detail) {
-        final int qty = (detail.quantity as num?)?.toInt() ?? 0;
+      final detailQty = details.fold<int>(0, (detailSum, detail) {
+        final qty = (detail.quantity as num?)?.toInt() ?? 0;
 
         return detailSum + qty;
       });
@@ -376,7 +378,7 @@ class TransactionGroupedList extends StatelessWidget {
       sum,
       item,
     ) {
-      final int grandTotal = (item.grandTotal as num?)?.toInt() ?? 0;
+      final grandTotal = (item.grandTotal as num?)?.toInt() ?? 0;
 
       return sum + grandTotal;
     });
@@ -387,14 +389,14 @@ class TransactionGroupedList extends StatelessWidget {
   // ==============================================================
 
   Widget _buildTransactionItem(dynamic item) {
-    final bool canDelete =
+    final canDelete =
         enableDelete && !item.deleteStatus && item.cashierName == cashierName;
 
-    final bool canPrint = enablePrint;
+    final canPrint = enablePrint;
 
-    final bool canSlide = canDelete || canPrint;
+    final canSlide = canDelete || canPrint;
 
-    final Widget tile = _transactionTile(item);
+    final tile = _transactionCard(item);
 
     if (!canSlide) {
       return tile;
@@ -422,11 +424,7 @@ class TransactionGroupedList extends StatelessWidget {
 
     final trxController = Get.find<TransactionController>();
 
-    final List<Widget> actions = [];
-
-    // ------------------------------------------------------------
-    // DELETE
-    // ------------------------------------------------------------
+    final actions = <Widget>[];
 
     if (canDelete) {
       actions.add(
@@ -434,17 +432,16 @@ class TransactionGroupedList extends StatelessWidget {
           onPressed: (_) {
             trxController.removeTransaction(item.id);
           },
-          backgroundColor: Colors.red,
+          backgroundColor: MyColors.red,
           foregroundColor: Colors.white,
-          icon: Icons.delete,
+          icon: Icons.delete_outline_rounded,
           label: 'Delete',
+          borderRadius: const BorderRadius.horizontal(
+            right: Radius.circular(16),
+          ),
         ),
       );
     }
-
-    // ------------------------------------------------------------
-    // PRINT
-    // ------------------------------------------------------------
 
     if (canPrint) {
       actions.add(
@@ -454,8 +451,11 @@ class TransactionGroupedList extends StatelessWidget {
           },
           backgroundColor: const Color(0xFF21B7CA),
           foregroundColor: Colors.white,
-          icon: Icons.print,
+          icon: Icons.print_outlined,
           label: 'Print',
+          borderRadius: const BorderRadius.horizontal(
+            left: Radius.circular(16),
+          ),
         ),
       );
     }
@@ -463,7 +463,8 @@ class TransactionGroupedList extends StatelessWidget {
     return Slidable(
       key: ValueKey(item.id),
       endActionPane: ActionPane(
-        motion: const ScrollMotion(),
+        motion: const StretchMotion(),
+        extentRatio: actions.length == 1 ? .24 : .48,
         children: actions,
       ),
       child: tile,
@@ -471,101 +472,147 @@ class TransactionGroupedList extends StatelessWidget {
   }
 
   // ==============================================================
-  // TRANSACTION TILE
+  // TRANSACTION CARD
   // ==============================================================
 
-  Widget _transactionTile(dynamic item) {
-    final bool isDeleted = item.deleteStatus == true;
+  Widget _transactionCard(dynamic item) {
+    final isDeleted = item.deleteStatus == true;
 
     return Container(
-      color: Colors.white,
-      child: ExpansionTile(
-        iconColor: MyColors.primary,
-
-        // ----------------------------------------------------------
-        // TITLE
-        // ----------------------------------------------------------
-        title: Text(
-          'HIMALAYA/'
-          '${item.branchCode}/'
-          '${item.numerator.toString().padLeft(4, '0')}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color:
+              isDeleted
+                  ? MyColors.red.withValues(alpha: .18)
+                  : Colors.grey.shade100,
         ),
-
-        // ----------------------------------------------------------
-        // SUBTITLE
-        // ----------------------------------------------------------
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _info(Icons.shopping_cart, 'Total Item: ${item.totalItem}'),
-
-            _info(
-              Icons.calendar_month,
-              DateFormat(
-                'dd MMM yyyy HH:mm',
-                'id_ID',
-              ).format(DateTime.parse(item.transactionDate)),
-            ),
-
-            _info(Icons.person, item.cashierName ?? '-'),
-          ],
-        ),
-
-        // ----------------------------------------------------------
-        // TOTAL
-        // ----------------------------------------------------------
-        trailing: _buildTransactionTotal(item, isDeleted),
-
-        // ----------------------------------------------------------
-        // DETAILS
-        // ----------------------------------------------------------
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Transaction Details',
-                  style: TextStyle(
-                    fontSize: MySizes.fontSizeMd,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const Gap(10),
-
-                ..._buildDetails(item),
-
-                if (isDeleted) _buildDeleteStatus(item),
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .025),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
+      ),
+      child: Theme(
+        data: Theme.of(Get.context!).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.fromLTRB(16, 8, 14, 8),
+          childrenPadding: EdgeInsets.zero,
+          iconColor: MyColors.primary,
+          collapsedIconColor: MyColors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+
+          title: _buildTransactionHeader(item, isDeleted),
+
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 8, right: 4),
+            child: _buildTransactionMeta(item),
+          ),
+
+          trailing: _buildTransactionAmount(item, isDeleted),
+
+          children: [_buildTransactionDetails(item, isDeleted)],
+        ),
       ),
     );
   }
 
   // ==============================================================
-  // TRANSACTION TOTAL
+  // TRANSACTION HEADER
   // ==============================================================
 
-  Widget _buildTransactionTotal(dynamic item, bool isDeleted) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
+  Widget _buildTransactionHeader(dynamic item, bool isDeleted) {
+    return Row(
       children: [
-        Text(
-          CurrencyFormat.convertToIdr(item.grandTotal, 0),
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color:
+                isDeleted
+                    ? MyColors.red.withValues(alpha: .08)
+                    : MyColors.primary.withValues(alpha: .08),
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Icon(
+            isDeleted
+                ? Icons.receipt_long_outlined
+                : Icons.receipt_long_rounded,
+            size: 20,
             color: isDeleted ? MyColors.red : MyColors.primary,
           ),
         ),
 
+        const Gap(10),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'HIMALAYA/'
+                '${item.branchCode}/'
+                '${item.numerator.toString().padLeft(4, '0')}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: MySizes.fontSizeMd,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+
+              if (isDeleted) ...[
+                const Gap(4),
+                _buildStatusBadge('DIBATALKAN', MyColors.red),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ==============================================================
+  // META
+  // ==============================================================
+
+  Widget _buildTransactionMeta(dynamic item) {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 5,
+      children: [
+        _buildMetaItem(Icons.shopping_bag_outlined, '${item.totalItem} item'),
+
+        _buildMetaItem(
+          Icons.schedule_outlined,
+          DateFormat(
+            'HH:mm',
+            'id_ID',
+          ).format(DateTime.parse(item.transactionDate)),
+        ),
+
+        _buildMetaItem(Icons.person_outline_rounded, item.cashierName ?? '-'),
+      ],
+    );
+  }
+
+  Widget _buildMetaItem(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: MyColors.grey),
+        const Gap(4),
         Text(
-          item.paymentMethod ?? 'Cash',
+          text,
           style: const TextStyle(
             color: MyColors.grey,
             fontSize: MySizes.fontSizeSm,
@@ -576,48 +623,236 @@ class TransactionGroupedList extends StatelessWidget {
   }
 
   // ==============================================================
+  // AMOUNT
+  // ==============================================================
+
+  Widget _buildTransactionAmount(dynamic item, bool isDeleted) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            CurrencyFormat.convertToIdr(item.grandTotal, 0),
+            style: TextStyle(
+              fontSize: MySizes.fontSizeMd,
+              fontWeight: FontWeight.w800,
+              color: isDeleted ? MyColors.red : MyColors.primary,
+            ),
+          ),
+
+          const Gap(4),
+
+          _buildPaymentBadge(item.paymentMethod ?? 'Cash'),
+        ],
+      ),
+    );
+  }
+
+  // ==============================================================
+  // PAYMENT BADGE
+  // ==============================================================
+
+  Widget _buildPaymentBadge(String paymentMethod) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        paymentMethod,
+        style: const TextStyle(
+          color: MyColors.grey,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  // ==============================================================
+  // STATUS BADGE
+  // ==============================================================
+
+  Widget _buildStatusBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .08),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 9,
+          fontWeight: FontWeight.w800,
+          letterSpacing: .3,
+        ),
+      ),
+    );
+  }
+
+  // ==============================================================
   // DETAILS
   // ==============================================================
 
-  List<Widget> _buildDetails(dynamic item) {
+  Widget _buildTransactionDetails(dynamic item, bool isDeleted) {
     final details = item.details as List<dynamic>? ?? [];
 
-    if (details.isEmpty) {
-      return [
-        const Text(
-          'Tidak ada detail transaksi',
-          style: TextStyle(color: MyColors.grey),
-        ),
-      ];
-    }
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: MyColors.notionBgGrey,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.list_alt_rounded, size: 17, color: MyColors.primary),
+              const Gap(7),
+              const Text(
+                'Transaction Details',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: MySizes.fontSizeSm,
+                ),
+              ),
+            ],
+          ),
 
+          const Gap(12),
+
+          _buildDetailHeader(),
+
+          const Gap(4),
+
+          if (details.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'Tidak ada detail transaksi',
+                style: TextStyle(color: MyColors.grey),
+              ),
+            )
+          else
+            ..._buildDetails(details),
+
+          if (isDeleted) _buildDeleteStatus(item),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailHeader() {
+    return const Row(
+      children: [
+        Expanded(
+          flex: 5,
+          child: Text(
+            'Produk',
+            style: TextStyle(
+              color: MyColors.grey,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Center(
+            child: Text(
+              'Qty',
+              style: TextStyle(
+                color: MyColors.grey,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'Total',
+              style: TextStyle(
+                color: MyColors.grey,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildDetails(List<dynamic> details) {
     return details.map<Widget>((detail) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 7),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        ),
         child: Row(
           children: [
-            // ------------------------------------------------------
-            // PRODUCT
-            // ------------------------------------------------------
-
-            Expanded(flex: 5, child: Text(detail.productName ?? '-')),
-
-            // ------------------------------------------------------
-            // QTY
-            // ------------------------------------------------------
             Expanded(
-              flex: 1,
-              child: Center(child: Text('${detail.quantity ?? 0}')),
+              flex: 5,
+              child: Text(
+                detail.productName ?? '-',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: MySizes.fontSizeSm,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
 
-            // ------------------------------------------------------
-            // PRICE
-            // ------------------------------------------------------
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    '${detail.quantity ?? 0}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             Expanded(
               flex: 3,
               child: Align(
                 alignment: Alignment.centerRight,
-                child: Text(CurrencyFormat.convertToIdr(detail.totalPrice, 0)),
+                child: Text(
+                  CurrencyFormat.convertToIdr(detail.totalPrice, 0),
+                  style: const TextStyle(
+                    fontSize: MySizes.fontSizeSm,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],
@@ -631,50 +866,35 @@ class TransactionGroupedList extends StatelessWidget {
   // ==============================================================
 
   Widget _buildDeleteStatus(dynamic item) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: MyColors.red.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: MyColors.red.withValues(alpha: 0.25)),
-        ),
-        child: Text(
-          'Transaksi dibatalkan\n'
-          'Alasan: ${item.deleteReason ?? '-'}',
-          style: const TextStyle(
-            color: MyColors.red,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: MyColors.red.withValues(alpha: .07),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: MyColors.red.withValues(alpha: .15)),
       ),
-    );
-  }
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: MyColors.red),
 
-  // ==============================================================
-  // INFO ROW
-  // ==============================================================
+          const Gap(8),
 
-  Widget _info(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: MyColors.grey),
-
-        const Gap(5),
-
-        Expanded(
-          child: Text(
-            text,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: MyColors.grey,
-              fontSize: MySizes.fontSizeSm,
+          Expanded(
+            child: Text(
+              'Transaksi dibatalkan\n'
+              'Alasan: ${item.deleteReason ?? '-'}',
+              style: const TextStyle(
+                color: MyColors.red,
+                fontSize: MySizes.fontSizeSm,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

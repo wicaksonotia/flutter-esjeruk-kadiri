@@ -38,6 +38,10 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
     await _transactionController.fetchTransaction();
   }
 
+  // ==============================================================
+  // PRINT PDF
+  // ==============================================================
+
   Future<void> _printPdf() async {
     try {
       final controller = _transactionController;
@@ -46,7 +50,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         Get.snackbar(
           'Report',
           'Tidak ada transaksi untuk dicetak',
-          icon: const Icon(Icons.info),
+          icon: const Icon(Icons.info_outline_rounded),
           snackPosition: SnackPosition.TOP,
         );
         return;
@@ -70,7 +74,11 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         Get.back();
       }
 
-      await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+      await Printing.layoutPdf(
+        onLayout: (format) async {
+          return pdf.save();
+        },
+      );
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
         Get.back();
@@ -79,53 +87,76 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
       Get.snackbar(
         'Error',
         'Gagal membuat PDF: $e',
-        icon: const Icon(Icons.error),
+        icon: const Icon(Icons.error_outline_rounded),
         snackPosition: SnackPosition.TOP,
       );
     }
   }
 
+  // ==============================================================
+  // BUILD
+  // ==============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
+
       backgroundColor: MyColors.notionBgGrey,
+
       bottomNavigationBar: const FooterReport(),
+
       appBar: AppBar(
         backgroundColor: MyColors.primary,
+        elevation: 0,
+
         title: const Text(
           'Transaction History',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
         ),
+
         leading: Builder(
-          builder:
-              (context) => IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
         ),
+
         actions: [
           IconButton(
             tooltip: 'Cetak PDF',
-            icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
+            icon: const Icon(
+              Icons.picture_as_pdf_outlined,
+              color: Colors.white,
+            ),
             onPressed: _printPdf,
           ),
+
+          const SizedBox(width: 4),
         ],
       ),
+
       body: SafeArea(
         child: Column(
           children: [
-            _buildFilterCategory(),
-            _buildFilterDate(),
+            _buildFilter(),
+
             Expanded(
               child: Obx(
                 () => TransactionGroupedList(
                   items: _transactionController.transactionItems,
+
                   isLoading:
                       _transactionController.isLoadingTransactionHistory.value,
 
                   enableDelete: false,
+
                   enablePrint: true,
+
                   showSummary: true,
 
                   cashierName: _transactionController.namaKasir.value,
@@ -140,32 +171,69 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
-  Widget _buildFilterCategory() {
+  // ==============================================================
+  // FILTER
+  // ==============================================================
+
+  Widget _buildFilter() {
     return Container(
-      width: double.infinity,
       color: Colors.white,
-      padding: const EdgeInsets.only(top: 10, left: 15, right: 20),
-      child: Obx(
-        () => ChipsChoice<String>.single(
-          value: _transactionController.filterBy.value,
-          wrapped: true,
-          padding: EdgeInsets.zero,
-          onChanged: (value) {
-            _transactionController.filterBy.value = value;
-            _transactionController.fetchTransaction();
-          },
-          choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
-            source: filterKategori,
-            value: (_, item) => item['value'] as String,
-            label: (_, item) => item['nama'] as String,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+      child: Column(
+        children: [
+          _buildFilterCategory(),
+
+          const SizedBox(height: 8),
+
+          _buildFilterDate(),
+        ],
+      ),
+    );
+  }
+
+  // ==============================================================
+  // FILTER CATEGORY
+  // ==============================================================
+
+  Widget _buildFilterCategory() {
+    return Obx(
+      () => ChipsChoice<String>.single(
+        value: _transactionController.filterBy.value,
+
+        wrapped: true,
+
+        padding: EdgeInsets.zero,
+
+        onChanged: (value) {
+          _transactionController.filterBy.value = value;
+
+          _transactionController.fetchTransaction();
+        },
+
+        choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
+          source: filterKategori,
+          value: (_, item) => item['value'] as String,
+          label: (_, item) => item['nama'] as String,
+        ),
+
+        choiceStyle: C2ChipStyle.filled(
+          foregroundStyle: const TextStyle(
+            fontSize: MySizes.fontSizeSm,
+            fontWeight: FontWeight.w600,
           ),
-          choiceStyle: C2ChipStyle.filled(
-            foregroundStyle: const TextStyle(fontSize: MySizes.fontSizeSm),
-            color: MyColors.notionBgGrey,
-            borderRadius: BorderRadius.circular(25),
-            selectedStyle: const C2ChipStyle(
-              backgroundColor: MyColors.red,
-              borderRadius: BorderRadius.all(Radius.circular(25)),
+
+          color: MyColors.notionBgGrey,
+
+          borderRadius: BorderRadius.circular(12),
+
+          selectedStyle: C2ChipStyle(
+            backgroundColor: MyColors.primary,
+
+            borderRadius: BorderRadius.circular(12),
+
+            foregroundStyle: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -173,12 +241,18 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
+  // ==============================================================
+  // FILTER DATE
+  // ==============================================================
+
   Widget _buildFilterDate() {
     return Container(
-      height: Get.height * .05,
-      color: Colors.white,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Obx(() {
-        return _transactionController.filterBy.value == 'bulan'
+        final filterBy = _transactionController.filterBy.value;
+
+        return filterBy == 'bulan'
             ? FilterMonth(transactionController: _transactionController)
             : FilterDateRange(transactionController: _transactionController);
       }),

@@ -7,6 +7,7 @@ class MyColors {
   static const Color blue = Color(0xFF1e81b0);
   static const Color yellow = Color(0xFFf7c143);
   static const Color grey = Color(0xFF9e9e9e);
+  static const Color textDark = Color(0xFF1e1e1e);
 
   // Notion Background Colors
   static const Color notionBgGrey = Color(0xFFF1F1EF);
