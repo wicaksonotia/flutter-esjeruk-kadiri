@@ -2,7 +2,9 @@ import 'package:cashier/commons/colors.dart';
 import 'package:cashier/models/cart_model.dart';
 import 'package:cashier/models/transaction_history_model.dart';
 import 'package:cashier/networks/api_request.dart';
+import 'package:cashier/widgets/delete_transaction_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -116,79 +118,84 @@ class TransactionController extends GetxController {
     }
   }
 
-  void removeTransaction(int transactionId) async {
-    TextEditingController reasonController = TextEditingController();
-    bool confirm =
-        (await showDialog<bool>(
-          context: Get.context!,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Konfirmasi Hapus Transaksi'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Apakah Anda yakin ingin menghapus transaksi ini?',
-                  ),
-                  TextField(
-                    controller: reasonController,
-                    decoration: const InputDecoration(
-                      labelText: 'Alasan penghapusan',
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Batal'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Konfirmasi'),
-                ),
-              ],
-            );
-          },
-        )) ??
-        false;
+  Future<void> removeTransaction(int transactionId) async {
+    final String? reason = await Get.dialog<String>(
+      const DeleteTransactionDialog(),
+      barrierDismissible: true,
+    );
 
-    if (confirm) {
-      String reason = reasonController.text.trim();
-      if (reason.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Mohon isi alasan penghapusan',
-          icon: const Icon(Icons.error),
-          snackPosition: SnackPosition.TOP,
-        );
-        return;
-      }
-
-      try {
-        isLoadingDailyTransaction(true);
-        var rawFormat = {'id_transaction': transactionId, 'reason': reason};
-        var result = await RemoteDataSource.deleteTransaction(rawFormat);
-        if (result) {
-          fetchTransaction();
-          Get.snackbar(
-            'Notification',
-            'Transaksi berhasil dihapus',
-            icon: const Icon(Icons.info),
-            snackPosition: SnackPosition.TOP,
-          );
-        } else {
-          Get.snackbar(
-            'Notification',
-            'Error menghapus transaksi',
-            icon: const Icon(Icons.info),
-            snackPosition: SnackPosition.TOP,
-          );
-        }
-      } finally {
-        isLoadingDailyTransaction(false);
-      }
+    if (reason == null || reason.trim().isEmpty) {
+      return;
     }
+
+    await _deleteTransaction(
+      transactionId: transactionId,
+      reason: reason.trim(),
+    );
+  }
+  // ==============================================================
+  // DELETE CONFIRMATION
+  // ==============================================================
+
+  // ==============================================================
+  // DELETE TRANSACTION
+  // ==============================================================
+
+  Future<void> _deleteTransaction({
+    required int transactionId,
+    required String reason,
+  }) async {
+    try {
+      isLoadingDailyTransaction(true);
+
+      final rawFormat = {'id_transaction': transactionId, 'reason': reason};
+
+      final result = await RemoteDataSource.deleteTransaction(rawFormat);
+
+      if (result) {
+        await fetchDailyTransactions();
+
+        _showSuccessSnackbar('Transaksi berhasil dibatalkan');
+      } else {
+        _showErrorSnackbar('Transaksi gagal dibatalkan');
+      }
+    } catch (error) {
+      _showErrorSnackbar(error.toString());
+    } finally {
+      isLoadingDailyTransaction(false);
+    }
+  }
+
+  // ==============================================================
+  // SNACKBAR
+  // ==============================================================
+
+  void _showSuccessSnackbar(String message) {
+    Get.snackbar(
+      'Berhasil',
+      message,
+      icon: const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: MyColors.primary,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 14,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _showErrorSnackbar(String message) {
+    Get.snackbar(
+      'Gagal',
+      message,
+      icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: MyColors.red,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 14,
+      duration: const Duration(seconds: 3),
+    );
   }
 
   /// ===================================

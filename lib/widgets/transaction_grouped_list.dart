@@ -253,7 +253,7 @@ class TransactionGroupedList extends StatelessWidget {
     final totalOmzet = _calculateTotalOmzet(transactions);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 18, 4, 10),
+      padding: const EdgeInsets.fromLTRB(10, 18, 10, 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -421,52 +421,57 @@ class TransactionGroupedList extends StatelessWidget {
     required bool canPrint,
   }) {
     final printController = Get.find<PrintNotaController>();
-
     final trxController = Get.find<TransactionController>();
-
-    final actions = <Widget>[];
-
-    if (canDelete) {
-      actions.add(
-        SlidableAction(
-          onPressed: (_) {
-            trxController.removeTransaction(item.id);
-          },
-          backgroundColor: MyColors.red,
-          foregroundColor: Colors.white,
-          icon: Icons.delete_outline_rounded,
-          label: 'Delete',
-          borderRadius: const BorderRadius.horizontal(
-            right: Radius.circular(16),
-          ),
-        ),
-      );
-    }
-
-    if (canPrint) {
-      actions.add(
-        SlidableAction(
-          onPressed: (_) {
-            printController.printTransaction(item.id);
-          },
-          backgroundColor: const Color(0xFF21B7CA),
-          foregroundColor: Colors.white,
-          icon: Icons.print_outlined,
-          label: 'Print',
-          borderRadius: const BorderRadius.horizontal(
-            left: Radius.circular(16),
-          ),
-        ),
-      );
-    }
 
     return Slidable(
       key: ValueKey(item.id),
+
       endActionPane: ActionPane(
-        motion: const StretchMotion(),
-        extentRatio: actions.length == 1 ? .24 : .48,
-        children: actions,
+        motion: const DrawerMotion(),
+
+        // Jangan terlalu besar supaya card tidak terasa terdorong ke kiri
+        extentRatio: canPrint && canDelete ? 0.15 : 0.10,
+
+        children: [
+          CustomSlidableAction(
+            onPressed: (_) {},
+
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+
+            child: Container(
+              margin: const EdgeInsets.only(top: 4, bottom: 4, right: 8),
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (canPrint)
+                    _SlideIconButton(
+                      icon: Icons.print_rounded,
+                      color: const Color(0xFF2563EB),
+                      onTap: () {
+                        printController.printTransaction(item.id);
+                      },
+                    ),
+
+                  if (canPrint && canDelete) const SizedBox(height: 5),
+
+                  if (canDelete)
+                    _SlideIconButton(
+                      icon: Icons.delete_outline_rounded,
+                      color: const Color(0xFFDC2626),
+                      onTap: () {
+                        trxController.removeTransaction(item.id);
+                      },
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
+
       child: tile,
     );
   }
@@ -479,7 +484,7 @@ class TransactionGroupedList extends StatelessWidget {
     final isDeleted = item.deleteStatus == true;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -894,6 +899,38 @@ class TransactionGroupedList extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SlideIconButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _SlideIconButton({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: .10),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 21),
+        ),
       ),
     );
   }
