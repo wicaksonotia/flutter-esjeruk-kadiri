@@ -11,7 +11,7 @@ import 'package:cashier/pages/user/change_password_page.dart';
 import 'package:cashier/pages/user/profile_page.dart';
 import 'package:cashier/pages/user/user_setting.dart';
 import 'package:get/get.dart';
-import 'package:cashier/pages/product/product.dart';
+import 'package:cashier/pages/product_menu/product_page.dart';
 
 class RouterClass {
   static String login = "/login";

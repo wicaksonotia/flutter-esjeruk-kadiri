@@ -7,27 +7,35 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductController extends GetxController {
-  var productCategoryItems = <ProductCategoryModel>[].obs;
-  var productItems = <ProductModel>[].obs;
-  var idProductCategory = 0.obs;
-  var isLoadingProductCategory = true.obs;
-  var isLoadingProduct = true.obs;
-  var showListGrid = true.obs;
-  var isEmptyValue = true.obs;
+  final productCategoryItems = <ProductCategoryModel>[].obs;
+
+  final productItems = <ProductModel>[].obs;
+
+  final idProductCategory = 0.obs;
+
+  final isLoadingProductCategory = true.obs;
+
+  final isLoadingProduct = true.obs;
+
+  final showListGrid = true.obs;
+
+  final isEmptyValue = true.obs;
+
   final searchTextFieldController = TextEditingController();
 
   @override
   void onInit() {
-    fetchProductCategory();
     super.onInit();
+    fetchProductCategory();
   }
 
-  void fetchProductCategory() async {
-    var bluetoothStatus = await Permission.bluetoothConnect.status;
-    var locationStatus = await Permission.location.status;
+  Future<void> fetchProductCategory() async {
+    final bluetoothStatus = await Permission.bluetoothConnect.status;
+
+    final locationStatus = await Permission.location.status;
 
     if (!bluetoothStatus.isGranted || !locationStatus.isGranted) {
-      Map<Permission, PermissionStatus> statuses =
+      final statuses =
           await [Permission.bluetoothConnect, Permission.location].request();
 
       if (!statuses[Permission.bluetoothConnect]!.isGranted ||
@@ -35,36 +43,43 @@ class ProductController extends GetxController {
         Get.snackbar(
           'Permission Required',
           'Bluetooth and Location permissions are needed to print.',
-          icon: const Icon(Icons.error),
+          icon: const Icon(Icons.error_outline_rounded),
           snackPosition: SnackPosition.TOP,
         );
+
         return;
       }
     }
 
     try {
       isLoadingProductCategory(true);
-      var result = await RemoteDataSource.getProductCategories();
+
+      final result = await RemoteDataSource.getProductCategories();
+
       if (result != null) {
-        // idProductCategory.value = result.first.categoryId ?? 0;
         productCategoryItems.assignAll(result);
-        fetchProduct();
       }
+
+      await fetchProduct();
     } finally {
       isLoadingProductCategory(false);
     }
   }
 
-  void fetchProduct() async {
+  Future<void> fetchProduct() async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
+
       isLoadingProduct(true);
-      var rawFormat = {
-        'search': searchTextFieldController.text,
+
+      final rawFormat = {
+        'search': searchTextFieldController.text.trim(),
         'category_id': idProductCategory.value,
         'id_kios': prefs.getInt('id_kios') ?? 0,
       };
-      var result = await RemoteDataSource.getProduct(rawFormat);
+
+      final result = await RemoteDataSource.getProduct(rawFormat);
+
       if (result != null) {
         productItems.assignAll(result);
       }
@@ -74,25 +89,45 @@ class ProductController extends GetxController {
   }
 
   void toggleShowListGrid() {
-    showListGrid(!showListGrid.value);
+    showListGrid.toggle();
   }
 
-  void toggleFavorite(int index) async {
-    var product = productItems[index];
+  Future<void> toggleFavorite(int index) async {
+    if (index < 0 || index >= productItems.length) {
+      return;
+    }
+
+    final product = productItems[index];
+
     product.favorite = !(product.favorite ?? false);
+
     productItems[index] = product;
+
     try {
-      await RemoteDataSource.updateFavorite(productItems[index].toJson());
+      await RemoteDataSource.updateFavorite(product.toJson());
     } catch (error) {
+      product.favorite = !(product.favorite ?? false);
+
+      productItems[index] = product;
+
       Get.snackbar(
-        'Notification',
+        'Gagal',
         error.toString(),
-        icon: const Icon(Icons.error),
+        icon: const Icon(Icons.error_outline_rounded),
         snackPosition: SnackPosition.TOP,
       );
+
+      return;
     }
+
     if (idProductCategory.value == 1) {
       productItems.removeAt(index);
     }
+  }
+
+  @override
+  void onClose() {
+    searchTextFieldController.dispose();
+    super.onClose();
   }
 }
