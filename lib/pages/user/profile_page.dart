@@ -26,7 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: MyColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -37,15 +37,21 @@ class _ProfilePageState extends State<ProfilePage> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
+      labelStyle: const TextStyle(color: MyColors.textSecondary),
+      floatingLabelStyle: const TextStyle(
+        color: MyColors.primaryDark,
+        fontWeight: FontWeight.w600,
+      ),
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: MyColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: const BorderSide(color: MyColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: const BorderSide(color: MyColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -57,23 +63,27 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors.notionBgGrey,
+      backgroundColor: MyColors.background,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 220,
             pinned: true,
             elevation: 0,
+            scrolledUnderElevation: 0,
             backgroundColor: MyColors.primary,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(
+                Icons.arrow_back_rounded,
+                color: MyColors.textOnPrimary,
+              ),
               onPressed: () => Get.back(),
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [MyColors.primary, MyColors.secondary],
+                    colors: [MyColors.primary, MyColors.primaryDark],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -84,32 +94,49 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const CircleAvatar(
-                          radius: 42,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.person,
-                            size: 48,
-                            color: MyColors.primary,
+                        Container(
+                          width: 84,
+                          height: 84,
+                          decoration: BoxDecoration(
+                            color: MyColors.textOnPrimary.withValues(
+                              alpha: .14,
+                            ),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: MyColors.textOnPrimary.withValues(
+                                alpha: .25,
+                              ),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.person_outline_rounded,
+                            size: 44,
+                            color: MyColors.textOnPrimary,
                           ),
                         ),
                         const Gap(12),
                         Text(
                           controller.namaController.text.isEmpty
-                              ? "Cashier"
+                              ? 'Cashier'
                               : controller.namaController.text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: MyColors.textOnPrimary,
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         const Gap(4),
                         Obx(
                           () => Text(
                             controller.namaCabang.value,
-                            style: const TextStyle(
-                              color: Colors.white70,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: MyColors.textOnPrimary.withValues(
+                                alpha: .72,
+                              ),
                               fontSize: 14,
                             ),
                           ),
@@ -127,71 +154,84 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  // EDIT PROFILE
                   _SectionCard(
-                    title: "Account Information",
-                    child: Column(
-                      children: [
-                        Obx(
-                          () => _infoTile(
-                            Icons.store,
-                            "Store Name",
-                            controller.namaCabang.value,
-                          ),
-                        ),
-                        const Divider(),
-                        _infoTile(
-                          Icons.phone,
-                          "Phone Number",
-                          controller.noTelponController.text.isEmpty
-                              ? "-"
-                              : controller.noTelponController.text,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Gap(16),
-
-                  _SectionCard(
-                    title: "Edit Profile",
+                    title: 'Edit Profile',
                     child: Column(
                       children: [
                         TextField(
                           controller: controller.namaController,
-                          decoration: _inputDecoration("Full Name"),
+                          style: const TextStyle(
+                            color: MyColors.textPrimary,
+                            fontSize: 14,
+                          ),
+                          decoration: _inputDecoration('Full Name'),
                         ),
+
                         const Gap(16),
 
                         TextField(
                           controller: controller.noTelponController,
                           keyboardType: TextInputType.phone,
-                          decoration: _inputDecoration("Phone Number"),
+                          style: const TextStyle(
+                            color: MyColors.textPrimary,
+                            fontSize: 14,
+                          ),
+                          decoration: _inputDecoration('Phone Number'),
                         ),
+
                         const Gap(16),
 
-                        InkWell(
+                        Material(
+                          color: MyColors.surface,
                           borderRadius: BorderRadius.circular(12),
-                          onTap: _changeOutlet,
-                          child: InputDecorator(
-                            decoration: _inputDecoration("Default Store"),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  color: MyColors.primary,
-                                  size: 20,
-                                ),
-                                const Gap(10),
-                                Expanded(
-                                  child: Obx(
-                                    () => Text(
-                                      controller.namaCabang.value,
-                                      style: const TextStyle(fontSize: 15),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            splashColor: MyColors.primary.withValues(
+                              alpha: .06,
+                            ),
+                            highlightColor: MyColors.primary.withValues(
+                              alpha: .03,
+                            ),
+                            onTap: _changeOutlet,
+                            child: InputDecorator(
+                              decoration: _inputDecoration('Default Store'),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: MyColors.primaryLight,
+                                      borderRadius: BorderRadius.circular(9),
+                                    ),
+                                    child: const Icon(
+                                      Icons.storefront_outlined,
+                                      color: MyColors.primaryDark,
+                                      size: 18,
                                     ),
                                   ),
-                                ),
-                                const Icon(Icons.chevron_right),
-                              ],
+                                  const Gap(10),
+                                  Expanded(
+                                    child: Obx(
+                                      () => Text(
+                                        controller.namaCabang.value,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: MyColors.textPrimary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: MyColors.textMuted,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -201,6 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const Gap(28),
 
+                  // SAVE BUTTON
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -212,7 +253,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 : controller.updateProfileProcess,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: MyColors.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: MyColors.textOnPrimary,
+                          disabledBackgroundColor: MyColors.surfaceSoft,
+                          disabledForegroundColor: MyColors.textMuted,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -225,14 +268,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                   height: 22,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    color: Colors.white,
+                                    color: MyColors.primary,
                                   ),
                                 )
                                 : const Text(
-                                  "Save Changes",
+                                  'Save Changes',
                                   style: TextStyle(
                                     fontSize: MySizes.fontSizeMd,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                       ),
@@ -252,10 +295,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _infoTile(IconData icon, String title, String value) {
     return Row(
       children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: MyColors.primary.withValues(alpha: .1),
-          child: Icon(icon, color: MyColors.primary, size: 20),
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: MyColors.primaryLight,
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Icon(icon, color: MyColors.primaryDark, size: 20),
         ),
         const Gap(12),
         Expanded(
@@ -264,14 +311,21 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: MyColors.textMuted,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              const Gap(2),
+              const Gap(3),
               Text(
                 value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
+                  color: MyColors.textPrimary,
                 ),
               ),
             ],
@@ -294,13 +348,14 @@ class _SectionCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
+        border: Border.all(color: MyColors.border),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: MyColors.shadow,
+            blurRadius: 14,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -309,7 +364,11 @@ class _SectionCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: MyColors.textPrimary,
+            ),
           ),
           const Gap(16),
           child,

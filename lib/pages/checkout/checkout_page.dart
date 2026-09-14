@@ -27,16 +27,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F9),
+      backgroundColor: MyColors.background,
+
       body: SafeArea(
         bottom: false,
+
         child: CustomScrollView(
           physics: const ClampingScrollPhysics(),
+
           slivers: [
             const SliverToBoxAdapter(child: CheckoutHeader()),
+
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+
                 child: _CheckoutCard(cartController: cartController),
               ),
             ),
@@ -47,6 +52,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 }
 
+// ================================================================
+// CHECKOUT CARD
+// ================================================================
+
 class _CheckoutCard extends StatelessWidget {
   final CartController cartController;
 
@@ -56,22 +65,29 @@ class _CheckoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
+
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE9EBEF)),
+
+        border: Border.all(color: MyColors.border),
+
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .04),
+            color: MyColors.shadow,
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
       ),
+
       child: Padding(
         padding: const EdgeInsets.all(16),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
             CheckoutCartSection(cartController: cartController),
 
@@ -101,6 +117,10 @@ class _CheckoutCard extends StatelessWidget {
   }
 }
 
+// ================================================================
+// CHECKOUT BUTTON
+// ================================================================
+
 class _CheckoutButton extends StatelessWidget {
   final CartController cartController;
 
@@ -114,25 +134,37 @@ class _CheckoutButton extends StatelessWidget {
       return SizedBox(
         width: double.infinity,
         height: 52,
+
         child: ElevatedButton(
           onPressed: enabled ? cartController.saveCart : null,
+
           style: ElevatedButton.styleFrom(
             elevation: 0,
+
             backgroundColor: MyColors.primary,
-            disabledBackgroundColor: const Color(0xFFE5E7EB),
-            foregroundColor: Colors.white,
-            disabledForegroundColor: const Color(0xFF9CA3AF),
+
+            foregroundColor: MyColors.textOnPrimary,
+
+            disabledBackgroundColor: MyColors.surfaceSoft,
+
+            disabledForegroundColor: MyColors.textMuted,
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
           ),
+
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
+
             children: [
               Icon(Icons.check_circle_outline_rounded, size: 19),
+
               SizedBox(width: 8),
+
               Text(
                 'Proses Pesanan',
+
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
               ),
             ],
@@ -143,11 +175,15 @@ class _CheckoutButton extends StatelessWidget {
   }
 }
 
+// ================================================================
+// SECTION DIVIDER
+// ================================================================
+
 class _SectionDivider extends StatelessWidget {
   const _SectionDivider();
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(height: 1, thickness: 1, color: Color(0xFFF0F1F3));
+    return const Divider(height: 1, thickness: 1, color: MyColors.divider);
   }
 }

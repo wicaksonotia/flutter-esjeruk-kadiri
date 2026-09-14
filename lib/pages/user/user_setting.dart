@@ -18,24 +18,33 @@ class UserSetting extends StatelessWidget {
 
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
-      backgroundColor: MyColors.notionBgGrey,
+
+      backgroundColor: MyColors.background,
+
       appBar: AppBar(
         backgroundColor: MyColors.primary,
-        foregroundColor: Colors.white,
-        title: const Text('User Settings'),
+        foregroundColor: MyColors.textOnPrimary,
+        elevation: 0,
+        title: const Text(
+          'User Settings',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
         leading: Builder(
           builder:
               (context) => IconButton(
-                icon: const Icon(Icons.menu),
+                icon: const Icon(Icons.menu_rounded),
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
         ),
       ),
+
       body: FutureBuilder<SharedPreferences>(
         future: SharedPreferences.getInstance(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: MyColors.primary),
+            );
           }
 
           final prefs = snapshot.data!;
@@ -43,14 +52,19 @@ class UserSetting extends StatelessWidget {
           return FutureBuilder<Map<String, String?>>(
             future: _loadPrinterInfo(),
             builder: (context, bluetooth) {
-              final printer = bluetooth.data!;
+              final printer = bluetooth.data ?? {};
+
               return ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  _UserHeader(
-                    name: prefs.getString('nama_kasir') ?? '-',
-                    outlet: prefs.getString('kios') ?? '-',
-                    branch: prefs.getString('cabang') ?? '-',
+                  GetBuilder<LoginController>(
+                    builder: (_) {
+                      return _UserHeader(
+                        name: prefs.getString('nama_kasir') ?? '-',
+                        outlet: prefs.getString('kios') ?? '-',
+                        branch: prefs.getString('cabang') ?? '-',
+                      );
+                    },
                   ),
 
                   const Gap(20),
@@ -59,15 +73,15 @@ class UserSetting extends StatelessWidget {
                     title: 'Account',
                     children: [
                       _MenuTile(
-                        icon: Icons.person_outline,
-                        color: Colors.blue,
+                        icon: Icons.person_outline_rounded,
+                        color: MyColors.primary,
                         title: 'Profile',
                         subtitle: 'Edit account information',
                         onTap: () => Get.toNamed(RouterClass.profile),
                       ),
                       _MenuTile(
-                        icon: Icons.lock_outline,
-                        color: Colors.orange,
+                        icon: Icons.lock_outline_rounded,
+                        color: MyColors.primary,
                         title: 'Change Password',
                         subtitle: 'Change account password',
                         onTap: () => Get.toNamed(RouterClass.changePassword),
@@ -81,18 +95,18 @@ class UserSetting extends StatelessWidget {
                     title: 'Operasional',
                     children: [
                       _MenuTile(
-                        icon: Icons.bluetooth,
-                        color: Colors.indigo,
+                        icon: Icons.bluetooth_rounded,
+                        color: MyColors.primary,
                         title: 'Bluetooth Printer',
                         subtitle: printer['name'] ?? 'Belum memilih printer',
                         trailing: Icon(
                           printer['mac'] != null
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
+                              ? Icons.check_circle_rounded
+                              : Icons.radio_button_unchecked_rounded,
                           color:
                               printer['mac'] != null
-                                  ? Colors.green
-                                  : Colors.grey,
+                                  ? MyColors.success
+                                  : MyColors.textMuted,
                         ),
                         onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
                       ),
@@ -106,14 +120,14 @@ class UserSetting extends StatelessWidget {
                     children: [
                       _MenuTile(
                         icon: Icons.menu_book_outlined,
-                        color: Colors.purple,
+                        color: MyColors.primary,
                         title: 'SOP Document',
                         subtitle: 'Panduan operasional kasir',
                         onTap: () => Get.toNamed(RouterClass.sopDocument),
                       ),
                       const _InfoTile(
-                        icon: Icons.info_outline,
-                        color: Colors.teal,
+                        icon: Icons.info_outline_rounded,
+                        color: MyColors.primary,
                         title: 'Versi Aplikasi',
                         value: 'v1.0.0',
                       ),
@@ -122,23 +136,25 @@ class UserSetting extends StatelessWidget {
 
                   const Gap(30),
 
+                  // LOGOUT
                   OutlinedButton.icon(
                     onPressed: () {
                       loginController.logout();
                       cartController.clearCart();
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                      foregroundColor: MyColors.error,
+                      side: const BorderSide(color: MyColors.error),
+                      backgroundColor: MyColors.surface,
                       minimumSize: const Size(double.infinity, 52),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    icon: const Icon(Icons.logout),
+                    icon: const Icon(Icons.logout_rounded),
                     label: const Text(
                       'Logout',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
 
@@ -147,9 +163,11 @@ class UserSetting extends StatelessWidget {
                   const Center(
                     child: Text(
                       'Cashier Himalaya',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: MyColors.textMuted, fontSize: 12),
                     ),
                   ),
+
+                  const Gap(10),
                 ],
               );
             },
@@ -189,19 +207,31 @@ class _UserHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: MyColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: MyColors.shadow,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
             width: 62,
             height: 62,
-            decoration: BoxDecoration(
-              color: MyColors.primary.withValues(alpha: .12),
+            decoration: const BoxDecoration(
+              color: MyColors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person, size: 34, color: MyColors.primary),
+            child: const Icon(
+              Icons.person_rounded,
+              size: 34,
+              color: MyColors.primaryDark,
+            ),
           ),
 
           const Gap(16),
@@ -214,19 +244,29 @@ class _UserHeader extends StatelessWidget {
                   name,
                   style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
+                    color: MyColors.textPrimary,
                   ),
                 ),
 
                 const Gap(4),
 
-                Text(outlet, style: const TextStyle(color: Colors.black87)),
+                Text(
+                  outlet,
+                  style: const TextStyle(
+                    color: MyColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
 
                 const Gap(2),
 
                 Text(
                   'Cabang $branch',
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  style: const TextStyle(
+                    color: MyColors.textMuted,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -251,8 +291,16 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: MyColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: MyColors.shadow,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,11 +309,15 @@ class _SectionCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
             child: Text(
               title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: MyColors.textPrimary,
+              ),
             ),
           ),
 
-          const Divider(height: 1),
+          const Divider(height: 1, color: MyColors.divider),
 
           ...children,
         ],
@@ -300,8 +352,9 @@ class _MenuTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
         onTap: onTap,
+        splashColor: MyColors.primary.withValues(alpha: .05),
+        highlightColor: MyColors.primary.withValues(alpha: .025),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           child: Row(
@@ -310,10 +363,10 @@ class _MenuTile extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: .12),
+                  color: MyColors.primaryLight,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: color),
+                child: Icon(icon, color: color, size: 21),
               ),
 
               const Gap(14),
@@ -324,19 +377,30 @@ class _MenuTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: MyColors.textPrimary,
+                      ),
                     ),
+
                     const Gap(2),
+
                     Text(
                       subtitle,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      style: const TextStyle(
+                        color: MyColors.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
               ),
 
               trailing ??
-                  const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: MyColors.textMuted,
+                  ),
             ],
           ),
         ),
@@ -372,10 +436,10 @@ class _InfoTile extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: .12),
+              color: MyColors.primaryLight,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color),
+            child: Icon(icon, color: color, size: 21),
           ),
 
           const Gap(14),
@@ -386,12 +450,20 @@ class _InfoTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: MyColors.textPrimary,
+                  ),
                 ),
+
                 const Gap(2),
+
                 Text(
                   value,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  style: const TextStyle(
+                    color: MyColors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),

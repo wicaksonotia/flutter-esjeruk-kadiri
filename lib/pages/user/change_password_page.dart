@@ -45,7 +45,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: MyColors.background,
       body: MediaQuery.removePadding(
         context: context,
         removeTop: true,
@@ -61,13 +61,13 @@ class _ChangePasswordState extends State<ChangePassword> {
                   height: 300,
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
                     ),
                     gradient: LinearGradient(
-                      colors: [MyColors.primary, MyColors.secondary],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomLeft,
+                      colors: [MyColors.primary, MyColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
                   ),
                 ),
@@ -78,39 +78,27 @@ class _ChangePasswordState extends State<ChangePassword> {
                 Positioned(
                   top: -100,
                   left: -50,
-                  child: Container(
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.white.withValues(alpha: 0.2),
-                    ),
+                  child: _circle(
+                    size: 200,
+                    color: MyColors.textOnPrimary.withValues(alpha: .10),
                   ),
                 ),
 
                 Positioned(
                   top: 50,
                   right: -60,
-                  child: Container(
-                    height: 120,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.white.withValues(alpha: 0.2),
-                    ),
+                  child: _circle(
+                    size: 120,
+                    color: MyColors.textOnPrimary.withValues(alpha: .08),
                   ),
                 ),
 
                 Positioned(
                   top: 70,
                   right: -40,
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: MyColors.primary,
-                    ),
+                  child: _circle(
+                    size: 80,
+                    color: MyColors.textOnPrimary.withValues(alpha: .06),
                   ),
                 ),
 
@@ -120,10 +108,24 @@ class _ChangePasswordState extends State<ChangePassword> {
                 Positioned(
                   top: 50,
                   left: 20,
-                  child: IconButton(
-                    tooltip: 'Kembali',
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: _back,
+                  child: Material(
+                    color: MyColors.textOnPrimary.withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(12),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: _back,
+                      splashColor: MyColors.textOnPrimary.withValues(
+                        alpha: .08,
+                      ),
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: MyColors.textOnPrimary,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
 
@@ -138,8 +140,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                     'Change Password',
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      color: MyColors.textOnPrimary,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -149,11 +151,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                 // =========================================================
                 Container(
                   margin: const EdgeInsets.fromLTRB(20, 120, 20, 24),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18),
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  decoration: BoxDecoration(
+                    color: MyColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: MyColors.border),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: MyColors.shadow,
+                        blurRadius: 18,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,17 +172,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                         'Change Password',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          color: MyColors.textPrimary,
                         ),
                       ),
 
                       const Gap(8),
 
-                      Text(
-                        'Input your current password and new password to change your account password. This is important',
+                      const Text(
+                        'Input your current password and new password '
+                        'to change your account password. This is important.',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey.shade600,
+                          color: MyColors.textSecondary,
                           height: 1.4,
                         ),
                       ),
@@ -240,27 +252,33 @@ class _ChangePasswordState extends State<ChangePassword> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: MyColors.primary.withValues(alpha: 0.06),
+                          color: MyColors.primaryLight,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: MyColors.primary.withValues(alpha: 0.15),
+                            color: MyColors.primary.withValues(alpha: .18),
                           ),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.info_outline,
+                            const Icon(
+                              Icons.info_outline_rounded,
                               size: 20,
-                              color: MyColors.primary,
+                              color: MyColors.primaryDark,
                             ),
+
                             const Gap(10),
-                            Expanded(
+
+                            const Expanded(
                               child: Text(
-                                'After changing your password, please log in again using your new password. If you forget your password, you can reset it through the "Forgot Password" feature.',
+                                'After changing your password, please '
+                                'log in again using your new password. '
+                                'If you forget your password, you can '
+                                'reset it through the "Forgot Password" '
+                                'feature.',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey.shade700,
+                                  color: MyColors.textSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -286,13 +304,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                                       : loginController.changePasswordProcess,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: MyColors.primary,
-                                disabledBackgroundColor: MyColors.primary
-                                    .withValues(alpha: 0.5),
+                                foregroundColor: MyColors.textOnPrimary,
+                                disabledBackgroundColor: MyColors.surfaceSoft,
+                                disabledForegroundColor: MyColors.textMuted,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 15,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 elevation: 0,
                               ),
@@ -303,15 +322,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                                         height: 22,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2.5,
-                                          color: Colors.white,
+                                          color: MyColors.textOnPrimary,
                                         ),
                                       )
                                       : const Text(
                                         'Save Changes',
                                         style: TextStyle(
                                           fontSize: MySizes.fontSizeMd,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
+                                          color: MyColors.textOnPrimary,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                             ),
@@ -351,26 +370,50 @@ class _ChangePasswordState extends State<ChangePassword> {
       autofillHints: autofillHints,
       enableSuggestions: false,
       autocorrect: false,
+      style: const TextStyle(color: MyColors.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         labelText: '$label *',
+        labelStyle: const TextStyle(color: MyColors.textSecondary),
         hintText: hint,
-        border: const OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
+        hintStyle: const TextStyle(color: MyColors.textMuted),
+        filled: true,
+        fillColor: MyColors.surface,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
         ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: MyColors.primary, width: 1.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: MyColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: MyColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: MyColors.primary, width: 1.5),
         ),
         suffixIcon: IconButton(
           tooltip:
               obscureText ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi',
           onPressed: onToggle,
           icon: Icon(
-            obscureText ? Icons.visibility_off : Icons.visibility,
-            color: const Color(0xFF5C5F65),
+            obscureText
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
+            color: MyColors.textSecondary,
           ),
         ),
       ),
+    );
+  }
+
+  Widget _circle({required double size, required Color color}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }

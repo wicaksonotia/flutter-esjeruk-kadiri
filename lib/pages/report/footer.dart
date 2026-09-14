@@ -19,65 +19,69 @@ class _FooterReportState extends State<FooterReport> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       height: MediaQuery.of(context).size.height * .07,
-      decoration: const BoxDecoration(
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        border: const Border(top: BorderSide(color: MyColors.border, width: 1)),
+        boxShadow: const [
           BoxShadow(
-            color: MyColors.notionBgGrey,
-            spreadRadius: 0,
-            blurRadius: 7,
+            color: MyColors.shadow,
+            blurRadius: 8,
+            offset: Offset(0, -2),
           ),
         ],
-        color: Colors.white,
       ),
       child: Obx(
         () => Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            // TOTAL ITEM
             Container(
-              width: 150,
-              padding: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: MyColors.primary,
-                borderRadius: BorderRadius.circular(8),
+                color: MyColors.primaryLight,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: MyColors.primary.withValues(alpha: .20),
+                ),
               ),
               child: Text(
                 'Total Item: ${_transactionController.totalCup.value}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: MySizes.fontSizeLg,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  fontSize: MySizes.fontSizeSm,
+                  fontWeight: FontWeight.w700,
+                  color: MyColors.primaryDark,
                 ),
               ),
             ),
+
             const Spacer(),
-            Row(
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Total: ',
-                    style: const TextStyle(
-                      fontSize: MySizes.fontSizeLg,
-                      color: MyColors.primary,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: CurrencyFormat.convertToIdr(
-                          _transactionController.total.value,
-                          0,
-                        ),
-                        style: const TextStyle(
-                          fontSize: MySizes.fontSizeXl,
-                          color: MyColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+
+            // TOTAL TRANSAKSI
+            RichText(
+              textAlign: TextAlign.right,
+              text: TextSpan(
+                text: 'Total  ',
+                style: const TextStyle(
+                  fontSize: MySizes.fontSizeSm,
+                  color: MyColors.textSecondary,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
+                children: [
+                  TextSpan(
+                    text: CurrencyFormat.convertToIdr(
+                      _transactionController.total.value,
+                      0,
+                    ),
+                    style: const TextStyle(
+                      fontSize: MySizes.fontSizeXl,
+                      color: MyColors.primaryDark,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

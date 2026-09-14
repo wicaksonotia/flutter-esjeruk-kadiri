@@ -62,7 +62,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7F9),
+      backgroundColor: MyColors.background,
 
       drawer: const custom_drawer.NavigationDrawer(),
 
@@ -101,7 +101,7 @@ class _ProductPageState extends State<ProductPage> {
 
                 delegate: _CategoryHeaderDelegate(
                   child: Container(
-                    color: const Color(0xFFF6F7F9),
+                    color: MyColors.background,
 
                     padding: const EdgeInsets.only(top: 4, bottom: 8),
 
@@ -134,7 +134,7 @@ class _ProductPageState extends State<ProductPage> {
 
       backgroundColor: MyColors.primary,
 
-      foregroundColor: Colors.white,
+      foregroundColor: MyColors.textOnPrimary,
 
       toolbarHeight: 68,
 
@@ -625,20 +625,20 @@ class _ProductCategorySection extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF202124),
+                  color: MyColors.textPrimary,
                 ),
               ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEEF4FF),
+                  color: MyColors.primaryLight,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${products.length}',
                   style: const TextStyle(
-                    color: MyColors.primary,
+                    color: MyColors.primaryDark,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
@@ -756,7 +756,7 @@ class _EmptyProduct extends StatelessWidget {
 
               size: 36,
 
-              color: Colors.grey,
+              color: MyColors.textMuted,
             ),
           ),
 
@@ -775,7 +775,7 @@ class _EmptyProduct extends StatelessWidget {
 
             textAlign: TextAlign.center,
 
-            style: TextStyle(color: Colors.grey, fontSize: 13),
+            style: TextStyle(color: MyColors.textSecondary, fontSize: 13),
           ),
         ],
       ),

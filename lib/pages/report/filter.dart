@@ -28,52 +28,68 @@ class _FilterReportState extends State<FilterReport> {
       maxChildSize: .5,
       minChildSize: .2,
       builder: (context, scrollController) {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Obx(
-                () => ChipsChoice.single(
-                  wrapped: true,
-                  padding: EdgeInsets.zero,
-                  value: _transactionController.filterBy.value,
-                  onChanged:
-                      (val) => _transactionController.filterBy.value = val,
-                  choiceItems: C2Choice.listFrom<String, Map<String, dynamic>>(
-                    source: filterKategori,
-                    value: (i, v) => v['value'] as String,
-                    label: (i, v) => v['nama'] as String,
-                  ),
-                  choiceStyle: C2ChipStyle.filled(
-                    foregroundStyle: const TextStyle(
-                      fontSize: MySizes.fontSizeSm,
-                    ),
-                    borderRadius: BorderRadius.circular(25),
-                    color: Colors.grey[200],
-                    selectedStyle: const C2ChipStyle(
-                      backgroundColor: MyColors.primary,
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
+        return Material(
+          color: MyColors.surface,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                child: Obx(
+                  () => ChipsChoice.single(
+                    wrapped: true,
+                    padding: EdgeInsets.zero,
+                    value: _transactionController.filterBy.value,
+                    onChanged: (val) {
+                      _transactionController.filterBy.value = val;
+                    },
+                    choiceItems:
+                        C2Choice.listFrom<String, Map<String, dynamic>>(
+                          source: filterKategori,
+                          value: (i, v) => v['value'] as String,
+                          label: (i, v) => v['nama'] as String,
+                        ),
+                    choiceStyle: C2ChipStyle.filled(
+                      foregroundStyle: const TextStyle(
+                        fontSize: MySizes.fontSizeSm,
+                        fontWeight: FontWeight.w500,
+                        color: MyColors.textSecondary,
+                      ),
+                      color: MyColors.surfaceSoft,
+                      borderRadius: BorderRadius.circular(12),
+                      selectedStyle: C2ChipStyle(
+                        backgroundColor: MyColors.primaryLight,
+                        borderRadius: BorderRadius.circular(12),
+                        borderColor: MyColors.primary.withValues(alpha: .35),
+                        foregroundStyle: const TextStyle(
+                          color: MyColors.primaryDark,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const Gap(5),
-            Container(
-              color: Colors.white,
-              height: context.height * 0.05,
-              child: Obx(
-                () =>
-                    _transactionController.filterBy.value == 'bulan'
-                        ? FilterMonth(
-                          transactionController: _transactionController,
-                        )
-                        : FilterDateRange(
-                          transactionController: _transactionController,
-                        ),
+
+              const Gap(5),
+
+              Container(
+                width: double.infinity,
+                height: context.height * 0.05,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                color: MyColors.surface,
+                child: Obx(
+                  () =>
+                      _transactionController.filterBy.value == 'bulan'
+                          ? FilterMonth(
+                            transactionController: _transactionController,
+                          )
+                          : FilterDateRange(
+                            transactionController: _transactionController,
+                          ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

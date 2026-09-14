@@ -50,14 +50,15 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         Get.snackbar(
           'Report',
           'Tidak ada transaksi untuk dicetak',
-          icon: const Icon(Icons.info_outline_rounded),
+          icon: const Icon(Icons.info_outline_rounded, color: MyColors.info),
           snackPosition: SnackPosition.TOP,
         );
+
         return;
       }
 
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+        const Center(child: CircularProgressIndicator(color: MyColors.primary)),
         barrierDismissible: false,
       );
 
@@ -87,7 +88,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
       Get.snackbar(
         'Error',
         'Gagal membuat PDF: $e',
-        icon: const Icon(Icons.error_outline_rounded),
+        icon: const Icon(Icons.error_outline_rounded, color: MyColors.error),
         snackPosition: SnackPosition.TOP,
       );
     }
@@ -102,23 +103,36 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
 
-      backgroundColor: MyColors.notionBgGrey,
+      backgroundColor: MyColors.background,
 
       bottomNavigationBar: const FooterReport(),
 
       appBar: AppBar(
         backgroundColor: MyColors.primary,
+
+        foregroundColor: MyColors.textOnPrimary,
+
         elevation: 0,
 
         title: const Text(
           'Transaction History',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+
+          style: TextStyle(
+            color: MyColors.textOnPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
 
         leading: Builder(
           builder: (context) {
             return IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              tooltip: 'Menu',
+
+              icon: const Icon(
+                Icons.menu_rounded,
+                color: MyColors.textOnPrimary,
+              ),
+
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -129,10 +143,12 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         actions: [
           IconButton(
             tooltip: 'Cetak PDF',
+
             icon: const Icon(
               Icons.picture_as_pdf_outlined,
-              color: Colors.white,
+              color: MyColors.textOnPrimary,
             ),
+
             onPressed: _printPdf,
           ),
 
@@ -177,8 +193,10 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
   Widget _buildFilter() {
     return Container(
-      color: Colors.white,
+      color: MyColors.surface,
+
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+
       child: Column(
         children: [
           _buildFilterCategory(),
@@ -217,22 +235,30 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
 
         choiceStyle: C2ChipStyle.filled(
+          // ------------------------------------------------------
+          // NORMAL CHIP
+          // ------------------------------------------------------
+
           foregroundStyle: const TextStyle(
+            color: MyColors.textSecondary,
             fontSize: MySizes.fontSizeSm,
             fontWeight: FontWeight.w600,
           ),
 
-          color: MyColors.notionBgGrey,
+          color: MyColors.surfaceSoft,
 
           borderRadius: BorderRadius.circular(12),
 
+          // ------------------------------------------------------
+          // SELECTED CHIP
+          // ------------------------------------------------------
           selectedStyle: C2ChipStyle(
-            backgroundColor: MyColors.primary,
+            backgroundColor: MyColors.primaryLight,
 
             borderRadius: BorderRadius.circular(12),
 
             foregroundStyle: const TextStyle(
-              color: Colors.white,
+              color: MyColors.primaryDark,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -248,7 +274,9 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget _buildFilterDate() {
     return Container(
       width: double.infinity,
+
       padding: const EdgeInsets.symmetric(horizontal: 4),
+
       child: Obx(() {
         final filterBy = _transactionController.filterBy.value;
 

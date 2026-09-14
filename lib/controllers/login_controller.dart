@@ -287,6 +287,19 @@ class LoginController extends GetxController {
       await prefs.setString('phone_cabang', phoneCabang.value);
 
       // --------------------------------------------------------
+      // Sync ke KasirController (UI utama)
+      // --------------------------------------------------------
+      if (Get.isRegistered<KasirController>()) {
+        final kasir = Get.find<KasirController>();
+
+        kasir.idCabang.value = idCabang.value;
+        kasir.namaCabang.value = namaCabang.value;
+        kasir.alamatCabang.value = alamatCabang.value;
+        kasir.phoneCabang.value = phoneCabang.value;
+      }
+
+      update();
+      // --------------------------------------------------------
       // Success
       // --------------------------------------------------------
 

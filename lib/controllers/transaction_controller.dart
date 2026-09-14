@@ -4,7 +4,6 @@ import 'package:cashier/models/transaction_history_model.dart';
 import 'package:cashier/networks/api_request.dart';
 import 'package:cashier/widgets/delete_transaction_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -29,9 +29,7 @@ class CategoriesMenu extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
           itemCount: categories.length,
-          separatorBuilder: (_, __) {
-            return const SizedBox(width: 8);
-          },
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (context, index) {
             final category = categories[index];
 
@@ -79,9 +77,12 @@ class _CategoryChip extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+
         borderRadius: BorderRadius.circular(12),
-        splashColor: MyColors.primary.withValues(alpha: .08),
-        highlightColor: MyColors.primary.withValues(alpha: .04),
+
+        splashColor: MyColors.primary.withValues(alpha: .06),
+        highlightColor: MyColors.primary.withValues(alpha: .03),
+
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
@@ -93,30 +94,36 @@ class _CategoryChip extends StatelessWidget {
           alignment: Alignment.center,
 
           decoration: BoxDecoration(
-            color: selected ? MyColors.primary : Colors.white,
+            // ----------------------------------------------------
+            // BACKGROUND
+            // ----------------------------------------------------
+            color: selected ? MyColors.primaryLight : MyColors.surface,
 
             borderRadius: BorderRadius.circular(12),
 
+            // ----------------------------------------------------
+            // BORDER
+            // ----------------------------------------------------
             border: Border.all(
-              color: selected ? MyColors.primary : const Color(0xFFE3E7EC),
+              color:
+                  selected
+                      ? MyColors.primary.withValues(alpha: .35)
+                      : MyColors.border,
             ),
 
+            // ----------------------------------------------------
+            // SHADOW
+            // ----------------------------------------------------
             boxShadow:
                 selected
                     ? [
                       BoxShadow(
-                        color: MyColors.primary.withValues(alpha: .18),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+                        color: MyColors.primary.withValues(alpha: .08),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
                       ),
                     ]
-                    : [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: .025),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
+                    : [],
           ),
 
           child: AnimatedDefaultTextStyle(
@@ -124,11 +131,14 @@ class _CategoryChip extends StatelessWidget {
             curve: Curves.easeOutCubic,
 
             style: TextStyle(
-              color: selected ? Colors.white : const Color(0xFF4B5563),
+              // --------------------------------------------------
+              // TEXT
+              // --------------------------------------------------
+              color: selected ? MyColors.primaryDark : MyColors.textSecondary,
 
               fontSize: 12,
 
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
 
               height: 1.0,
             ),

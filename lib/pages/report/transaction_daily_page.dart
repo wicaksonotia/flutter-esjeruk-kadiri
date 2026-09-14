@@ -36,23 +36,42 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
 
-      backgroundColor: MyColors.notionBgGrey,
+      // ==========================================================
+      // BACKGROUND
+      // ==========================================================
+      backgroundColor: MyColors.background,
 
       bottomNavigationBar: const FooterReport(),
 
+      // ==========================================================
+      // APP BAR
+      // ==========================================================
       appBar: AppBar(
         backgroundColor: MyColors.primary,
+
+        foregroundColor: MyColors.textOnPrimary,
+
         elevation: 0,
 
         title: const Text(
           'Daily Transactions',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+
+          style: TextStyle(
+            color: MyColors.textOnPrimary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
 
         leading: Builder(
           builder: (context) {
             return IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              tooltip: 'Menu',
+
+              icon: const Icon(
+                Icons.menu_rounded,
+                color: MyColors.textOnPrimary,
+              ),
+
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -61,6 +80,9 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
         ),
       ),
 
+      // ==========================================================
+      // CONTENT
+      // ==========================================================
       body: SafeArea(
         child: Obx(
           () => TransactionGroupedList(

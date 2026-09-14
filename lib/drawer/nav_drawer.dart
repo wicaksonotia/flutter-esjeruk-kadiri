@@ -19,8 +19,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   late final LoginController loginController;
   late final CartController cartController;
 
-  SharedPreferences? _prefs;
-
   String _namaKasir = '';
   String _kios = '';
   String _cabang = '';
@@ -41,7 +39,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     if (!mounted) return;
 
     setState(() {
-      _prefs = prefs;
       _namaKasir = prefs.getString('nama_kasir') ?? '';
       _kios = prefs.getString('kios') ?? '';
       _cabang = prefs.getString('cabang') ?? '';
@@ -51,7 +48,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: MyColors.background,
       elevation: 0,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: SafeArea(
@@ -85,7 +82,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                     route: RouterClass.transactionhistories,
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 22),
 
                   _buildSectionTitle('LAINNYA'),
 
@@ -126,8 +123,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
       decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFE9EBEF))),
+        color: MyColors.surface,
+        border: Border(bottom: BorderSide(color: MyColors.border)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +146,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       style: const TextStyle(
                         fontSize: MySizes.fontSizeLg,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
+                        color: MyColors.textPrimary,
                       ),
                     ),
 
@@ -161,7 +158,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: MySizes.fontSizeSm,
-                        color: Color(0xFF7A808A),
+                        color: MyColors.textSecondary,
                       ),
                     ),
                   ],
@@ -182,43 +179,53 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     return Container(
       width: 56,
       height: 56,
-      decoration: BoxDecoration(
-        color: MyColors.primary.withValues(alpha: 0.08),
+      padding: const EdgeInsets.all(4),
+      decoration: const BoxDecoration(
+        color: MyColors.primaryLight,
         shape: BoxShape.circle,
       ),
-      padding: const EdgeInsets.all(4),
       child: const CircleAvatar(
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.surface,
         backgroundImage: AssetImage('assets/images/clerk.png'),
       ),
     );
   }
 
+  // ============================================================
+  // OUTLET
+  // ============================================================
+
   Widget _buildOutletCard() {
     return Material(
-      color: const Color(0xFFF5F6F8),
+      color: MyColors.surfaceSoft,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
+        splashColor: MyColors.primary.withValues(alpha: .06),
+        highlightColor: MyColors.primary.withValues(alpha: .03),
         onTap: () {
           Get.back();
           _showChangeOutlet(context);
         },
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: MyColors.border),
+          ),
           child: Row(
             children: [
               Container(
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: MyColors.primary.withValues(alpha: 0.10),
+                  color: MyColors.primaryLight,
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.storefront_outlined,
                   size: MySizes.iconSm,
-                  color: MyColors.primary,
+                  color: MyColors.primaryDark,
                 ),
               ),
 
@@ -232,7 +239,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       'Outlet aktif',
                       style: TextStyle(
                         fontSize: MySizes.fontSizeSm,
-                        color: Color(0xFF8A9099),
+                        color: MyColors.textMuted,
                       ),
                     ),
 
@@ -245,7 +252,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       style: const TextStyle(
                         fontSize: MySizes.fontSizeSm,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF30343B),
+                        color: MyColors.textPrimary,
                       ),
                     ),
                   ],
@@ -254,7 +261,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
               const SizedBox(width: 8),
 
-              Icon(
+              const Icon(
                 Icons.swap_horiz_rounded,
                 size: MySizes.iconSm,
                 color: MyColors.primary,
@@ -278,8 +285,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          letterSpacing: 0.8,
-          color: Color(0xFF969BA3),
+          letterSpacing: .8,
+          color: MyColors.textMuted,
         ),
       ),
     );
@@ -295,18 +302,17 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     String? route,
     VoidCallback? onTap,
   }) {
-    final bool isActive = route != null && Get.currentRoute == route;
+    final isActive = route != null && Get.currentRoute == route;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Material(
-        color:
-            isActive
-                ? MyColors.primary.withValues(alpha: 0.10)
-                : Colors.transparent,
+        color: isActive ? MyColors.primaryLight : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
+          splashColor: MyColors.primary.withValues(alpha: .06),
+          highlightColor: MyColors.primary.withValues(alpha: .03),
           onTap:
               onTap ??
               () {
@@ -318,66 +324,65 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border:
-                  isActive
-                      ? Border.all(
-                        color: MyColors.primary.withValues(alpha: 0.08),
-                      )
-                      : null,
+              border: Border.all(
+                color:
+                    isActive
+                        ? MyColors.primary.withValues(alpha: .12)
+                        : Colors.transparent,
+              ),
             ),
             child: Row(
               children: [
+                // ICON
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: isActive ? MyColors.primary : Colors.white,
+                    color: isActive ? MyColors.surface : MyColors.surfaceSoft,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow:
-                        isActive
-                            ? null
-                            : [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 4,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
                   ),
                   child: Icon(
                     icon,
                     size: MySizes.iconSm,
-                    color: isActive ? Colors.white : const Color(0xFF555B65),
+                    color:
+                        isActive
+                            ? MyColors.primaryDark
+                            : MyColors.textSecondary,
                   ),
                 ),
 
                 const SizedBox(width: 12),
 
+                // TEXT
                 Expanded(
                   child: Text(
                     text,
                     style: TextStyle(
                       fontSize: MySizes.fontSizeMd,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                       color:
-                          isActive ? MyColors.primary : const Color(0xFF343940),
+                          isActive
+                              ? MyColors.primaryDark
+                              : MyColors.textPrimary,
                     ),
                   ),
                 ),
 
-                if (isActive)
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: MyColors.primary,
-                      shape: BoxShape.circle,
-                    ),
+                // ACTIVE INDICATOR
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: isActive ? 6 : 0,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: MyColors.primary,
+                    shape: BoxShape.circle,
                   ),
+                ),
               ],
             ),
           ),
@@ -394,29 +399,35 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
       child: Material(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
+          splashColor: MyColors.error.withValues(alpha: .06),
+          highlightColor: MyColors.error.withValues(alpha: .03),
           onTap: () {
             cartController.clearCart();
             loginController.logout();
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: MyColors.border),
+            ),
             child: Row(
               children: [
                 Container(
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0F0),
+                    color: MyColors.errorBg,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.logout_rounded,
                     size: MySizes.iconSm,
-                    color: Color(0xFFE05252),
+                    color: MyColors.error,
                   ),
                 ),
 
@@ -427,16 +438,10 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                     'Logout',
                     style: TextStyle(
                       fontSize: MySizes.fontSizeMd,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFE05252),
+                      fontWeight: FontWeight.w600,
+                      color: MyColors.error,
                     ),
                   ),
-                ),
-
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  size: MySizes.iconSm,
-                  color: Color(0xFFD58A8A),
                 ),
               ],
             ),
@@ -455,7 +460,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       padding: EdgeInsets.only(bottom: 12),
       child: Text(
         'Cashier',
-        style: TextStyle(fontSize: 11, color: Color(0xFFB0B4BA)),
+        style: TextStyle(fontSize: 11, color: MyColors.textMuted),
       ),
     );
   }
@@ -468,7 +473,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: MyColors.surface,
       constraints: const BoxConstraints(minWidth: double.infinity),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
