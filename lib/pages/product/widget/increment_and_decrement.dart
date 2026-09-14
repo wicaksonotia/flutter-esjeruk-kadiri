@@ -11,98 +11,108 @@ class IncrementAndDecrement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CartController cartController = Get.find<CartController>();
+    final cartController = Get.find<CartController>();
 
     return Obx(() {
       final quantity = cartController.getProductQuantity(dataProduct);
 
-      return BoxContainer(
-        height: 36,
-        radius: 10,
-        showBorder: true,
-        borderColor: const Color(0xFFE5E7EB),
-        shadow: false,
-
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-          children: [
-            _QuantityButton(
-              icon: Icons.remove_rounded,
-
-              enabled: quantity > 0,
-
-              onPressed:
-                  quantity > 0
-                      ? () {
-                        cartController.decrementProductQuantity(dataProduct);
-
-                        if (cartController.getProductQuantity(dataProduct) <
-                            1) {
-                          cartController.removeProduct(dataProduct);
-                        }
-                      }
-                      : null,
-            ),
-
-            Expanded(
-              child: Center(
-                child: Text(
-                  '$quantity',
-
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF202124),
-                  ),
-                ),
-              ),
-            ),
-
-            _QuantityButton(
-              icon: Icons.add_rounded,
-
-              enabled: true,
-
-              onPressed: () {
-                cartController.incrementProductQuantity(dataProduct);
-              },
-            ),
-          ],
-        ),
+      return _QuantityControl(
+        quantity: quantity,
+        onDecrement:
+            quantity > 0
+                ? () {
+                  cartController.decrementProductQuantity(dataProduct);
+                }
+                : null,
+        onIncrement: () {
+          cartController.incrementProductQuantity(dataProduct);
+        },
       );
     });
   }
 }
 
-class _QuantityButton extends StatelessWidget {
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback? onPressed;
+// ============================================================
+// QUANTITY CONTROL
+// ============================================================
 
-  const _QuantityButton({
-    required this.icon,
-    required this.enabled,
-    required this.onPressed,
+class _QuantityControl extends StatelessWidget {
+  final int quantity;
+  final VoidCallback? onDecrement;
+  final VoidCallback onIncrement;
+
+  const _QuantityControl({
+    required this.quantity,
+    required this.onDecrement,
+    required this.onIncrement,
   });
 
   @override
   Widget build(BuildContext context) {
+    return BoxContainer(
+      height: 36,
+      radius: 10,
+      showBorder: true,
+      borderColor: const Color(0xFFE5E7EB),
+      shadow: false,
+      child: Row(
+        children: [
+          _QuantityButton(icon: Icons.remove_rounded, onPressed: onDecrement),
+
+          Expanded(
+            child: Center(
+              child: Text(
+                '$quantity',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF202124),
+                  height: 1,
+                ),
+              ),
+            ),
+          ),
+
+          _QuantityButton(icon: Icons.add_rounded, onPressed: onIncrement),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// QUANTITY BUTTON
+// ============================================================
+
+class _QuantityButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  const _QuantityButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null;
+
     return SizedBox(
       width: 32,
       height: 32,
-
-      child: IconButton(
-        padding: EdgeInsets.zero,
-
-        constraints: const BoxConstraints(),
-
-        onPressed: enabled ? onPressed : null,
-
-        icon: Icon(
-          icon,
-          size: 17,
-          color: enabled ? Colors.black87 : Colors.grey.shade300,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(8),
+          splashColor: const Color(0xFF2563EB).withValues(alpha: .10),
+          highlightColor: const Color(0xFF2563EB).withValues(alpha: .05),
+          child: Center(
+            child: Icon(
+              icon,
+              size: 17,
+              color:
+                  enabled ? const Color(0xFF202124) : const Color(0xFFD1D5DB),
+            ),
+          ),
         ),
       ),
     );

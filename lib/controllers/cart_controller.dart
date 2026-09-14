@@ -48,19 +48,26 @@ class CartController extends GetxController {
   }
 
   void decrementProductQuantity(ProductModel dataProduct) {
-    var index = cartList.indexWhere(
+    final index = cartList.indexWhere(
       (element) => element.idProduct == dataProduct.idProduct,
     );
-    if (index >= 0) {
-      if (cartList[index].quantity > 0) {
-        cartList[index].quantity--;
-        totalAllQuantity--;
-        subTotal.value -= dataProduct.price!;
-        cartList.refresh();
-      } else {
-        cartList.removeAt(index);
-      }
+
+    if (index < 0) return;
+
+    final cartItem = cartList[index];
+
+    if (cartItem.quantity > 1) {
+      cartItem.quantity--;
+
+      totalAllQuantity.value--;
+      subTotal.value -= dataProduct.price!;
+
+      cartList.refresh();
+    } else {
+      removeProduct(dataProduct);
+      return;
     }
+
     buttonCheckhoutDisable();
     update();
   }
