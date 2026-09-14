@@ -1,10 +1,7 @@
 import 'package:cashier/bindings/kasir_binding.dart';
-import 'package:cashier/controllers/cart_controller.dart';
-import 'package:cashier/controllers/kasir_controller.dart';
-import 'package:cashier/controllers/product_controller.dart';
 import 'package:cashier/login_page.dart';
 import 'package:cashier/bluetooth_setting.dart';
-import 'package:cashier/pages/product/checkout_page.dart';
+import 'package:cashier/pages/checkout/checkout_page.dart';
 import 'package:cashier/pages/report/transaction_daily_page.dart';
 import 'package:cashier/pages/report/transaction_history_page.dart';
 import 'package:cashier/pages/sop/sop_page.dart';
