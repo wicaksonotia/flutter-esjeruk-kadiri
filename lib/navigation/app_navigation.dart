@@ -1,3 +1,4 @@
+import 'package:cashier/bindings/kasir_binding.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
 import 'package:cashier/controllers/product_controller.dart';
@@ -11,7 +12,7 @@ import 'package:cashier/pages/user/change_password_page.dart';
 import 'package:cashier/pages/user/profile_page.dart';
 import 'package:cashier/pages/user/user_setting.dart';
 import 'package:get/get.dart';
-import 'package:cashier/pages/product_menu/product_page.dart';
+import 'package:cashier/pages/product/product_page.dart';
 
 class RouterClass {
   static String login = "/login";
@@ -32,9 +33,7 @@ class RouterClass {
       page: () => const ProductPage(),
       name: product,
       binding: BindingsBuilder(() {
-        Get.put<ProductController>(ProductController());
-        Get.put<CartController>(CartController());
-        Get.put<KasirController>(KasirController());
+        KasirBinding().dependencies();
       }),
     ),
     GetPage(page: () => const TransactionDailyPage(), name: dailytransactions),
