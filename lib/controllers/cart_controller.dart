@@ -12,7 +12,7 @@ class CartController extends GetxController {
   final PrintNotaController _printNotaController = Get.put(
     PrintNotaController(),
   );
-  List<CartModel> cartList = <CartModel>[].obs;
+  RxList<CartModel> cartList = <CartModel>[].obs;
   var isLoading = false.obs;
   var numberOfItems = 1.obs;
   var subTotal = 0.obs;
@@ -40,6 +40,7 @@ class CartController extends GetxController {
         ),
       );
     }
+    cartList.refresh();
     totalAllQuantity++;
     subTotal.value += dataProduct.price!;
     buttonCheckhoutDisable();
@@ -55,6 +56,7 @@ class CartController extends GetxController {
         cartList[index].quantity--;
         totalAllQuantity--;
         subTotal.value -= dataProduct.price!;
+        cartList.refresh();
       } else {
         cartList.removeAt(index);
       }
