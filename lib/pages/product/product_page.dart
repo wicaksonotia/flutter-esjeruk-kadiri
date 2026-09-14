@@ -350,22 +350,37 @@ class _ProductPageState extends State<ProductPage> {
     if (_isCategoryJumping) return;
 
     final key = _categoryKeys[target.id];
+    final targetContext = key?.currentContext;
 
-    if (key?.currentContext == null) return;
+    if (targetContext == null) return;
 
     _isCategoryJumping = true;
 
+    // Langsung ubah selected agar UI category menu mengikuti klik.
     productController.selectedCategoryId.value = target.id;
 
     try {
       await Scrollable.ensureVisible(
-        key!.currentContext!,
+        targetContext,
         duration: const Duration(milliseconds: 450),
         curve: Curves.easeInOutCubic,
-        alignment: 0.08,
+        alignment: 0.0,
       );
 
-      productController.selectedCategoryId.value = target.id;
+      // Category header kita pinned setinggi 58px.
+      // Setelah ensureVisible selesai, section berada di paling atas
+      // viewport. Geser kembali 58px supaya header section terlihat
+      // tepat di bawah category menu.
+      const double categoryMenuHeight = 58;
+
+      final targetOffset = (_scrollController.offset - categoryMenuHeight)
+          .clamp(0.0, _scrollController.position.maxScrollExtent);
+
+      await _scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
     } finally {
       _isCategoryJumping = false;
     }
