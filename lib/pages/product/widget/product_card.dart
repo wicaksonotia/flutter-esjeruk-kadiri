@@ -27,18 +27,15 @@ class ProductCard extends StatelessWidget {
   }
 
   // ============================================================
-  // GRID
+  // GRID CARD
   // ============================================================
 
   Widget _buildGridCard() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-
         borderRadius: BorderRadius.circular(20),
-
         border: Border.all(color: const Color(0xFFE9EBEF)),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: .045),
@@ -47,29 +44,38 @@ class ProductCard extends StatelessWidget {
           ),
         ],
       ),
-
       clipBehavior: Clip.antiAlias,
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
-          ProductImage(image: product.photo1, size: 150, borderRadius: 20),
+          // ======================================================
+          // IMAGE
+          // ======================================================
 
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: ProductImage(image: product.photo1, borderRadius: 20),
+            ),
+          ),
+
+          // ======================================================
+          // PRODUCT INFO
+          // ======================================================
           Padding(
-            padding: const EdgeInsets.fromLTRB(13, 12, 13, 13),
-
+            padding: const EdgeInsets.fromLTRB(13, 10, 13, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
+              mainAxisSize: MainAxisSize.min,
               children: [
+                // ------------------------------------------------
+                // PRODUCT NAME
+                // ------------------------------------------------
+
                 Text(
                   product.productName ?? 'Produk',
-
                   maxLines: 1,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -79,47 +85,48 @@ class ProductCard extends StatelessWidget {
 
                 const SizedBox(height: 4),
 
+                // ------------------------------------------------
+                // DESCRIPTION
+                // ------------------------------------------------
                 Text(
                   product.description?.trim().isNotEmpty == true
                       ? product.description!
                       : 'Produk pilihan',
-
                   maxLines: 1,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF8A8F98),
                   ),
                 ),
 
-                const SizedBox(height: 11),
+                const SizedBox(height: 8),
 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                // ------------------------------------------------
+                // PRICE
+                // ------------------------------------------------
+                Text(
+                  _formatPrice(product.price),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: MyColors.primary,
+                  ),
+                ),
 
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _formatPrice(product.price),
+                const SizedBox(height: 9),
 
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: MyColors.primary,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    SizedBox(
-                      width: 104,
-
-                      child: IncrementAndDecrement(dataProduct: product),
-                    ),
-                  ],
+                // ------------------------------------------------
+                // QUANTITY
+                // ------------------------------------------------
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 104,
+                    child: IncrementAndDecrement(dataProduct: product),
+                  ),
                 ),
               ],
             ),
@@ -130,20 +137,16 @@ class ProductCard extends StatelessWidget {
   }
 
   // ============================================================
-  // LIST
+  // LIST CARD
   // ============================================================
 
   Widget _buildListCard() {
     return Container(
       padding: const EdgeInsets.all(10),
-
       decoration: BoxDecoration(
         color: Colors.white,
-
         borderRadius: BorderRadius.circular(18),
-
         border: Border.all(color: const Color(0xFFE9EBEF)),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: .035),
@@ -152,25 +155,28 @@ class ProductCard extends StatelessWidget {
           ),
         ],
       ),
-
       child: Row(
         children: [
+          // ======================================================
+          // IMAGE
+          // ======================================================
+
           ProductImage(image: product.photo1, size: 86, borderRadius: 14),
 
           const SizedBox(width: 13),
 
+          // ======================================================
+          // PRODUCT INFO
+          // ======================================================
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   product.productName ?? 'Produk',
-
                   maxLines: 1,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -184,11 +190,8 @@ class ProductCard extends StatelessWidget {
                   product.description?.trim().isNotEmpty == true
                       ? product.description!
                       : 'Produk pilihan',
-
                   maxLines: 1,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF8A8F98),
@@ -199,7 +202,8 @@ class ProductCard extends StatelessWidget {
 
                 Text(
                   _formatPrice(product.price),
-
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -212,15 +216,21 @@ class ProductCard extends StatelessWidget {
 
           const SizedBox(width: 10),
 
+          // ======================================================
+          // QUANTITY
+          // ======================================================
           SizedBox(
             width: 104,
-
             child: IncrementAndDecrement(dataProduct: product),
           ),
         ],
       ),
     );
   }
+
+  // ============================================================
+  // FORMAT PRICE
+  // ============================================================
 
   String _formatPrice(int? price) {
     if (price == null) {

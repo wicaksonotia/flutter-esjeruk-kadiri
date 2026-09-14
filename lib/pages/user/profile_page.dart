@@ -291,49 +291,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
-  Widget _infoTile(IconData icon, String title, String value) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: MyColors.primaryLight,
-            borderRadius: BorderRadius.circular(11),
-          ),
-          child: Icon(icon, color: MyColors.primaryDark, size: 20),
-        ),
-        const Gap(12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: MyColors.textMuted,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const Gap(3),
-              Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: MyColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _SectionCard extends StatelessWidget {

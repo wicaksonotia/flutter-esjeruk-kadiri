@@ -15,33 +15,44 @@ class ProductGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
 
-    int columns = 2;
+        int columns = 2;
 
-    if (width >= 1200) {
-      columns = 5;
-    } else if (width >= 900) {
-      columns = 4;
-    } else if (width >= 650) {
-      columns = 3;
-    }
+        if (width >= 1200) {
+          columns = 5;
+        } else if (width >= 900) {
+          columns = 4;
+        } else if (width >= 650) {
+          columns = 3;
+        }
 
-    return GridView.builder(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: products.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
-        crossAxisSpacing: 11,
-        mainAxisSpacing: 11,
-        childAspectRatio: columns == 2 ? .76 : .82,
-      ),
-      itemBuilder: (context, index) {
-        return ProductCard(
-          product: products[index],
-          productController: productController,
+        const spacing = 11.0;
+
+        final itemWidth = (width - (spacing * (columns - 1))) / columns;
+
+        // Tinggi card agar tidak overflow
+        final itemHeight = itemWidth * 1.38;
+
+        return GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: products.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
+            mainAxisExtent: itemHeight,
+          ),
+          itemBuilder: (context, index) {
+            return ProductCard(
+              product: products[index],
+              productController: productController,
+            );
+          },
         );
       },
     );
