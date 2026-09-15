@@ -35,7 +35,7 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF8FA57A), Color(0xFF7C9366)],
+          colors: [MyColors.primary, MyColors.primaryDark],
         ),
         boxShadow: [
           BoxShadow(

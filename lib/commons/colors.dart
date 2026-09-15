@@ -5,96 +5,113 @@ class MyColors {
   // BRAND
   // ============================================================
 
-  /// Warna utama aplikasi — soft sage green
-  static const Color primary = Color(0xFF7F9862);
+  /// Primary brand — deep navy blue
+  /// Cocok untuk button, active state, icon utama, CTA.
+  static const Color primary = Color(0xFF3F6685);
 
-  /// Primary yang lebih terang untuk surface / selected state
-  static const Color primaryLight = Color(0xFFE9EEE2);
+  /// Soft primary — selected background / subtle surface
+  static const Color primaryLight = Color(0xFFE8F0F6);
 
-  /// Primary yang lebih gelap untuk pressed / active
-  static const Color primaryDark = Color(0xFF63794D);
+  /// Deep primary — pressed / active / strong emphasis
+  static const Color primaryDark = Color(0xFF2F506B);
 
   // ============================================================
   // ACCENT
   // ============================================================
 
-  /// Warm beige — accent / secondary action
-  static const Color secondary = Color(0xFFD8CDB8);
+  /// Warm neutral — memberi sedikit warmth agar blue tidak terasa dingin.
+  static const Color secondary = Color(0xFFCDBB9F);
 
-  /// Muted red — error / delete
-  static const Color red = Color(0xFFC76A68);
+  /// Muted red — delete / error
+  static const Color red = Color(0xFFC86B69);
 
-  /// Muted blue — info
-  static const Color blue = Color(0xFF6689A0);
+  /// Informational blue
+  static const Color blue = Color(0xFF557B9A);
 
   /// Soft amber — warning
-  static const Color yellow = Color(0xFFD1AA61);
+  static const Color yellow = Color(0xFFC99D58);
 
   /// Neutral grey
-  static const Color grey = Color(0xFF989B93);
+  static const Color grey = Color(0xFF9299A1);
 
   // ============================================================
   // TEXT
   // ============================================================
 
-  /// Soft charcoal — jangan gunakan hitam pekat
-  static const Color textDark = Color(0xFF282C26);
+  /// Dark charcoal — bukan hitam pekat
+  static const Color textDark = Color(0xFF202832);
 
-  static const Color textPrimary = Color(0xFF282C26);
+  static const Color textPrimary = Color(0xFF202832);
 
-  static const Color textSecondary = Color(0xFF73786F);
+  static const Color textSecondary = Color(0xFF68727D);
 
-  static const Color textMuted = Color(0xFFA1A49D);
+  static const Color textMuted = Color(0xFFA0A7AE);
 
-  /// Text di atas primary / button
+  /// Text di atas primary
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   // ============================================================
   // BACKGROUND
   // ============================================================
 
-  /// Background utama — warm off-white
-  static const Color background = Color(0xFFF8F8F5);
+  /// Main application background
+  static const Color background = Color(0xFFF7F8FA);
 
-  /// Surface / card
+  /// Card / modal / input surface
   static const Color surface = Color(0xFFFFFFFF);
 
-  /// Soft surface — drawer / secondary card / subtle section
-  static const Color surfaceSoft = Color(0xFFF1F3EC);
+  /// Secondary surface
+  static const Color surfaceSoft = Color(0xFFF0F3F6);
 
-  /// Border yang sangat subtle
-  static const Color border = Color(0xFFE2E5DD);
+  /// Very subtle border
+  static const Color border = Color(0xFFDDE3E8);
 
   /// Divider
-  static const Color divider = Color(0xFFE9EBE5);
+  static const Color divider = Color(0xFFE7EBEE);
 
   // ============================================================
   // STATUS
   // ============================================================
 
-  static const Color success = Color(0xFF719366);
+  // -------------------------
+  // SUCCESS
+  // -------------------------
 
-  static const Color successBg = Color(0xFFEAF1E6);
+  static const Color success = Color(0xFF5F8B70);
 
-  static const Color warning = Color(0xFFC69E59);
+  static const Color successBg = Color(0xFFEAF2ED);
 
-  static const Color warningBg = Color(0xFFF8F1E1);
+  // -------------------------
+  // WARNING
+  // -------------------------
 
-  static const Color error = Color(0xFFC76A68);
+  static const Color warning = Color(0xFFC49A58);
 
-  static const Color errorBg = Color(0xFFF8EAEA);
+  static const Color warningBg = Color(0xFFF8F1E3);
 
-  static const Color info = Color(0xFF6689A0);
+  // -------------------------
+  // ERROR
+  // -------------------------
 
-  static const Color infoBg = Color(0xFFEAF1F5);
+  static const Color error = Color(0xFFC86B69);
+
+  static const Color errorBg = Color(0xFFF9EAEA);
+
+  // -------------------------
+  // INFO
+  // -------------------------
+
+  static const Color info = Color(0xFF557B9A);
+
+  static const Color infoBg = Color(0xFFE8F0F6);
 
   // ============================================================
   // NOTION / CATEGORY BACKGROUNDS
   // ============================================================
 
-  static const Color notionBgGrey = Color(0xFFF1F2EF);
+  static const Color notionBgGrey = Color(0xFFF1F3F5);
 
-  static const Color notionBgBrown = Color(0xFFF4EFEC);
+  static const Color notionBgBrown = Color(0xFFF4EFEB);
 
   static const Color notionBgOrange = Color(0xFFFAECDE);
 
@@ -102,9 +119,9 @@ class MyColors {
 
   static const Color notionBgGreen = Color(0xFFEDF3E9);
 
-  static const Color notionBgBlue = Color(0xFFE8F2F6);
+  static const Color notionBgBlue = Color(0xFFE8F0F6);
 
-  static const Color notionBgPurple = Color(0xFFF5F2F8);
+  static const Color notionBgPurple = Color(0xFFF2F0F6);
 
   static const Color notionBgPink = Color(0xFFFAF1F5);
 
@@ -117,19 +134,19 @@ class MyColors {
   /// Overlay ringan
   static const Color overlay = Color(0x14000000);
 
-  /// Shadow sangat soft
+  /// Shadow soft
   static const Color shadow = Color(0x12000000);
 
   // ============================================================
   // NAVIGATION / SELECTION
   // ============================================================
 
-  /// Soft sage background untuk menu yang sedang aktif
-  static const Color selectedBackground = Color(0xFFE8EEDF);
+  /// Selected menu — soft blue
+  static const Color selectedBackground = Color(0xFFE8F0F6);
 
-  /// Border sangat subtle untuk menu aktif
-  static const Color selectedBorder = Color(0xFFDCE4D1);
+  /// Selected border — subtle blue
+  static const Color selectedBorder = Color(0xFFD3E0E9);
 
-  /// Icon / text pada menu aktif
-  static const Color selectedForeground = Color(0xFF627A43);
+  /// Selected icon / text
+  static const Color selectedForeground = Color(0xFF2F506B);
 }
