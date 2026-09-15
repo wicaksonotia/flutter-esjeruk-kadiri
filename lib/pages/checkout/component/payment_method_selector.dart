@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/lists.dart';
 import 'package:flutter/material.dart';
 
@@ -79,13 +80,14 @@ class _PaymentMethodItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFFEFF6FF) : const Color(0xFFF8F9FA),
+            color:
+                selected ? MyColors.selectedBackground : MyColors.surfaceSoft,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color:
-                  selected ? const Color(0xFFBFDBFE) : const Color(0xFFE5E7EB),
+              color: selected ? MyColors.selectedBorder : MyColors.border,
             ),
           ),
           child: Row(
@@ -96,8 +98,8 @@ class _PaymentMethodItem extends StatelessWidget {
                 size: 17,
                 color:
                     selected
-                        ? const Color(0xFF2563EB)
-                        : const Color(0xFF6B7280),
+                        ? MyColors.selectedForeground
+                        : MyColors.textSecondary,
               ),
 
               const SizedBox(width: 7),
@@ -109,8 +111,8 @@ class _PaymentMethodItem extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color:
                       selected
-                          ? const Color(0xFF2563EB)
-                          : const Color(0xFF4B5563),
+                          ? MyColors.selectedForeground
+                          : MyColors.textSecondary,
                 ),
               ),
             ],

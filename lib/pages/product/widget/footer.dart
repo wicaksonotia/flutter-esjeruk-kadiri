@@ -13,45 +13,41 @@ class FooterProduct extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final quantity = cartController.totalAllQuantity.value;
-
       final subtotal = cartController.subTotal.value;
-
       final disabled = cartController.isButtonDisabled.value;
 
       return Container(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
-
         decoration: BoxDecoration(
-          color: Colors.white,
-
-          border: const Border(top: BorderSide(color: Color(0xFFE8EAED))),
-
+          color: MyColors.surface,
+          border: Border(
+            top: BorderSide(color: MyColors.divider.withValues(alpha: .9)),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .06),
-              blurRadius: 20,
-              offset: const Offset(0, -6),
+              color: MyColors.shadow.withValues(alpha: .05),
+              blurRadius: 18,
+              offset: const Offset(0, -5),
             ),
           ],
         ),
-
         child: SafeArea(
           top: false,
-
           child: Row(
             children: [
+              // ============================================================
+              // TOTAL
+              // ============================================================
+
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
                     Text(
                       '$quantity item',
-
                       style: const TextStyle(
-                        color: Color(0xFF7A7F87),
+                        color: MyColors.textSecondary,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -61,11 +57,11 @@ class FooterProduct extends StatelessWidget {
 
                     Text(
                       _formatPrice(subtotal),
-
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF202124),
+                        color: MyColors.primaryDark,
+                        letterSpacing: -.2,
                       ),
                     ),
                   ],
@@ -74,9 +70,11 @@ class FooterProduct extends StatelessWidget {
 
               const SizedBox(width: 12),
 
+              // ============================================================
+              // CHECKOUT
+              // ============================================================
               SizedBox(
                 height: 48,
-
                 child: ElevatedButton(
                   onPressed:
                       disabled
@@ -86,29 +84,20 @@ class FooterProduct extends StatelessWidget {
 
                             Get.toNamed(RouterClass.checkoutPage);
                           },
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyColors.primary,
-
-                    disabledBackgroundColor: const Color(0xFFE1E4E8),
-
-                    foregroundColor: Colors.white,
-
-                    disabledForegroundColor: const Color(0xFF9AA0A6),
-
+                    disabledBackgroundColor: MyColors.border,
+                    foregroundColor: MyColors.textOnPrimary,
+                    disabledForegroundColor: MyColors.textMuted,
                     elevation: 0,
-
                     padding: const EdgeInsets.symmetric(horizontal: 22),
-
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-
-                    children: const [
+                    children: [
                       Text(
                         'Checkout',
                         style: TextStyle(
@@ -116,9 +105,7 @@ class FooterProduct extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-
                       SizedBox(width: 8),
-
                       Icon(Icons.arrow_forward_rounded, size: 18),
                     ],
                   ),
@@ -130,6 +117,10 @@ class FooterProduct extends StatelessWidget {
       );
     });
   }
+
+  // ================================================================
+  // FORMAT PRICE
+  // ================================================================
 
   String _formatPrice(int? price) {
     if (price == null) {

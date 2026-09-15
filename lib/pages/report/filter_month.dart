@@ -16,8 +16,6 @@ class FilterMonth extends StatefulWidget {
 }
 
 class _FilterMonthState extends State<FilterMonth> {
-  int month = DateTime.now().month;
-  int year = DateTime.now().year;
   int enableMonth = DateTime.now().month;
 
   @override
@@ -26,6 +24,10 @@ class _FilterMonthState extends State<FilterMonth> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        // ==========================================================
+        // PREVIOUS MONTH
+        // ==========================================================
+
         IconButton(
           iconSize: MySizes.iconSm,
           splashRadius: 20,
@@ -37,6 +39,9 @@ class _FilterMonthState extends State<FilterMonth> {
           },
         ),
 
+        // ==========================================================
+        // CURRENT MONTH
+        // ==========================================================
         Expanded(
           child: Center(
             child: Obx(
@@ -46,13 +51,12 @@ class _FilterMonthState extends State<FilterMonth> {
                   onTap: () async {
                     showMonthPicker(
                       context,
-                      onSelected: (month, year) {
-                        month = month;
-                        year = year;
+                      onSelected: (selectedMonth, selectedYear) {
+                        widget.transactionController.initMonth.value =
+                            selectedMonth;
 
-                        widget.transactionController.initMonth.value = month;
-
-                        widget.transactionController.initYear.value = year;
+                        widget.transactionController.initYear.value =
+                            selectedYear;
 
                         widget.transactionController.fetchTransaction();
                       },
@@ -67,16 +71,18 @@ class _FilterMonthState extends State<FilterMonth> {
                       selectButtonText: 'OK',
                       cancelButtonText: 'Cancel',
 
-                      // Modern palette
-                      highlightColor: MyColors.primary,
+                      // ==================================================
+                      // MONTH PICKER COLORS
+                      // ==================================================
+                      highlightColor: MyColors.accent,
                       textColor: MyColors.textPrimary,
                       contentBackgroundColor: MyColors.surface,
                       dialogBackgroundColor: MyColors.background,
                     );
                   },
                   borderRadius: BorderRadius.circular(10),
-                  splashColor: MyColors.primary.withValues(alpha: .06),
-                  highlightColor: MyColors.primary.withValues(alpha: .03),
+                  splashColor: MyColors.accent.withValues(alpha: .08),
+                  highlightColor: MyColors.accent.withValues(alpha: .04),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -85,7 +91,9 @@ class _FilterMonthState extends State<FilterMonth> {
                     decoration: BoxDecoration(
                       color: MyColors.surfaceSoft,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: MyColors.border),
+                      border: Border.all(
+                        color: MyColors.accent.withValues(alpha: .22),
+                      ),
                     ),
                     child: Text(
                       '${DateFormat('MMMM', 'id_ID').format(DateTime(0, widget.transactionController.initMonth.value))} ${widget.transactionController.initYear.value}',
@@ -102,6 +110,9 @@ class _FilterMonthState extends State<FilterMonth> {
           ),
         ),
 
+        // ==========================================================
+        // NEXT MONTH
+        // ==========================================================
         IconButton(
           iconSize: MySizes.iconSm,
           splashRadius: 20,
@@ -116,9 +127,6 @@ class _FilterMonthState extends State<FilterMonth> {
                         DateTime.now().month)) {
               widget.transactionController.nextOrPreviousMonth(true);
               widget.transactionController.fetchTransaction();
-
-              month = widget.transactionController.initMonth.value;
-              year = widget.transactionController.initYear.value;
             }
           },
         ),

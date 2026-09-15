@@ -22,7 +22,7 @@ class CheckoutHeader extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF202124),
+                    color: MyColors.textDark,
                   ),
                 ),
                 SizedBox(height: 2),
@@ -31,7 +31,7 @@ class CheckoutHeader extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF8A8F98),
+                    color: MyColors.textSecondary,
                   ),
                 ),
               ],
@@ -51,7 +51,7 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: MyColors.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -61,7 +61,7 @@ class _BackButton extends StatelessWidget {
           height: 42,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE7E9ED)),
+            border: Border.all(color: MyColors.border),
           ),
           child: Icon(
             Icons.arrow_back_rounded,

@@ -429,11 +429,12 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        // Accent line
         Container(
           width: 4,
           height: 21,
           decoration: BoxDecoration(
-            color: MyColors.primary,
+            color: MyColors.accent,
             borderRadius: BorderRadius.circular(8),
           ),
         ),
@@ -456,18 +457,20 @@ class _SectionHeader extends StatelessWidget {
 
         const SizedBox(width: 8),
 
+        // Terracotta badge
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
           decoration: BoxDecoration(
-            color: MyColors.primaryLight,
+            color: MyColors.accentLight,
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: MyColors.accent.withValues(alpha: .25)),
           ),
           child: Text(
             '$itemCount Menu',
             style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: MyColors.primaryDark,
+              color: MyColors.accentDark,
             ),
           ),
         ),

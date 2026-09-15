@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:flutter/material.dart';
 
 class QuantityBadge extends StatelessWidget {
@@ -10,15 +11,16 @@ class QuantityBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
+        color: MyColors.accentLight,
         borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: MyColors.accent.withValues(alpha: .25)),
       ),
       child: Text(
         '${quantity}x',
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF2563EB),
+          color: MyColors.accentDark,
         ),
       ),
     );

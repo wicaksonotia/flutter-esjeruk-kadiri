@@ -39,6 +39,10 @@ class ProductImage extends StatelessWidget {
     );
   }
 
+  // ================================================================
+  // PLACEHOLDER
+  // ================================================================
+
   Widget _placeholder() {
     return Container(
       width: size,
@@ -46,6 +50,7 @@ class ProductImage extends StatelessWidget {
       decoration: BoxDecoration(
         color: MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(color: MyColors.border.withValues(alpha: .7)),
       ),
       child: Center(
         child: Container(

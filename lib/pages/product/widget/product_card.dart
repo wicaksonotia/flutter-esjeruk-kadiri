@@ -22,6 +22,10 @@ class ProductCard extends StatelessWidget {
     return compact ? _buildListCard() : _buildGridCard();
   }
 
+  // ================================================================
+  // GRID CARD
+  // ================================================================
+
   Widget _buildGridCard() {
     return Container(
       decoration: BoxDecoration(
@@ -52,52 +56,18 @@ class ProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  product.productName?.trim().isNotEmpty == true
-                      ? product.productName!
-                      : 'Produk',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.textPrimary,
-                    height: 1.15,
-                  ),
-                ),
+                _ProductName(name: product.productName),
 
                 const SizedBox(height: 4),
 
-                Text(
-                  product.description?.trim().isNotEmpty == true
-                      ? product.description!
-                      : 'Produk pilihan',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w500,
-                    color: MyColors.textSecondary,
-                  ),
-                ),
+                _ProductDescription(description: product.description),
 
                 const SizedBox(height: 9),
 
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Text(
-                        _formatPrice(product.price),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w800,
-                          color: MyColors.primaryDark,
-                        ),
-                      ),
-                    ),
+                    Expanded(child: _ProductPrice(price: product.price)),
 
                     const SizedBox(width: 8),
 
@@ -114,6 +84,10 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+
+  // ================================================================
+  // LIST CARD
+  // ================================================================
 
   Widget _buildListCard() {
     return Container(
@@ -141,43 +115,18 @@ class ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  product.productName?.trim().isNotEmpty == true
-                      ? product.productName!
-                      : 'Produk',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.textPrimary,
-                  ),
-                ),
+                _ProductName(name: product.productName, fontSize: 14),
 
                 const SizedBox(height: 4),
 
-                Text(
-                  product.description?.trim().isNotEmpty == true
-                      ? product.description!
-                      : 'Produk pilihan',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: MyColors.textSecondary,
-                  ),
+                _ProductDescription(
+                  description: product.description,
+                  fontSize: 11,
                 ),
 
                 const SizedBox(height: 9),
 
-                Text(
-                  _formatPrice(product.price),
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.primaryDark,
-                  ),
-                ),
+                _ProductPrice(price: product.price),
               ],
             ),
           ),
@@ -189,6 +138,85 @@ class ProductCard extends StatelessWidget {
             child: IncrementAndDecrement(dataProduct: product),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ==================================================================
+// PRODUCT NAME
+// ==================================================================
+
+class _ProductName extends StatelessWidget {
+  final String? name;
+  final double fontSize;
+
+  const _ProductName({required this.name, this.fontSize = 13.5});
+
+  @override
+  Widget build(BuildContext context) {
+    final value = name?.trim();
+
+    return Text(
+      value?.isNotEmpty == true ? value! : 'Produk',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w800,
+        color: MyColors.textPrimary,
+        height: 1.15,
+      ),
+    );
+  }
+}
+
+// ==================================================================
+// PRODUCT DESCRIPTION
+// ==================================================================
+
+class _ProductDescription extends StatelessWidget {
+  final String? description;
+  final double fontSize;
+
+  const _ProductDescription({required this.description, this.fontSize = 10.5});
+
+  @override
+  Widget build(BuildContext context) {
+    final value = description?.trim();
+
+    return Text(
+      value?.isNotEmpty == true ? value! : 'Produk pilihan',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+        color: MyColors.textSecondary,
+      ),
+    );
+  }
+}
+
+// ==================================================================
+// PRODUCT PRICE
+// ==================================================================
+
+class _ProductPrice extends StatelessWidget {
+  final int? price;
+
+  const _ProductPrice({required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _formatPrice(price),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w800,
+        color: MyColors.primaryDark,
       ),
     );
   }

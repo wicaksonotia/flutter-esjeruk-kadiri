@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/currency.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/models/cart_model.dart';
@@ -66,9 +67,9 @@ class _CheckoutCartItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAFBFC),
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEDEFF2)),
+        border: Border.all(color: MyColors.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,7 +89,7 @@ class _CheckoutCartItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF202124),
+                    color: MyColors.textPrimary,
                   ),
                 ),
 
@@ -99,7 +100,7 @@ class _CheckoutCartItem extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF7A808A),
+                    color: MyColors.textSecondary,
                   ),
                 ),
 
@@ -116,7 +117,7 @@ class _CheckoutCartItem extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF202124),
+                        color: MyColors.primaryDark,
                       ),
                     ),
                   ],
@@ -151,13 +152,13 @@ class _RemoveButton extends StatelessWidget {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFF1F2),
+            color: MyColors.errorBg,
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Icon(
             Icons.delete_outline_rounded,
             size: 18,
-            color: Color(0xFFEF4444),
+            color: MyColors.error,
           ),
         ),
       ),
@@ -179,10 +180,10 @@ class _SectionTitle extends StatelessWidget {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
+            color: MyColors.accentLight,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: const Color(0xFF475569)),
+          child: Icon(icon, size: 18, color: MyColors.accentDark),
         ),
 
         const SizedBox(width: 10),
@@ -192,7 +193,7 @@ class _SectionTitle extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF202124),
+            color: MyColors.textPrimary,
           ),
         ),
       ],
@@ -214,13 +215,13 @@ class _EmptyCart extends StatelessWidget {
             width: 58,
             height: 58,
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
+              color: MyColors.surfaceSoft,
               borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(
               Icons.shopping_bag_outlined,
               size: 28,
-              color: Color(0xFF9CA3AF),
+              color: MyColors.textMuted,
             ),
           ),
 
@@ -231,7 +232,7 @@ class _EmptyCart extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF4B5563),
+              color: MyColors.textSecondary,
             ),
           ),
 
@@ -242,7 +243,7 @@ class _EmptyCart extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF9CA3AF),
+              color: MyColors.textMuted,
             ),
           ),
         ],

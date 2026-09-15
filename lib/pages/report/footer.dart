@@ -23,26 +23,34 @@ class _FooterReportState extends State<FooterReport> {
       height: MediaQuery.of(context).size.height * .07,
       decoration: BoxDecoration(
         color: MyColors.surface,
-        border: const Border(top: BorderSide(color: MyColors.border, width: 1)),
-        boxShadow: const [
+        border: Border(
+          top: BorderSide(
+            color: MyColors.border.withValues(alpha: .9),
+            width: 1,
+          ),
+        ),
+        boxShadow: [
           BoxShadow(
-            color: MyColors.shadow,
-            blurRadius: 8,
-            offset: Offset(0, -2),
+            color: MyColors.shadow.withValues(alpha: .05),
+            blurRadius: 14,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: Obx(
         () => Row(
           children: [
+            // ==========================================================
             // TOTAL ITEM
+            // ==========================================================
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: MyColors.primaryLight,
+                color: MyColors.accentLight,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: MyColors.primary.withValues(alpha: .20),
+                  color: MyColors.accent.withValues(alpha: .25),
                 ),
               ),
               child: Text(
@@ -51,14 +59,16 @@ class _FooterReportState extends State<FooterReport> {
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeSm,
                   fontWeight: FontWeight.w700,
-                  color: MyColors.primaryDark,
+                  color: MyColors.accentDark,
                 ),
               ),
             ),
 
             const Spacer(),
 
+            // ==========================================================
             // TOTAL TRANSAKSI
+            // ==========================================================
             RichText(
               textAlign: TextAlign.right,
               text: TextSpan(

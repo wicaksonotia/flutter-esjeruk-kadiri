@@ -18,7 +18,7 @@ class ProductViewToggle extends StatelessWidget {
         decoration: BoxDecoration(
           color: MyColors.surfaceSoft,
           borderRadius: BorderRadius.circular(11),
-          border: Border.all(color: MyColors.border.withValues(alpha: .7)),
+          border: Border.all(color: MyColors.border.withValues(alpha: .65)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -71,13 +71,38 @@ class _ViewButton extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: selected ? MyColors.primaryLight : Colors.transparent,
+            color: selected ? MyColors.selectedBackground : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
+            border:
+                selected
+                    ? Border.all(
+                      color: MyColors.selectedBorder.withValues(alpha: .8),
+                    )
+                    : null,
+            boxShadow:
+                selected
+                    ? [
+                      BoxShadow(
+                        color: MyColors.primary.withValues(alpha: .06),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                    : null,
           ),
-          child: Icon(
-            icon,
-            size: 16,
-            color: selected ? MyColors.primaryDark : MyColors.textSecondary,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            switchInCurve: Curves.easeOut,
+            switchOutCurve: Curves.easeIn,
+            child: Icon(
+              icon,
+              key: ValueKey(selected),
+              size: 16,
+              color:
+                  selected
+                      ? MyColors.selectedForeground
+                      : MyColors.textSecondary,
+            ),
           ),
         ),
       ),

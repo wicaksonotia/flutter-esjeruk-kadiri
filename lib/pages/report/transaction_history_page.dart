@@ -107,19 +107,23 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
       bottomNavigationBar: const FooterReport(),
 
+      // ==========================================================
+      // APP BAR
+      // ==========================================================
       appBar: AppBar(
         backgroundColor: MyColors.primary,
-
         foregroundColor: MyColors.textOnPrimary,
-
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        titleSpacing: 0,
 
         title: const Text(
           'Transaction History',
-
           style: TextStyle(
             color: MyColors.textOnPrimary,
-            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -.15,
           ),
         ),
 
@@ -127,12 +131,11 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
           builder: (context) {
             return IconButton(
               tooltip: 'Menu',
-
+              splashRadius: 22,
               icon: const Icon(
                 Icons.menu_rounded,
                 color: MyColors.textOnPrimary,
               ),
-
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -143,19 +146,38 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         actions: [
           IconButton(
             tooltip: 'Cetak PDF',
-
+            splashRadius: 22,
             icon: const Icon(
               Icons.picture_as_pdf_outlined,
               color: MyColors.textOnPrimary,
             ),
-
             onPressed: _printPdf,
           ),
-
           const SizedBox(width: 4),
         ],
+
+        // ========================================================
+        // TERRACOTTA ACCENT
+        // ========================================================
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 34,
+              height: 3,
+              decoration: BoxDecoration(
+                color: MyColors.accent,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
+        ),
       ),
 
+      // ==========================================================
+      // CONTENT
+      // ==========================================================
       body: SafeArea(
         child: Column(
           children: [
@@ -194,9 +216,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget _buildFilter() {
     return Container(
       color: MyColors.surface,
-
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
-
       child: Column(
         children: [
           _buildFilterCategory(),
@@ -235,9 +255,9 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
 
         choiceStyle: C2ChipStyle.filled(
-          // ------------------------------------------------------
+          // ======================================================
           // NORMAL CHIP
-          // ------------------------------------------------------
+          // ======================================================
 
           foregroundStyle: const TextStyle(
             color: MyColors.textSecondary,
@@ -249,18 +269,21 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
           borderRadius: BorderRadius.circular(12),
 
-          // ------------------------------------------------------
+          // ======================================================
           // SELECTED CHIP
-          // ------------------------------------------------------
+          // ======================================================
           selectedStyle: C2ChipStyle(
-            backgroundColor: MyColors.primaryLight,
+            backgroundColor: MyColors.accentLight,
 
             borderRadius: BorderRadius.circular(12),
 
             foregroundStyle: const TextStyle(
-              color: MyColors.primaryDark,
+              color: MyColors.accentDark,
+              fontSize: MySizes.fontSizeSm,
               fontWeight: FontWeight.w700,
             ),
+
+            borderColor: MyColors.accent.withValues(alpha: .30),
           ),
         ),
       ),
@@ -274,9 +297,7 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget _buildFilterDate() {
     return Container(
       width: double.infinity,
-
       padding: const EdgeInsets.symmetric(horizontal: 4),
-
       child: Obx(() {
         final filterBy = _transactionController.filterBy.value;
 

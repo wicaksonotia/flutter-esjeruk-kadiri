@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
@@ -19,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: MyColors.surface,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -94,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               "Login",
                               style: TextStyle(
-                                color: Colors.white,
+                                color: MyColors.surface,
                                 fontSize: 40,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -115,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: MyColors.surface,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: const Color.fromRGBO(143, 148, 251, 1),
@@ -197,13 +198,13 @@ class _LoginPageState extends State<LoginPage> {
                                 loginController.isLoading.value
                                     ? const CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                                        MyColors.surface,
                                       ),
                                     )
                                     : const Text(
                                       "Login",
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: MyColors.surface,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

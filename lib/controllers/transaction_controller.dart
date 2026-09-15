@@ -173,10 +173,13 @@ class TransactionController extends GetxController {
     Get.snackbar(
       'Berhasil',
       message,
-      icon: const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+      icon: const Icon(
+        Icons.check_circle_outline_rounded,
+        color: MyColors.surface,
+      ),
       snackPosition: SnackPosition.TOP,
       backgroundColor: MyColors.primary,
-      colorText: Colors.white,
+      colorText: MyColors.surface,
       margin: const EdgeInsets.all(12),
       borderRadius: 14,
       duration: const Duration(seconds: 2),
@@ -187,10 +190,10 @@ class TransactionController extends GetxController {
     Get.snackbar(
       'Gagal',
       message,
-      icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
+      icon: const Icon(Icons.error_outline_rounded, color: MyColors.surface),
       snackPosition: SnackPosition.TOP,
-      backgroundColor: MyColors.red,
-      colorText: Colors.white,
+      backgroundColor: MyColors.error,
+      colorText: MyColors.surface,
       margin: const EdgeInsets.all(12),
       borderRadius: 14,
       duration: const Duration(seconds: 3),
@@ -230,7 +233,7 @@ class TransactionController extends GetxController {
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.light(
               primary: MyColors.primary,
-              onPrimary: Colors.white,
+              onPrimary: MyColors.surface,
               outlineVariant: Colors.grey.shade200,
               // onSurfaceVariant: MyColors.green,
               outline: Colors.grey.shade300,

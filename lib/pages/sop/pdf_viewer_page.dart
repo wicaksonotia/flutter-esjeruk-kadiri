@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,8 +44,11 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFD32F2F),
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text("PDF Viewer", style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: MyColors.surface),
+        title: const Text(
+          "PDF Viewer",
+          style: TextStyle(color: MyColors.surface),
+        ),
       ),
       body:
           isLoading

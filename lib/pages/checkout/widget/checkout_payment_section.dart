@@ -22,7 +22,6 @@ class _CheckoutPaymentSectionState extends State<CheckoutPaymentSection> {
   @override
   void initState() {
     super.initState();
-
     _generatePaymentSuggestions();
   }
 
@@ -46,7 +45,6 @@ class _CheckoutPaymentSectionState extends State<CheckoutPaymentSection> {
     final suggestions = <int>[];
 
     final closest5000 = ((total + 4999) ~/ 5000) * 5000;
-
     suggestions.add(closest5000);
 
     final closest50000 = ((total + 49999) ~/ 50000) * 50000;
@@ -106,7 +104,6 @@ class _CheckoutPaymentSectionState extends State<CheckoutPaymentSection> {
           value: cartController.paymentMethod.value,
           onChanged: (value) {
             cartController.paymentMethod.value = value;
-
             setState(() {});
           },
         ),
@@ -117,7 +114,6 @@ class _CheckoutPaymentSectionState extends State<CheckoutPaymentSection> {
           _CashPaymentSection(
             controller: cartController.bayarTunai,
             suggestions: _paymentSuggestions,
-            total: cartController.totalBayar.value,
             onAmountChanged: (_) {
               setState(() {});
             },
@@ -141,14 +137,12 @@ class _CheckoutPaymentSectionState extends State<CheckoutPaymentSection> {
 class _CashPaymentSection extends StatelessWidget {
   final TextEditingController controller;
   final List<int> suggestions;
-  final int total;
   final ValueChanged<String> onAmountChanged;
   final ValueChanged<int> onSuggestionSelected;
 
   const _CashPaymentSection({
     required this.controller,
     required this.suggestions,
-    required this.total,
     required this.onAmountChanged,
     required this.onSuggestionSelected,
   });
@@ -163,7 +157,7 @@ class _CashPaymentSection extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF6B7280),
+            color: MyColors.textSecondary,
           ),
         ),
 
@@ -178,37 +172,37 @@ class _CashPaymentSection extends StatelessWidget {
             prefixStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF202124),
+              color: MyColors.textPrimary,
             ),
             hintText: 'Masukkan nominal',
             hintStyle: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF9CA3AF),
+              color: MyColors.textMuted,
             ),
             filled: true,
-            fillColor: const Color(0xFFF8F9FA),
+            fillColor: MyColors.surfaceSoft,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 15,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(13),
-              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+              borderSide: const BorderSide(color: MyColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(13),
-              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+              borderSide: const BorderSide(color: MyColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(13),
-              borderSide: BorderSide(color: MyColors.primary),
+              borderSide: const BorderSide(color: MyColors.primary, width: 1.4),
             ),
           ),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF202124),
+            color: MyColors.textPrimary,
           ),
         ),
 
@@ -260,10 +254,13 @@ class _ChangeRow extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: enough ? const Color(0xFFF0FDF4) : const Color(0xFFFFF7ED),
+        color: enough ? MyColors.successBg : MyColors.warningBg,
         borderRadius: BorderRadius.circular(13),
         border: Border.all(
-          color: enough ? const Color(0xFFDCFCE7) : const Color(0xFFFED7AA),
+          color:
+              enough
+                  ? MyColors.success.withValues(alpha: .18)
+                  : MyColors.warning.withValues(alpha: .20),
         ),
       ),
       child: Row(
@@ -273,7 +270,7 @@ class _ChangeRow extends StatelessWidget {
                 ? Icons.check_circle_outline_rounded
                 : Icons.info_outline_rounded,
             size: 18,
-            color: enough ? const Color(0xFF16A34A) : const Color(0xFFEA580C),
+            color: enough ? MyColors.success : MyColors.warning,
           ),
 
           const SizedBox(width: 8),
@@ -284,8 +281,7 @@ class _ChangeRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color:
-                    enough ? const Color(0xFF15803D) : const Color(0xFFC2410C),
+                color: enough ? MyColors.success : MyColors.warning,
               ),
             ),
           ),
@@ -295,7 +291,7 @@ class _ChangeRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: enough ? const Color(0xFF15803D) : const Color(0xFFC2410C),
+              color: enough ? MyColors.success : MyColors.warning,
             ),
           ),
         ],
@@ -318,18 +314,20 @@ class _SectionTitle extends StatelessWidget {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
+            color: MyColors.selectedBackground,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 18, color: const Color(0xFF475569)),
+          child: Icon(icon, size: 18, color: MyColors.selectedForeground),
         ),
+
         const SizedBox(width: 10),
+
         Text(
           title,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF202124),
+            color: MyColors.textPrimary,
           ),
         ),
       ],

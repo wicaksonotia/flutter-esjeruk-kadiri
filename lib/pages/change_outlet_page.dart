@@ -58,6 +58,10 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
     );
   }
 
+  // ==============================================================
+  // HEADER
+  // ==============================================================
+
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
@@ -71,7 +75,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
+
           const SizedBox(height: 18),
+
           Row(
             children: [
               Container(
@@ -87,7 +93,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                   color: MyColors.primaryDark,
                 ),
               ),
+
               const SizedBox(width: 12),
+
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,6 +126,10 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
     );
   }
 
+  // ==============================================================
+  // OUTLET ITEM
+  // ==============================================================
+
   Widget _buildOutletItem({required dynamic outlet, required int index}) {
     return Obx(() {
       final isSelected =
@@ -128,12 +140,14 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Material(
-          color: isSelected ? MyColors.primaryLight : MyColors.surface,
+          color: isSelected ? MyColors.accentLight : MyColors.surface,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
 
-            // LOGIC ASLI — JANGAN DIUBAH
+            // ======================================================
+            // LOGIC ASLI — TIDAK DIUBAH
+            // ======================================================
             onTap: () {
               kasirController.idKasir.value = outlet.idKasir!;
               kasirController.namaKasir.value = outlet.namaKasir ?? '';
@@ -146,8 +160,8 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
               kasirController.changeBranchOutlet();
             },
 
-            splashColor: MyColors.primary.withValues(alpha: .06),
-            highlightColor: MyColors.primary.withValues(alpha: .03),
+            splashColor: MyColors.accent.withValues(alpha: .08),
+            highlightColor: MyColors.accent.withValues(alpha: .04),
 
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
@@ -158,30 +172,56 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                 border: Border.all(
                   color:
                       isSelected
-                          ? MyColors.primary.withValues(alpha: .35)
+                          ? MyColors.accent.withValues(alpha: .30)
                           : MyColors.border,
                 ),
+                boxShadow:
+                    isSelected
+                        ? [
+                          BoxShadow(
+                            color: MyColors.accent.withValues(alpha: .08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                        : null,
               ),
               child: Row(
                 children: [
-                  Container(
+                  // ==================================================
+                  // OUTLET ICON
+                  // ==================================================
+
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
                       color:
                           isSelected ? MyColors.surface : MyColors.surfaceSoft,
                       borderRadius: BorderRadius.circular(11),
+                      border:
+                          isSelected
+                              ? Border.all(
+                                color: MyColors.accent.withValues(alpha: .18),
+                              )
+                              : null,
                     ),
                     child: Icon(
                       Icons.storefront_outlined,
                       size: 20,
                       color:
                           isSelected
-                              ? MyColors.primaryDark
+                              ? MyColors.accentDark
                               : MyColors.textSecondary,
                     ),
                   ),
+
                   const SizedBox(width: 12),
+
+                  // ==================================================
+                  // OUTLET INFO
+                  // ==================================================
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,11 +235,13 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                             fontWeight: FontWeight.w700,
                             color:
                                 isSelected
-                                    ? MyColors.primaryDark
+                                    ? MyColors.accentDark
                                     : MyColors.textPrimary,
                           ),
                         ),
+
                         const SizedBox(height: 5),
+
                         Text(
                           outlet.alamatCabang!.replaceAll(r'\n', '\n'),
                           maxLines: 2,
@@ -213,39 +255,48 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                       ],
                     ),
                   ),
+
                   const SizedBox(width: 12),
 
-                  // OBX tetap seperti behavior sebelumnya
-                  Obx(
-                    () => AnimatedContainer(
+                  // ==================================================
+                  // SELECTED INDICATOR
+                  // ==================================================
+                  Obx(() {
+                    final selected =
+                        outlet.idKios == kasirController.idKios.value &&
+                        outlet.idKasir == kasirController.idKasir.value &&
+                        outlet.idCabang == kasirController.idCabang.value;
+
+                    return AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutCubic,
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color:
-                            (outlet.idKios == kasirController.idKios.value &&
-                                    outlet.idKasir ==
-                                        kasirController.idKasir.value &&
-                                    outlet.idCabang ==
-                                        kasirController.idCabang.value)
-                                ? MyColors.primary
-                                : MyColors.surfaceSoft,
+                            selected ? MyColors.accent : MyColors.surfaceSoft,
+                        border:
+                            selected
+                                ? null
+                                : Border.all(
+                                  color: MyColors.border.withValues(alpha: .8),
+                                ),
                       ),
-                      child: Icon(
-                        Icons.check_rounded,
-                        size: 17,
-                        color:
-                            (outlet.idKios == kasirController.idKios.value &&
-                                    outlet.idKasir ==
-                                        kasirController.idKasir.value &&
-                                    outlet.idCabang ==
-                                        kasirController.idCabang.value)
-                                ? MyColors.textOnPrimary
-                                : MyColors.textMuted,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        child: Icon(
+                          Icons.check_rounded,
+                          key: ValueKey(selected),
+                          size: 17,
+                          color:
+                              selected
+                                  ? MyColors.textOnPrimary
+                                  : MyColors.textMuted,
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -255,10 +306,15 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
     });
   }
 
+  // ==============================================================
+  // LOADING
+  // ==============================================================
+
   Widget _buildLoading() {
     return Column(
       children: [
         _buildHeader(),
+
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
@@ -280,10 +336,15 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
     );
   }
 
+  // ==============================================================
+  // EMPTY
+  // ==============================================================
+
   Widget _buildEmpty() {
     return Column(
       children: [
         _buildHeader(),
+
         Expanded(
           child: Center(
             child: Padding(
@@ -304,7 +365,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                       size: 26,
                     ),
                   ),
+
                   const SizedBox(height: 14),
+
                   const Text(
                     'Outlet tidak tersedia',
                     style: TextStyle(
@@ -313,7 +376,9 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                       color: MyColors.textPrimary,
                     ),
                   ),
+
                   const SizedBox(height: 5),
+
                   const Text(
                     'Belum ada outlet yang dapat dipilih.',
                     textAlign: TextAlign.center,

@@ -49,24 +49,24 @@ class _AddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: MyColors.primaryLight,
+      color: MyColors.selectedBackground,
       borderRadius: BorderRadius.circular(11),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(11),
-        splashColor: MyColors.primary.withValues(alpha: .10),
-        highlightColor: MyColors.primary.withValues(alpha: .05),
+        splashColor: MyColors.selectedForeground.withValues(alpha: .10),
+        highlightColor: MyColors.selectedForeground.withValues(alpha: .05),
         child: Container(
           height: 34,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(11),
-            border: Border.all(color: MyColors.primary.withValues(alpha: .12)),
+            border: Border.all(color: MyColors.selectedBorder),
           ),
           child: const Center(
             child: Icon(
               Icons.add_rounded,
               size: 20,
-              color: MyColors.primaryDark,
+              color: MyColors.selectedForeground,
             ),
           ),
         ),
@@ -95,9 +95,9 @@ class _QuantityControl extends StatelessWidget {
     return Container(
       height: 34,
       decoration: BoxDecoration(
-        color: MyColors.primaryLight,
+        color: MyColors.selectedBackground,
         borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: MyColors.primary.withValues(alpha: .16)),
+        border: Border.all(color: MyColors.selectedBorder),
       ),
       child: Row(
         children: [
@@ -121,7 +121,7 @@ class _QuantityControl extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
-                    color: MyColors.primaryDark,
+                    color: MyColors.selectedForeground,
                   ),
                 ),
               ),
@@ -155,9 +155,9 @@ class _QuantityButton extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(9),
-          splashColor: MyColors.primary.withValues(alpha: .10),
-          highlightColor: MyColors.primary.withValues(alpha: .05),
-          child: Icon(icon, size: 16, color: MyColors.primaryDark),
+          splashColor: MyColors.selectedForeground.withValues(alpha: .10),
+          highlightColor: MyColors.selectedForeground.withValues(alpha: .05),
+          child: Icon(icon, size: 16, color: MyColors.selectedForeground),
         ),
       ),
     );

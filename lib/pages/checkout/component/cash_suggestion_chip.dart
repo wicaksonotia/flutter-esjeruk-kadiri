@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/currency.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +23,9 @@ class CashSuggestionChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 11),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: MyColors.selectedBackground,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(color: MyColors.selectedBorder),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -32,7 +33,7 @@ class CashSuggestionChip extends StatelessWidget {
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF4B5563),
+              color: MyColors.selectedForeground,
             ),
           ),
         ),

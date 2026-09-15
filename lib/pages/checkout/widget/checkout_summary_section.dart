@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/currency.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:flutter/material.dart';
@@ -87,10 +88,7 @@ class _SummaryRow extends StatelessWidget {
             style: TextStyle(
               fontSize: emphasized ? 14 : 13,
               fontWeight: emphasized ? FontWeight.w800 : FontWeight.w600,
-              color:
-                  emphasized
-                      ? const Color(0xFF202124)
-                      : const Color(0xFF6B7280),
+              color: emphasized ? MyColors.textPrimary : MyColors.textSecondary,
             ),
           ),
         ),
@@ -99,8 +97,7 @@ class _SummaryRow extends StatelessWidget {
           style: TextStyle(
             fontSize: emphasized ? 17 : 13,
             fontWeight: emphasized ? FontWeight.w800 : FontWeight.w700,
-            color:
-                emphasized ? const Color(0xFF202124) : const Color(0xFF4B5563),
+            color: emphasized ? MyColors.primaryDark : MyColors.textPrimary,
           ),
         ),
       ],
@@ -121,19 +118,22 @@ class _DiscountRow extends StatelessWidget {
         const Expanded(
           child: Row(
             children: [
-              Icon(Icons.discount_outlined, size: 17, color: Color(0xFF6B7280)),
+              Icon(Icons.discount_outlined, size: 17, color: MyColors.accent),
+
               SizedBox(width: 7),
+
               Text(
                 'Diskon',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF6B7280),
+                  color: MyColors.textSecondary,
                 ),
               ),
             ],
           ),
         ),
+
         SizedBox(
           width: 130,
           height: 38,
@@ -148,33 +148,36 @@ class _DiscountRow extends StatelessWidget {
               prefixStyle: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF6B7280),
+                color: MyColors.textSecondary,
               ),
               hintText: '0',
               hintStyle: const TextStyle(
                 fontSize: 12,
-                color: Color(0xFF9CA3AF),
+                color: MyColors.textMuted,
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
               filled: true,
-              fillColor: const Color(0xFFF8F9FA),
+              fillColor: MyColors.surfaceSoft,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                borderSide: const BorderSide(color: MyColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                borderSide: const BorderSide(color: MyColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                borderSide: const BorderSide(
+                  color: MyColors.primary,
+                  width: 1.3,
+                ),
               ),
             ),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF202124),
+              color: MyColors.textPrimary,
             ),
           ),
         ),

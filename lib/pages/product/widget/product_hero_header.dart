@@ -39,7 +39,7 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .055),
+            color: MyColors.shadow.withValues(alpha: .055),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -50,6 +50,10 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
       ),
     );
   }
+
+  // ================================================================
+  // HEADER
+  // ================================================================
 
   Widget _buildHeader() {
     return Obx(() {
@@ -72,23 +76,34 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 19,
-                    color: Colors.white,
                     fontWeight: FontWeight.w800,
+                    color: MyColors.textOnPrimary,
                     letterSpacing: -.2,
                   ),
                 ),
 
                 const SizedBox(height: 3),
 
-                Text(
-                  namaKasir.isEmpty ? 'Kasir' : 'Kasir • $namaKasir',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 18,
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: MyColors.accent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      namaKasir.isEmpty ? 'Kasir' : 'Kasir • $namaKasir',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: MyColors.textOnPrimary,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -98,16 +113,17 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
     });
   }
 
-  // ==============================================================
+  // ================================================================
   // SEARCH
-  // ==============================================================
+  // ================================================================
 
   Widget _buildSearch() {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .96),
+        color: MyColors.surface.withValues(alpha: .96),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: MyColors.surface.withValues(alpha: .35)),
       ),
       child: Row(
         children: [
@@ -138,8 +154,8 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
                 hintText: 'Cari STMJ, Jahe, Booster...',
                 hintStyle: TextStyle(
                   fontSize: 13,
-                  color: MyColors.textMuted,
                   fontWeight: FontWeight.w500,
+                  color: MyColors.textMuted,
                 ),
                 border: InputBorder.none,
                 isDense: true,
@@ -181,17 +197,17 @@ class _HeaderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: .14),
+      color: MyColors.surface.withValues(alpha: .14),
       borderRadius: BorderRadius.circular(13),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(13),
-        splashColor: Colors.white.withValues(alpha: .10),
-        highlightColor: Colors.white.withValues(alpha: .06),
-        child: const SizedBox(
+        splashColor: MyColors.surface.withValues(alpha: .10),
+        highlightColor: MyColors.surface.withValues(alpha: .06),
+        child: SizedBox(
           width: 42,
           height: 42,
-          child: Icon(Icons.menu_rounded, color: Colors.white, size: 22),
+          child: Icon(icon, color: MyColors.textOnPrimary, size: 22),
         ),
       ),
     );

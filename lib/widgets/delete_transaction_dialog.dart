@@ -52,12 +52,12 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: MyColors.red.withValues(alpha: .08),
+                    color: MyColors.error.withValues(alpha: .08),
                     borderRadius: BorderRadius.circular(13),
                   ),
                   child: const Icon(
                     Icons.delete_outline_rounded,
-                    color: MyColors.red,
+                    color: MyColors.error,
                     size: 23,
                   ),
                 ),
@@ -79,7 +79,10 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                       SizedBox(height: 3),
                       Text(
                         'Tindakan ini akan membatalkan transaksi.',
-                        style: TextStyle(fontSize: 12, color: MyColors.grey),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: MyColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -96,16 +99,18 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: MyColors.red.withValues(alpha: .05),
+                color: MyColors.error.withValues(alpha: .05),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: MyColors.red.withValues(alpha: .10)),
+                border: Border.all(
+                  color: MyColors.error.withValues(alpha: .10),
+                ),
               ),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     Icons.info_outline_rounded,
-                    color: MyColors.red,
+                    color: MyColors.error,
                     size: 18,
                   ),
                   Gap(8),
@@ -115,7 +120,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                       style: TextStyle(
                         fontSize: 11,
                         height: 1.4,
-                        color: MyColors.red,
+                        color: MyColors.error,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -151,7 +156,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
               decoration: InputDecoration(
                 hintText: 'Contoh: Salah input produk',
                 hintStyle: TextStyle(
-                  color: MyColors.grey.withValues(alpha: .7),
+                  color: MyColors.textSecondary.withValues(alpha: .7),
                   fontSize: 12,
                 ),
                 filled: true,
@@ -222,7 +227,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                                 : null,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size.fromHeight(46),
-                          backgroundColor: MyColors.red,
+                          backgroundColor: MyColors.error,
                           disabledBackgroundColor: Colors.grey.shade200,
                           elevation: 0,
                           shape: RoundedRectangleBorder(

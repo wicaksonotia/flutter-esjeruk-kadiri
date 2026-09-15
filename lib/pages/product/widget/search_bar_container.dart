@@ -14,7 +14,7 @@ class SearchBarContainer extends StatelessWidget {
       height: 54,
 
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(16),
 
         border: Border.all(
@@ -24,7 +24,7 @@ class SearchBarContainer extends StatelessWidget {
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .035),
+            color: MyColors.shadow.withValues(alpha: .035),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),

@@ -111,7 +111,9 @@ class TransactionGroupedList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
+
               const Gap(12),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,12 +128,17 @@ class TransactionGroupedList extends StatelessWidget {
                   ],
                 ),
               ),
+
               Container(width: 75, height: 15, color: Colors.white),
             ],
           ),
+
           const Gap(16),
+
           Container(width: double.infinity, height: 1, color: Colors.white),
+
           const Gap(12),
+
           Row(
             children: [
               Container(width: 100, height: 10, color: Colors.white),
@@ -164,8 +171,11 @@ class TransactionGroupedList extends StatelessWidget {
                   height: 120,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: MyColors.surface,
                     borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: MyColors.border.withValues(alpha: .7),
+                    ),
                   ),
                   child: Image.asset('assets/images/empty_cart.png'),
                 ),
@@ -177,6 +187,7 @@ class TransactionGroupedList extends StatelessWidget {
                   style: TextStyle(
                     fontSize: MySizes.fontSizeXl,
                     fontWeight: FontWeight.w700,
+                    color: MyColors.textPrimary,
                   ),
                 ),
 
@@ -185,7 +196,7 @@ class TransactionGroupedList extends StatelessWidget {
                 const Text(
                   'Pull down to refresh',
                   style: TextStyle(
-                    color: MyColors.grey,
+                    color: MyColors.textSecondary,
                     fontSize: MySizes.fontSizeSm,
                   ),
                 ),
@@ -206,9 +217,7 @@ class TransactionGroupedList extends StatelessWidget {
       onRefresh: onRefresh,
       child: GroupListView(
         physics: const AlwaysScrollableScrollPhysics(),
-
         sectionsCount: keys.length,
-
         countOfItemInSection: (section) {
           return values[section].length;
         },
@@ -257,7 +266,10 @@ class TransactionGroupedList extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // ========================================================
           // DATE BADGE
+          // ========================================================
+
           Container(
             width: 48,
             height: 48,
@@ -271,17 +283,19 @@ class TransactionGroupedList extends StatelessWidget {
                 Text(
                   DateFormat('dd').format(date),
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: MyColors.textOnPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     height: 1,
                   ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
                   DateFormat('MMM', 'id_ID').format(date).toUpperCase(),
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: MyColors.textOnPrimary.withValues(alpha: .85),
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
                     height: 1,
@@ -293,7 +307,9 @@ class TransactionGroupedList extends StatelessWidget {
 
           const SizedBox(width: 12),
 
+          // ========================================================
           // DATE INFO
+          // ========================================================
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,32 +319,53 @@ class TransactionGroupedList extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: MyColors.textDark,
+                    color: MyColors.textPrimary,
                   ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
                   DateFormat('d MMMM yyyy', 'id_ID').format(date),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: MyColors.grey,
+                    color: MyColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+
                 const SizedBox(height: 4),
-                Text(
-                  '$totalItem item',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: MyColors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
+
+                Row(
+                  children: [
+                    Container(
+                      width: 16,
+                      height: 2,
+                      decoration: BoxDecoration(
+                        color: MyColors.accent,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+
+                    const SizedBox(width: 5),
+
+                    Text(
+                      '$totalItem item',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: MyColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
+          // ========================================================
           // DAILY TOTAL
+          // ========================================================
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -337,13 +374,15 @@ class TransactionGroupedList extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: MyColors.textDark,
+                  color: MyColors.primaryDark,
                 ),
               ),
+
               const SizedBox(height: 4),
-              Text(
+
+              const Text(
                 'Total hari ini',
-                style: TextStyle(fontSize: 10, color: MyColors.grey),
+                style: TextStyle(fontSize: 10, color: MyColors.textSecondary),
               ),
             ],
           ),
@@ -428,17 +467,12 @@ class TransactionGroupedList extends StatelessWidget {
 
       endActionPane: ActionPane(
         motion: const DrawerMotion(),
-
-        // Jangan terlalu besar supaya card tidak terasa terdorong ke kiri
         extentRatio: canPrint && canDelete ? 0.15 : 0.10,
-
         children: [
           CustomSlidableAction(
             onPressed: (_) {},
-
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
-
             child: Container(
               margin: const EdgeInsets.only(top: 4, bottom: 4, right: 8),
               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -449,7 +483,7 @@ class TransactionGroupedList extends StatelessWidget {
                   if (canPrint)
                     _SlideIconButton(
                       icon: Icons.print_rounded,
-                      color: const Color(0xFF2563EB),
+                      color: MyColors.primary,
                       onTap: () {
                         printController.printTransaction(item.id);
                       },
@@ -460,7 +494,7 @@ class TransactionGroupedList extends StatelessWidget {
                   if (canDelete)
                     _SlideIconButton(
                       icon: Icons.delete_outline_rounded,
-                      color: const Color(0xFFDC2626),
+                      color: MyColors.error,
                       onTap: () {
                         trxController.removeTransaction(item.id);
                       },
@@ -486,18 +520,18 @@ class TransactionGroupedList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: MyColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color:
               isDeleted
-                  ? MyColors.red.withValues(alpha: .18)
-                  : Colors.grey.shade100,
+                  ? MyColors.error.withValues(alpha: .18)
+                  : MyColors.border.withValues(alpha: .65),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .025),
-            blurRadius: 8,
+            color: MyColors.shadow.withValues(alpha: .04),
+            blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
@@ -507,8 +541,10 @@ class TransactionGroupedList extends StatelessWidget {
         child: ExpansionTile(
           tilePadding: const EdgeInsets.fromLTRB(16, 8, 14, 8),
           childrenPadding: EdgeInsets.zero,
+
           iconColor: MyColors.primary,
-          collapsedIconColor: MyColors.grey,
+          collapsedIconColor: MyColors.textMuted,
+
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -544,8 +580,8 @@ class TransactionGroupedList extends StatelessWidget {
           decoration: BoxDecoration(
             color:
                 isDeleted
-                    ? MyColors.red.withValues(alpha: .08)
-                    : MyColors.primary.withValues(alpha: .08),
+                    ? MyColors.error.withValues(alpha: .08)
+                    : MyColors.primaryLight,
             borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(
@@ -553,7 +589,7 @@ class TransactionGroupedList extends StatelessWidget {
                 ? Icons.receipt_long_outlined
                 : Icons.receipt_long_rounded,
             size: 20,
-            color: isDeleted ? MyColors.red : MyColors.primary,
+            color: isDeleted ? MyColors.error : MyColors.primaryDark,
           ),
         ),
 
@@ -572,12 +608,13 @@ class TransactionGroupedList extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeMd,
                   fontWeight: FontWeight.w800,
+                  color: MyColors.textPrimary,
                 ),
               ),
 
               if (isDeleted) ...[
                 const Gap(4),
-                _buildStatusBadge('DIBATALKAN', MyColors.red),
+                _buildStatusBadge('DIBATALKAN', MyColors.error),
               ],
             ],
           ),
@@ -614,12 +651,14 @@ class TransactionGroupedList extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: MyColors.grey),
+        Icon(icon, size: 14, color: MyColors.textSecondary),
+
         const Gap(4),
+
         Text(
           text,
           style: const TextStyle(
-            color: MyColors.grey,
+            color: MyColors.textSecondary,
             fontSize: MySizes.fontSizeSm,
           ),
         ),
@@ -643,7 +682,7 @@ class TransactionGroupedList extends StatelessWidget {
             style: TextStyle(
               fontSize: MySizes.fontSizeMd,
               fontWeight: FontWeight.w800,
-              color: isDeleted ? MyColors.red : MyColors.primary,
+              color: isDeleted ? MyColors.error : MyColors.primaryDark,
             ),
           ),
 
@@ -663,13 +702,14 @@ class TransactionGroupedList extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: MyColors.border.withValues(alpha: .6)),
       ),
       child: Text(
         paymentMethod,
         style: const TextStyle(
-          color: MyColors.grey,
+          color: MyColors.textSecondary,
           fontSize: 10,
           fontWeight: FontWeight.w600,
         ),
@@ -720,13 +760,28 @@ class TransactionGroupedList extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.list_alt_rounded, size: 17, color: MyColors.primary),
-              const Gap(7),
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: MyColors.accentLight,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.list_alt_rounded,
+                  size: 16,
+                  color: MyColors.accentDark,
+                ),
+              ),
+
+              const Gap(8),
+
               const Text(
                 'Transaction Details',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: MySizes.fontSizeSm,
+                  color: MyColors.textPrimary,
                 ),
               ),
             ],
@@ -743,7 +798,7 @@ class TransactionGroupedList extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'Tidak ada detail transaksi',
-                style: TextStyle(color: MyColors.grey),
+                style: TextStyle(color: MyColors.textSecondary),
               ),
             )
           else
@@ -763,25 +818,27 @@ class TransactionGroupedList extends StatelessWidget {
           child: Text(
             'Produk',
             style: TextStyle(
-              color: MyColors.grey,
+              color: MyColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
+
         Expanded(
           flex: 1,
           child: Center(
             child: Text(
               'Qty',
               style: TextStyle(
-                color: MyColors.grey,
+                color: MyColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
         ),
+
         Expanded(
           flex: 3,
           child: Align(
@@ -789,7 +846,7 @@ class TransactionGroupedList extends StatelessWidget {
             child: Text(
               'Total',
               style: TextStyle(
-                color: MyColors.grey,
+                color: MyColors.textSecondary,
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
               ),
@@ -805,7 +862,9 @@ class TransactionGroupedList extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 7),
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          border: Border(
+            top: BorderSide(color: MyColors.border.withValues(alpha: .7)),
+          ),
         ),
         child: Row(
           children: [
@@ -818,6 +877,7 @@ class TransactionGroupedList extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeSm,
                   fontWeight: FontWeight.w500,
+                  color: MyColors.textPrimary,
                 ),
               ),
             ),
@@ -832,8 +892,11 @@ class TransactionGroupedList extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: MyColors.accentLight,
                     borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: MyColors.accent.withValues(alpha: .18),
+                    ),
                   ),
                   child: Text(
                     '${detail.quantity ?? 0}',
@@ -841,6 +904,7 @@ class TransactionGroupedList extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
+                      color: MyColors.accentDark,
                     ),
                   ),
                 ),
@@ -856,6 +920,7 @@ class TransactionGroupedList extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: MySizes.fontSizeSm,
                     fontWeight: FontWeight.w600,
+                    color: MyColors.primaryDark,
                   ),
                 ),
               ),
@@ -876,14 +941,18 @@ class TransactionGroupedList extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: MyColors.red.withValues(alpha: .07),
+        color: MyColors.error.withValues(alpha: .07),
         borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: MyColors.red.withValues(alpha: .15)),
+        border: Border.all(color: MyColors.error.withValues(alpha: .15)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, size: 18, color: MyColors.red),
+          const Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: MyColors.error,
+          ),
 
           const Gap(8),
 
@@ -892,7 +961,7 @@ class TransactionGroupedList extends StatelessWidget {
               'Transaksi dibatalkan\n'
               'Alasan: ${item.deleteReason ?? '-'}',
               style: const TextStyle(
-                color: MyColors.red,
+                color: MyColors.error,
                 fontSize: MySizes.fontSizeSm,
                 fontWeight: FontWeight.w600,
               ),
@@ -903,6 +972,10 @@ class TransactionGroupedList extends StatelessWidget {
     );
   }
 }
+
+// ==================================================================
+// SLIDE ICON BUTTON
+// ==================================================================
 
 class _SlideIconButton extends StatelessWidget {
   final IconData icon;

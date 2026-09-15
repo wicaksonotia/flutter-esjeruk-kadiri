@@ -50,29 +50,29 @@ class CategoriesMenu extends StatelessWidget {
 
             Row(
               children: [
-                const Icon(
-                  Icons.restaurant_menu_rounded,
-                  size: 15,
-                  color: MyColors.primary,
+                Container(
+                  width: 4,
+                  height: 21,
+                  decoration: BoxDecoration(
+                    color: MyColors.accent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
 
-                const SizedBox(width: 7),
+                const SizedBox(width: 9),
 
                 const Expanded(
                   child: Text(
                     'Pilih Menu',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: MyColors.textPrimary,
-                      letterSpacing: -.1,
+                      letterSpacing: -.2,
                     ),
                   ),
                 ),
 
-                // ==================================================
-                // LIST / GRID TOGGLE
-                // ==================================================
                 ProductViewToggle(controller: controller),
               ],
             ),
@@ -154,18 +154,15 @@ class _CategoryChip extends StatelessWidget {
               // SOFT SELECTED BACKGROUND
               // ==================================================
 
-              color:
-                  selected
-                      ? MyColors.primary.withValues(alpha: .075)
-                      : Colors.white,
+              color: selected ? MyColors.accentLight : MyColors.surface,
 
               borderRadius: BorderRadius.circular(14),
 
               border: Border.all(
                 color:
                     selected
-                        ? MyColors.primary.withValues(alpha: .18)
-                        : MyColors.border.withValues(alpha: .85),
+                        ? MyColors.accent.withValues(alpha: .30)
+                        : MyColors.border,
                 width: selected ? 1.1 : 1,
               ),
 
@@ -176,10 +173,10 @@ class _CategoryChip extends StatelessWidget {
                   selected
                       ? [
                         BoxShadow(
-                          color: MyColors.primary.withValues(alpha: .055),
-                          blurRadius: 9,
+                          color: MyColors.accent.withValues(alpha: .14),
+                          blurRadius: 10,
                           spreadRadius: 0,
-                          offset: const Offset(0, 2),
+                          offset: const Offset(0, 3),
                         ),
                       ]
                       : null,
@@ -200,7 +197,7 @@ class _CategoryChip extends StatelessWidget {
                   decoration: BoxDecoration(
                     color:
                         selected
-                            ? MyColors.primary.withValues(alpha: .10)
+                            ? MyColors.accent.withValues(alpha: .14)
                             : MyColors.primaryLight.withValues(alpha: .72),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -223,7 +220,7 @@ class _CategoryChip extends StatelessWidget {
                       size: 14,
                       color:
                           selected
-                              ? MyColors.primaryDark
+                              ? MyColors.accentDark
                               : MyColors.textSecondary,
                     ),
                   ),
@@ -239,7 +236,7 @@ class _CategoryChip extends StatelessWidget {
                   curve: Curves.easeOutCubic,
                   style: TextStyle(
                     color:
-                        selected ? MyColors.primaryDark : MyColors.textPrimary,
+                        selected ? MyColors.accentDark : MyColors.textPrimary,
                     fontSize: 12,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     letterSpacing: -.1,
@@ -267,9 +264,7 @@ class _CategoryChip extends StatelessWidget {
                               width: 5,
                               height: 5,
                               decoration: BoxDecoration(
-                                color: MyColors.primaryDark.withValues(
-                                  alpha: .65,
-                                ),
+                                color: MyColors.accent,
                                 shape: BoxShape.circle,
                               ),
                             ),

@@ -48,17 +48,19 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
       // ==========================================================
       appBar: AppBar(
         backgroundColor: MyColors.primary,
-
         foregroundColor: MyColors.textOnPrimary,
-
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
+
+        titleSpacing: 0,
 
         title: const Text(
           'Daily Transactions',
-
           style: TextStyle(
             color: MyColors.textOnPrimary,
-            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -.15,
           ),
         ),
 
@@ -66,17 +68,31 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
           builder: (context) {
             return IconButton(
               tooltip: 'Menu',
-
+              splashRadius: 22,
               icon: const Icon(
                 Icons.menu_rounded,
                 color: MyColors.textOnPrimary,
               ),
-
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
             );
           },
+        ),
+
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 34,
+              height: 3,
+              decoration: BoxDecoration(
+                color: MyColors.accent,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
         ),
       ),
 

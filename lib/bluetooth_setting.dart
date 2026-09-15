@@ -139,7 +139,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
           'Printer',
           '${printer.name} berhasil terhubung',
           backgroundColor: Colors.green,
-          colorText: Colors.white,
+          colorText: MyColors.surface,
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -234,7 +234,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
       'Berhasil',
       'Test print berhasil',
       backgroundColor: Colors.green,
-      colorText: Colors.white,
+      colorText: MyColors.surface,
       snackPosition: SnackPosition.TOP,
     );
   }
@@ -244,7 +244,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
       'Printer',
       msg,
       backgroundColor: Colors.red,
-      colorText: Colors.white,
+      colorText: MyColors.surface,
       snackPosition: SnackPosition.TOP,
     );
   }
@@ -259,7 +259,7 @@ class _BluetoothSettingState extends State<BluetoothSetting> {
       backgroundColor: const Color(0xffF5F5F5),
       appBar: AppBar(
         backgroundColor: MyColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: MyColors.surface,
         title: const Text('Bluetooth Printer'),
         actions: [
           IconButton(

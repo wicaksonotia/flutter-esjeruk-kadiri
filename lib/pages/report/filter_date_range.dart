@@ -24,8 +24,8 @@ class _FilterDateRangeState extends State<FilterDateRange> {
             widget.transactionController.showDialogDateRangePicker();
           },
           borderRadius: BorderRadius.circular(10),
-          splashColor: MyColors.primary.withValues(alpha: .06),
-          highlightColor: MyColors.primary.withValues(alpha: .03),
+          splashColor: MyColors.accent.withValues(alpha: .08),
+          highlightColor: MyColors.accent.withValues(alpha: .04),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -40,9 +40,11 @@ class _FilterDateRangeState extends State<FilterDateRange> {
                 const Icon(
                   Icons.date_range_rounded,
                   size: 18,
-                  color: MyColors.primary,
+                  color: MyColors.accentDark,
                 ),
+
                 const SizedBox(width: 8),
+
                 Text(
                   '${DateFormat('dd MMM yyyy').format(widget.transactionController.startDate.value)}'
                   ' - '

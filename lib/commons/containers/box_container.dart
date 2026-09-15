@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/sizes.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,8 @@ class BoxContainer extends StatelessWidget {
     this.shadow = false,
     this.showBorder = false,
     this.radius = MySizes.cardRadiusLg,
-    this.backgroundColor = Colors.white,
-    this.borderColor = Colors.black,
+    this.backgroundColor = MyColors.surface,
+    this.borderColor = MyColors.border,
     this.alignment = Alignment.center,
   });
 
@@ -38,7 +39,7 @@ class BoxContainer extends StatelessWidget {
         boxShadow: [
           shadow
               ? BoxShadow(
-                color: Colors.grey.withValues(alpha: .3),
+                color: MyColors.shadow,
                 spreadRadius: 0,
                 blurRadius: 7,
                 // offset: Offset(0, 3), // changes position of shadow

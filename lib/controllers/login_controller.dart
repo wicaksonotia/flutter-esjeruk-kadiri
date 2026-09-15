@@ -1,3 +1,4 @@
+import 'package:cashier/commons/colors.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
@@ -420,7 +421,7 @@ class LoginController extends GetxController {
               children: [
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
+                    foregroundColor: MyColors.surface,
                     backgroundColor: Colors.green,
                     textStyle: const TextStyle(
                       fontSize: 20,
@@ -433,7 +434,7 @@ class LoginController extends GetxController {
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
+                    foregroundColor: MyColors.surface,
                     backgroundColor: Colors.red,
                     textStyle: const TextStyle(
                       fontSize: 20,
@@ -453,7 +454,7 @@ class LoginController extends GetxController {
       isDismissible: false,
       isScrollControlled: true,
       enableDrag: false,
-      backgroundColor: Colors.white,
+      backgroundColor: MyColors.surface,
       elevation: 1,
     );
   }
