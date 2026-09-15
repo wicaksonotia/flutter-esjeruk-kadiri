@@ -254,46 +254,53 @@ class _ProductPageState extends State<ProductPage> {
       }
 
       // ============================================================
-      // PRODUCT LIST
+      // PRODUCT CATEGORIES
       // ============================================================
 
-      return SliverList(
-        key: ValueKey('product-list-${categories.length}-${products.length}'),
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final category = categories[index];
+      return SliverToBoxAdapter(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int index = 0; index < categories.length; index++)
+              Builder(
+                builder: (context) {
+                  final category = categories[index];
 
-          final categoryId = category.categoryId;
-          final categoryName = category.categoryName?.trim();
+                  final categoryId = category.categoryId;
+                  final categoryName = category.categoryName?.trim();
 
-          if (categoryId == null ||
-              categoryName == null ||
-              categoryName.isEmpty) {
-            return const SizedBox.shrink();
-          }
+                  if (categoryId == null ||
+                      categoryName == null ||
+                      categoryName.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
 
-          _categoryKeys.putIfAbsent(categoryId, () => GlobalKey());
+                  final categoryProducts =
+                      products
+                          .where((product) => product.idCategory == categoryId)
+                          .toList();
 
-          final categoryProducts =
-              products
-                  .where((product) => product.idCategory == categoryId)
-                  .toList();
+                  if (categoryProducts.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
 
-          if (categoryProducts.isEmpty) {
-            return const SizedBox.shrink();
-          }
+                  _categoryKeys.putIfAbsent(categoryId, () => GlobalKey());
 
-          return Padding(
-            key: _categoryKeys[categoryId],
-            padding: EdgeInsets.only(
-              bottom: index == categories.length - 1 ? 0 : 22,
-            ),
-            child: _ProductCategorySection(
-              title: categoryName,
-              products: categoryProducts,
-              productController: productController,
-            ),
-          );
-        }, childCount: categories.length),
+                  return Padding(
+                    key: _categoryKeys[categoryId],
+                    padding: EdgeInsets.only(
+                      bottom: index == categories.length - 1 ? 0 : 22,
+                    ),
+                    child: _ProductCategorySection(
+                      title: categoryName,
+                      products: categoryProducts,
+                      productController: productController,
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       );
     });
   }
