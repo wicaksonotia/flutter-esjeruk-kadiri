@@ -337,10 +337,10 @@ class _PinnedCategoryDelegate extends SliverPersistentHeaderDelegate {
   _PinnedCategoryDelegate({required this.child});
 
   @override
-  double get minExtent => 111;
+  double get minExtent => 100;
 
   @override
-  double get maxExtent => 111;
+  double get maxExtent => 100;
 
   @override
   Widget build(

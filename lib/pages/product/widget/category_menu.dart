@@ -34,7 +34,7 @@ class CategoriesMenu extends StatelessWidget {
 
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 5),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
         decoration: BoxDecoration(
           color: MyColors.background,
           border: Border(

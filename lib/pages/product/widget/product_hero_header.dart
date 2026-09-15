@@ -28,7 +28,7 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
