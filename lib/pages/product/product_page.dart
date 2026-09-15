@@ -147,10 +147,6 @@ class _ProductPageState extends State<ProductPage> {
   Future<void> _onCategorySelected(ProductCategoryTarget target) async {
     final categoryId = target.categoryId;
 
-    if (categoryId == null) {
-      return;
-    }
-
     productController.selectedCategoryId.value = categoryId;
 
     final key = _categoryKeys[categoryId];
@@ -237,17 +233,42 @@ class _ProductPageState extends State<ProductPage> {
   Widget _buildProductCategories() {
     return Obx(() {
       final categories = productController.productCategoryItems.toList();
+      final products = productController.productItems.toList();
 
-      if (categories.isEmpty) {
+      // ============================================================
+      // LOADING
+      // ============================================================
+
+      if (productController.isLoadingProductCategory.value ||
+          productController.isLoadingProduct.value) {
+        return const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 80),
+            child: Center(
+              child: CircularProgressIndicator(color: MyColors.primary),
+            ),
+          ),
+        );
+      }
+
+      // ============================================================
+      // EMPTY
+      // ============================================================
+
+      if (categories.isEmpty || products.isEmpty) {
         return const SliverToBoxAdapter(child: _EmptyProductState());
       }
 
+      // ============================================================
+      // PRODUCT LIST
+      // ============================================================
+
       return SliverList(
+        key: ValueKey('product-list-${categories.length}-${products.length}'),
         delegate: SliverChildBuilderDelegate((context, index) {
           final category = categories[index];
 
           final categoryId = category.categoryId;
-
           final categoryName = category.categoryName?.trim();
 
           if (categoryId == null ||
@@ -258,12 +279,12 @@ class _ProductPageState extends State<ProductPage> {
 
           _categoryKeys.putIfAbsent(categoryId, () => GlobalKey());
 
-          final products =
-              productController.productItems
+          final categoryProducts =
+              products
                   .where((product) => product.idCategory == categoryId)
                   .toList();
 
-          if (products.isEmpty) {
+          if (categoryProducts.isEmpty) {
             return const SizedBox.shrink();
           }
 
@@ -274,7 +295,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
             child: _ProductCategorySection(
               title: categoryName,
-              products: products,
+              products: categoryProducts,
               productController: productController,
             ),
           );

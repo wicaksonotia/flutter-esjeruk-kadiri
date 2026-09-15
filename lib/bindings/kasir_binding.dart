@@ -6,8 +6,17 @@ import 'package:get/get.dart';
 class KasirBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<CartController>(() => CartController(), fenix: true);
-    Get.lazyPut<ProductController>(() => ProductController(), fenix: true);
-    Get.lazyPut<KasirController>(() => KasirController(), fenix: true);
+    // ============================================================
+    // CART
+    // ============================================================
+    Get.put<CartController>(CartController(), permanent: false);
+    // ============================================================
+    // KASIR
+    // ============================================================
+    Get.put<KasirController>(KasirController(), permanent: false);
+    // ============================================================
+    // PRODUCT
+    // ============================================================
+    Get.put<ProductController>(ProductController(), permanent: false);
   }
 }

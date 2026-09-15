@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
-import 'package:cashier/controllers/product_controller.dart';
 import 'package:cashier/navigation/app_navigation.dart';
 import 'package:cashier/networks/api_request.dart';
 import 'package:flutter/material.dart';
@@ -109,16 +108,7 @@ class LoginController extends GetxController {
         throw "Kios is not registered";
       }
 
-      final ProductController productController = Get.put(ProductController());
-
-      productController.fetchProductCategory();
-      productController.fetchProduct();
-
-      final KasirController kasirController = Get.put(KasirController());
-
-      kasirController.fetchDataListOutlet();
-
-      Get.offNamed(RouterClass.product);
+      Get.offAllNamed(RouterClass.product);
     } catch (error) {
       Get.snackbar(
         'Notification',

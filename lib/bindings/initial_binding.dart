@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 class InitialBinding implements Bindings {
   @override
-  void dependencies() async {
+  void dependencies() {
     Get.put<LoginController>(LoginController());
   }
 }

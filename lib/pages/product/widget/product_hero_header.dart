@@ -51,13 +51,7 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
     );
   }
 
-  // ==============================================================
-  // HEADER
-  // ==============================================================
-
   Widget _buildHeader() {
-    final kasirController = Get.find<KasirController>();
-
     return Obx(() {
       final cabang = kasirController.namaCabang.value.trim();
       final namaKasir = kasirController.namaKasir.value.trim();
@@ -65,7 +59,9 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
       return Row(
         children: [
           _HeaderButton(icon: Icons.menu_rounded, onTap: widget.onMenuTap),
+
           const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +77,9 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
                     letterSpacing: -.2,
                   ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
                   namaKasir.isEmpty ? 'Kasir' : 'Kasir • $namaKasir',
                   maxLines: 1,
@@ -190,10 +188,10 @@ class _HeaderButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(13),
         splashColor: Colors.white.withValues(alpha: .10),
         highlightColor: Colors.white.withValues(alpha: .06),
-        child: SizedBox(
+        child: const SizedBox(
           width: 42,
           height: 42,
-          child: Icon(icon, color: Colors.white, size: 22),
+          child: Icon(Icons.menu_rounded, color: Colors.white, size: 22),
         ),
       ),
     );

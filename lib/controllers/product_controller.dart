@@ -7,6 +7,10 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductController extends GetxController {
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
+
   final CartController cartController = Get.find<CartController>();
 
   // ============================================================
@@ -22,6 +26,7 @@ class ProductController extends GetxController {
   // ============================================================
 
   final isLoadingProductCategory = true.obs;
+
   final isLoadingProduct = true.obs;
 
   final showListGrid = true.obs;
@@ -32,10 +37,15 @@ class ProductController extends GetxController {
 
   final selectedCategoryName = 'Semua'.obs;
 
-  final searchTextFieldController = TextEditingController();
+  // ============================================================
+  // SEARCH
+  // ============================================================
+
+  final TextEditingController searchTextFieldController =
+      TextEditingController();
 
   // ============================================================
-  // INIT
+  // LIFECYCLE
   // ============================================================
 
   @override
@@ -57,6 +67,8 @@ class ProductController extends GetxController {
 
       if (result != null) {
         productCategoryItems.assignAll(result);
+      } else {
+        productCategoryItems.clear();
       }
 
       await fetchProduct();
@@ -64,7 +76,6 @@ class ProductController extends GetxController {
       Get.snackbar(
         'Notification',
         error.toString(),
-        icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -82,17 +93,28 @@ class ProductController extends GetxController {
 
       final prefs = await SharedPreferences.getInstance();
 
+      final idKios = prefs.getInt('id_kios') ?? 0;
+
+      debugPrint('========== FETCH PRODUCT ==========');
+      debugPrint('id_kios: $idKios');
+      debugPrint('search: ${searchTextFieldController.text.trim()}');
+
+      if (idKios == 0) {
+        debugPrint('ID KIOS = 0');
+        productItems.clear();
+        return;
+      }
+
       final rawFormat = {
         'search': searchTextFieldController.text.trim(),
-
-        // IMPORTANT:
-        // Jangan filter category di API lagi.
         'category_id': 0,
-
-        'id_kios': prefs.getInt('id_kios') ?? 0,
+        'id_kios': idKios,
       };
 
       final result = await RemoteDataSource.getProduct(rawFormat);
+
+      debugPrint('PRODUCT RESULT: ${result?.length}');
+      debugPrint('===================================');
 
       if (result != null) {
         productItems.assignAll(result);
@@ -100,10 +122,11 @@ class ProductController extends GetxController {
         productItems.clear();
       }
     } catch (error) {
+      debugPrint('FETCH PRODUCT ERROR: $error');
+
       Get.snackbar(
         'Notification',
         error.toString(),
-        icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
     } finally {
