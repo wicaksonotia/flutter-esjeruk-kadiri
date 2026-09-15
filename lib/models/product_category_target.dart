@@ -1,5 +1,5 @@
 class ProductCategoryTarget {
-  final int id;
+  final int categoryId;
 
-  const ProductCategoryTarget({required this.id});
+  const ProductCategoryTarget({required this.categoryId});
 }

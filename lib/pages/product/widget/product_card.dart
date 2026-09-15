@@ -19,28 +19,20 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (compact) {
-      return _buildListCard();
-    }
-
-    return _buildGridCard();
+    return compact ? _buildListCard() : _buildGridCard();
   }
-
-  // ============================================================
-  // GRID CARD
-  // ============================================================
 
   Widget _buildGridCard() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE9EBEF)),
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: MyColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .045),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
+            color: MyColors.shadow,
+            blurRadius: 14,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -48,46 +40,34 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ======================================================
-          // IMAGE
-          // ======================================================
-
           Expanded(
             child: SizedBox(
               width: double.infinity,
-              child: ProductImage(image: product.photo1, borderRadius: 20),
+              child: ProductImage(image: product.photo1, borderRadius: 0),
             ),
           ),
 
-          // ======================================================
-          // PRODUCT INFO
-          // ======================================================
           Padding(
-            padding: const EdgeInsets.fromLTRB(13, 10, 13, 12),
+            padding: const EdgeInsets.fromLTRB(12, 11, 12, 11),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                // ------------------------------------------------
-                // PRODUCT NAME
-                // ------------------------------------------------
-
                 Text(
-                  product.productName ?? 'Produk',
+                  product.productName?.trim().isNotEmpty == true
+                      ? product.productName!
+                      : 'Produk',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF202124),
+                    color: MyColors.textPrimary,
+                    height: 1.15,
                   ),
                 ),
 
                 const SizedBox(height: 4),
 
-                // ------------------------------------------------
-                // DESCRIPTION
-                // ------------------------------------------------
                 Text(
                   product.description?.trim().isNotEmpty == true
                       ? product.description!
@@ -95,38 +75,37 @@ class ProductCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF8A8F98),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // ------------------------------------------------
-                // PRICE
-                // ------------------------------------------------
-                Text(
-                  _formatPrice(product.price),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: MyColors.primary,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: MyColors.textSecondary,
                   ),
                 ),
 
                 const SizedBox(height: 9),
 
-                // ------------------------------------------------
-                // QUANTITY
-                // ------------------------------------------------
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 104,
-                    child: IncrementAndDecrement(dataProduct: product),
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _formatPrice(product.price),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w800,
+                          color: MyColors.primaryDark,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    SizedBox(
+                      width: 82,
+                      child: IncrementAndDecrement(dataProduct: product),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -136,51 +115,42 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  // ============================================================
-  // LIST CARD
-  // ============================================================
-
   Widget _buildListCard() {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE9EBEF)),
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: MyColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .035),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
+            color: MyColors.shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          // ======================================================
-          // IMAGE
-          // ======================================================
+          ProductImage(image: product.photo1, size: 82, borderRadius: 13),
 
-          ProductImage(image: product.photo1, size: 86, borderRadius: 14),
+          const SizedBox(width: 12),
 
-          const SizedBox(width: 13),
-
-          // ======================================================
-          // PRODUCT INFO
-          // ======================================================
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  product.productName ?? 'Produk',
+                  product.productName?.trim().isNotEmpty == true
+                      ? product.productName!
+                      : 'Produk',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF202124),
+                    color: MyColors.textPrimary,
                   ),
                 ),
 
@@ -194,20 +164,18 @@ class ProductCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF8A8F98),
+                    color: MyColors.textSecondary,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 9),
 
                 Text(
                   _formatPrice(product.price),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w800,
-                    color: MyColors.primary,
+                    color: MyColors.primaryDark,
                   ),
                 ),
               ],
@@ -216,9 +184,6 @@ class ProductCard extends StatelessWidget {
 
           const SizedBox(width: 10),
 
-          // ======================================================
-          // QUANTITY
-          // ======================================================
           SizedBox(
             width: 104,
             child: IncrementAndDecrement(dataProduct: product),
@@ -228,17 +193,10 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  // ============================================================
-  // FORMAT PRICE
-  // ============================================================
-
   String _formatPrice(int? price) {
-    if (price == null) {
-      return 'Rp 0';
-    }
+    if (price == null) return 'Rp 0';
 
     final value = price.toString();
-
     final buffer = StringBuffer();
 
     for (int i = 0; i < value.length; i++) {

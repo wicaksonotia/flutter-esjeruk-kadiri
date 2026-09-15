@@ -1,4 +1,4 @@
-import 'package:cashier/commons/containers/box_container.dart';
+import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/models/product_model.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +16,19 @@ class IncrementAndDecrement extends StatelessWidget {
     return Obx(() {
       final quantity = cartController.getProductQuantity(dataProduct);
 
+      if (quantity <= 0) {
+        return _AddButton(
+          onTap: () {
+            cartController.incrementProductQuantity(dataProduct);
+          },
+        );
+      }
+
       return _QuantityControl(
         quantity: quantity,
-        onDecrement:
-            quantity > 0
-                ? () {
-                  cartController.decrementProductQuantity(dataProduct);
-                }
-                : null,
+        onDecrement: () {
+          cartController.decrementProductQuantity(dataProduct);
+        },
         onIncrement: () {
           cartController.incrementProductQuantity(dataProduct);
         },
@@ -32,13 +37,51 @@ class IncrementAndDecrement extends StatelessWidget {
   }
 }
 
-// ============================================================
+// ==================================================================
+// ADD BUTTON
+// ==================================================================
+
+class _AddButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AddButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: MyColors.primaryLight,
+      borderRadius: BorderRadius.circular(11),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(11),
+        splashColor: MyColors.primary.withValues(alpha: .10),
+        highlightColor: MyColors.primary.withValues(alpha: .05),
+        child: Container(
+          height: 34,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(color: MyColors.primary.withValues(alpha: .12)),
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.add_rounded,
+              size: 20,
+              color: MyColors.primaryDark,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ==================================================================
 // QUANTITY CONTROL
-// ============================================================
+// ==================================================================
 
 class _QuantityControl extends StatelessWidget {
   final int quantity;
-  final VoidCallback? onDecrement;
+  final VoidCallback onDecrement;
   final VoidCallback onIncrement;
 
   const _QuantityControl({
@@ -49,70 +92,72 @@ class _QuantityControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BoxContainer(
-      height: 36,
-      radius: 10,
-      showBorder: true,
-      borderColor: const Color(0xFFE5E7EB),
-      shadow: false,
+    return Container(
+      height: 34,
+      decoration: BoxDecoration(
+        color: MyColors.primaryLight,
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: MyColors.primary.withValues(alpha: .16)),
+      ),
       child: Row(
         children: [
-          _QuantityButton(icon: Icons.remove_rounded, onPressed: onDecrement),
+          _QuantityButton(icon: Icons.remove_rounded, onTap: onDecrement),
 
           Expanded(
             child: Center(
-              child: Text(
-                '$quantity',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF202124),
-                  height: 1,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 150),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(scale: animation, child: child),
+                  );
+                },
+                child: Text(
+                  '$quantity',
+                  key: ValueKey(quantity),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                    color: MyColors.primaryDark,
+                  ),
                 ),
               ),
             ),
           ),
 
-          _QuantityButton(icon: Icons.add_rounded, onPressed: onIncrement),
+          _QuantityButton(icon: Icons.add_rounded, onTap: onIncrement),
         ],
       ),
     );
   }
 }
 
-// ============================================================
+// ==================================================================
 // QUANTITY BUTTON
-// ============================================================
+// ==================================================================
 
 class _QuantityButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback? onPressed;
+  final VoidCallback onTap;
 
-  const _QuantityButton({required this.icon, required this.onPressed});
+  const _QuantityButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null;
-
     return SizedBox(
-      width: 32,
+      width: 30,
       height: 32,
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
         child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(8),
-          splashColor: const Color(0xFF2563EB).withValues(alpha: .10),
-          highlightColor: const Color(0xFF2563EB).withValues(alpha: .05),
-          child: Center(
-            child: Icon(
-              icon,
-              size: 17,
-              color:
-                  enabled ? const Color(0xFF202124) : const Color(0xFFD1D5DB),
-            ),
-          ),
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          splashColor: MyColors.primary.withValues(alpha: .10),
+          highlightColor: MyColors.primary.withValues(alpha: .05),
+          child: Icon(icon, size: 16, color: MyColors.primaryDark),
         ),
       ),
     );

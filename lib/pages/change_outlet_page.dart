@@ -12,13 +12,7 @@ class ChangeOutletPage extends StatefulWidget {
 }
 
 class _ChangeOutletPageState extends State<ChangeOutletPage> {
-  final KasirController kasirController = Get.put(KasirController());
-
-  @override
-  void initState() {
-    super.initState();
-    kasirController.fetchDataListOutlet();
-  }
+  final KasirController kasirController = Get.find<KasirController>();
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +263,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
             itemCount: 4,
-            itemBuilder: (_, __) {
+            itemBuilder: (_, _) {
               return Container(
                 height: 82,
                 margin: const EdgeInsets.only(bottom: 10),

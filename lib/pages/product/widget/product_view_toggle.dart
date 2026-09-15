@@ -10,81 +10,51 @@ class ProductViewToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 38,
+    return Obx(() {
+      final isList = controller.showListGrid.value;
 
-      padding: const EdgeInsets.all(3),
-
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .16),
-        borderRadius: BorderRadius.circular(12),
-      ),
-
-      child: Obx(() {
-        final isList = controller.showListGrid.value;
-
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-
-          children: [
-            _ToggleButton(
-              icon: Icons.view_list_rounded,
-              active: isList,
-              onTap: controller.setListView,
-            ),
-
-            _ToggleButton(
-              icon: Icons.grid_view_rounded,
-              active: !isList,
-              onTap: controller.setGridView,
-            ),
-          ],
-        );
-      }),
-    );
-  }
-}
-
-class _ToggleButton extends StatelessWidget {
-  final IconData icon;
-  final bool active;
-  final VoidCallback onTap;
-
-  const _ToggleButton({
-    required this.icon,
-    required this.active,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-
-      child: InkWell(
+      return Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(9),
-        onTap: onTap,
-
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-
-          width: 36,
-          height: 32,
-
-          decoration: BoxDecoration(
-            color: active ? Colors.white : Colors.transparent,
-
-            borderRadius: BorderRadius.circular(9),
-          ),
-
-          child: Icon(
-            icon,
-            size: 19,
-
-            color: active ? MyColors.primary : Colors.white,
+        child: InkWell(
+          onTap: () {
+            if (isList) {
+              controller.setGridView();
+            } else {
+              controller.setListView();
+            }
+          },
+          borderRadius: BorderRadius.circular(9),
+          splashColor: MyColors.primary.withValues(alpha: .08),
+          highlightColor: MyColors.primary.withValues(alpha: .04),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: MyColors.surfaceSoft,
+              borderRadius: BorderRadius.circular(9),
+              border: Border.all(color: MyColors.border.withValues(alpha: .7)),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 180),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(scale: animation, child: child),
+                );
+              },
+              child: Icon(
+                isList ? Icons.grid_view_rounded : Icons.view_list_rounded,
+                key: ValueKey(isList),
+                size: 17,
+                color: MyColors.textSecondary,
+              ),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

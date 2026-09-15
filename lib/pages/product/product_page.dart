@@ -1,21 +1,17 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/cart_controller.dart';
-import 'package:cashier/controllers/kasir_controller.dart';
-import 'package:cashier/controllers/login_controller.dart';
 import 'package:cashier/controllers/product_controller.dart';
-import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
+import 'package:cashier/models/product_category_target.dart';
 import 'package:cashier/models/product_model.dart';
-import 'package:cashier/pages/change_outlet_page.dart';
-import 'package:cashier/pages/product/widget/categories.dart';
+import 'package:cashier/pages/product/widget/category_menu.dart';
 import 'package:cashier/pages/product/widget/footer.dart';
 import 'package:cashier/pages/product/widget/product_grid_view.dart';
+import 'package:cashier/pages/product/widget/product_hero_header.dart';
 import 'package:cashier/pages/product/widget/product_list_view.dart';
-import 'package:cashier/pages/product/widget/product_view_toggle.dart';
-import 'package:cashier/pages/product/widget/search_bar_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
-import 'package:cashier/models/product_category_target.dart';
+
+import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -25,13 +21,22 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final ProductController productController = Get.find<ProductController>();
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
 
-  final CartController cartController = Get.find<CartController>();
+  late final ProductController productController;
+  late final CartController cartController;
 
-  final LoginController loginController = Get.find<LoginController>();
+  // ============================================================
+  // SCAFFOLD
+  // ============================================================
 
-  final KasirController kasirController = Get.find<KasirController>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // ============================================================
+  // SCROLL
+  // ============================================================
 
   final ScrollController _scrollController = ScrollController();
 
@@ -39,379 +44,54 @@ class _ProductPageState extends State<ProductPage> {
 
   bool _isCategoryJumping = false;
 
+  // ============================================================
+  // INIT
+  // ============================================================
+
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeCategory();
-    });
+    productController = Get.find<ProductController>();
+    cartController = Get.find<CartController>();
+
+    _scrollController.addListener(_handleScroll);
   }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
+    _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
 
     super.dispose();
   }
 
   // ============================================================
-  // BUILD
+  // REFRESH
   // ============================================================
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.background,
-
-      drawer: const custom_drawer.NavigationDrawer(),
-
-      bottomNavigationBar: FooterProduct(cartController: cartController),
-
-      body: RefreshIndicator(
-        color: MyColors.primary,
-
-        onRefresh: () async {
-          await productController.fetchProduct();
-
-          if (!mounted) return;
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _initializeCategory(force: true);
-          });
-        },
-
-        child: NotificationListener<ScrollNotification>(
-          onNotification: _onScrollNotification,
-
-          child: CustomScrollView(
-            controller: _scrollController,
-
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: ClampingScrollPhysics(),
-            ),
-
-            slivers: [
-              _buildAppBar(),
-
-              SliverToBoxAdapter(child: _buildTopArea()),
-
-              SliverPersistentHeader(
-                pinned: true,
-
-                delegate: _CategoryHeaderDelegate(
-                  child: Container(
-                    color: MyColors.background,
-
-                    padding: const EdgeInsets.only(top: 4, bottom: 8),
-
-                    child: CategoriesMenu(
-                      onCategorySelected: _scrollToCategory,
-                    ),
-                  ),
-                ),
-              ),
-
-              ..._buildCategorySlivers(),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 30)),
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<void> _refreshProducts() async {
+    await productController.fetchProduct();
   }
 
   // ============================================================
-  // APP BAR
+  // OPEN DRAWER
   // ============================================================
 
-  SliverAppBar _buildAppBar() {
-    return SliverAppBar(
-      pinned: true,
-
-      elevation: 0,
-
-      backgroundColor: MyColors.primary,
-
-      foregroundColor: MyColors.textOnPrimary,
-
-      toolbarHeight: 68,
-
-      leading: Builder(
-        builder: (context) {
-          return IconButton(
-            tooltip: 'Menu',
-
-            icon: const Icon(Icons.menu_rounded, size: 25),
-
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          );
-        },
-      ),
-
-      titleSpacing: 0,
-
-      title: _HeaderTitle(
-        kasirController: kasirController,
-        onChangeOutlet: _showChangeOutlet,
-      ),
-
-      actions: [
-        IconButton(
-          tooltip: 'Refresh',
-
-          icon: const Icon(Icons.refresh_rounded),
-
-          onPressed: () async {
-            await productController.fetchProduct();
-
-            if (!mounted) return;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _initializeCategory(force: true);
-            });
-          },
-        ),
-
-        const SizedBox(width: 6),
-      ],
-    );
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
   }
 
   // ============================================================
-  // TOP AREA
+  // CATEGORY SCROLL TRACKING
   // ============================================================
 
-  Widget _buildTopArea() {
-    return Container(
-      color: MyColors.primary,
-
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
-
-      child: Column(
-        children: [
-          SearchBarContainer(productController: productController),
-
-          const SizedBox(height: 14),
-
-          Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Pilih produk',
-
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-
-              ProductViewToggle(controller: productController),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // CATEGORY SLIVERS
-  // ============================================================
-
-  List<Widget> _buildCategorySlivers() {
-    return [
-      Obx(() {
-        if (productController.isLoadingProduct.value) {
-          return const SliverToBoxAdapter(child: _ProductLoading());
-        }
-
-        if (productController.productItems.isEmpty) {
-          return const SliverToBoxAdapter(child: _EmptyProduct());
-        }
-
-        return SliverMainAxisGroup(slivers: _buildCategoryContent());
-      }),
-    ];
-  }
-
-  // ============================================================
-  // CATEGORY CONTENT
-  // ============================================================
-
-  List<Widget> _buildCategoryContent() {
-    final products = productController.productItems.toList();
-
-    final categories = productController.productCategoryItems.toList();
-
-    final slivers = <Widget>[];
-
-    for (final category in categories) {
-      final categoryId = category.categoryId;
-
-      if (categoryId == null) {
-        continue;
-      }
-
-      final categoryName = category.categoryName?.trim();
-
-      if (categoryName == null || categoryName.isEmpty) {
-        continue;
-      }
-
-      final categoryProducts =
-          products
-              .where((product) => product.idCategory == categoryId)
-              .toList();
-
-      if (categoryProducts.isEmpty) {
-        continue;
-      }
-
-      slivers.add(
-        SliverToBoxAdapter(
-          child: Container(
-            key: _getCategoryKey(categoryId),
-
-            child: _ProductCategorySection(
-              categoryId: categoryId,
-
-              title: categoryName,
-
-              products: categoryProducts,
-
-              productController: productController,
-            ),
-          ),
-        ),
-      );
-
-      slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 20)));
-    }
-
-    return slivers;
-  }
-
-  // ============================================================
-  // CATEGORY KEY
-  // ============================================================
-
-  GlobalKey _getCategoryKey(int categoryId) {
-    return _categoryKeys.putIfAbsent(categoryId, () => GlobalKey());
-  }
-
-  // ============================================================
-  // INITIAL CATEGORY
-  // ============================================================
-
-  void _initializeCategory({bool force = false}) {
-    if (!mounted) return;
-
-    final products = productController.productItems.toList();
-
-    final categories = productController.productCategoryItems.toList();
-
-    if (products.isEmpty || categories.isEmpty) {
-      return;
-    }
-
-    if (!force && productController.selectedCategoryId.value > 0) {
-      return;
-    }
-
-    for (final category in categories) {
-      final id = category.categoryId;
-
-      if (id == null) {
-        continue;
-      }
-
-      final hasProducts = products.any((product) => product.idCategory == id);
-
-      if (!hasProducts) {
-        continue;
-      }
-
-      productController.selectedCategoryId.value = id;
-
-      return;
-    }
-  }
-
-  // ============================================================
-  // CATEGORY CLICK
-  // ============================================================
-
-  Future<void> _scrollToCategory(ProductCategoryTarget target) async {
-    if (_isCategoryJumping) return;
-
-    final key = _categoryKeys[target.id];
-    final targetContext = key?.currentContext;
-
-    if (targetContext == null) return;
-
-    _isCategoryJumping = true;
-
-    // Langsung ubah selected agar UI category menu mengikuti klik.
-    productController.selectedCategoryId.value = target.id;
-
-    try {
-      await Scrollable.ensureVisible(
-        targetContext,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOutCubic,
-        alignment: 0.0,
-      );
-
-      // Category header kita pinned setinggi 58px.
-      // Setelah ensureVisible selesai, section berada di paling atas
-      // viewport. Geser kembali 58px supaya header section terlihat
-      // tepat di bawah category menu.
-      const double categoryMenuHeight = 58;
-
-      final targetOffset = (_scrollController.offset - categoryMenuHeight)
-          .clamp(0.0, _scrollController.position.maxScrollExtent);
-
-      await _scrollController.animateTo(
-        targetOffset,
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-      );
-    } finally {
-      _isCategoryJumping = false;
-    }
-  }
-
-  // ============================================================
-  // SCROLL NOTIFICATION
-  // ============================================================
-
-  bool _onScrollNotification(ScrollNotification notification) {
+  void _handleScroll() {
     if (_isCategoryJumping) {
-      return false;
-    }
-
-    if (notification is UserScrollNotification) {
-      if (notification.direction == ScrollDirection.idle) {
-        return false;
-      }
-
-      _updateCategoryFromScroll();
-    }
-
-    return false;
-  }
-
-  // ============================================================
-  // UPDATE CATEGORY FROM MANUAL SCROLL
-  // ============================================================
-
-  void _updateCategoryFromScroll() {
-    if (!mounted) {
       return;
     }
 
@@ -421,182 +101,261 @@ class _ProductPageState extends State<ProductPage> {
       return;
     }
 
-    const double categoryHeaderHeight = 58;
+    int? activeCategoryId;
 
-    const double activationOffset = 90;
-
-    int? activeCategory;
-
-    double bestDistance = double.infinity;
+    double closestDistance = double.infinity;
 
     for (final category in categories) {
-      final id = category.categoryId;
+      final categoryId = category.categoryId;
 
-      if (id == null) {
+      if (categoryId == null) {
         continue;
       }
 
-      final context = _categoryKeys[id]?.currentContext;
+      final key = _categoryKeys[categoryId];
 
-      if (context == null) {
+      if (key?.currentContext == null) {
         continue;
       }
 
-      final renderObject = context.findRenderObject();
+      final renderObject = key!.currentContext!.findRenderObject();
 
       if (renderObject is! RenderBox) {
         continue;
       }
 
-      if (!renderObject.hasSize) {
-        continue;
-      }
-
       final position = renderObject.localToGlobal(Offset.zero);
 
-      final top = position.dy;
+      final distance = (position.dy - 180).abs();
 
-      final effectiveTop = top - categoryHeaderHeight;
-
-      // Kategori yang sudah melewati garis
-      // aktivasi menjadi kandidat aktif.
-      if (effectiveTop <= activationOffset) {
-        final distance = (activationOffset - effectiveTop).abs();
-
-        if (distance < bestDistance) {
-          bestDistance = distance;
-
-          activeCategory = id;
-        }
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        activeCategoryId = categoryId;
       }
     }
 
-    if (activeCategory == null) {
+    if (activeCategoryId != null &&
+        productController.selectedCategoryId.value != activeCategoryId) {
+      productController.selectedCategoryId.value = activeCategoryId;
+    }
+  }
+
+  // ============================================================
+  // CATEGORY SELECT
+  // ============================================================
+
+  Future<void> _onCategorySelected(ProductCategoryTarget target) async {
+    final categoryId = target.categoryId;
+
+    if (categoryId == null) {
       return;
     }
 
-    if (productController.selectedCategoryId.value != activeCategory) {
-      productController.selectedCategoryId.value = activeCategory;
+    productController.selectedCategoryId.value = categoryId;
+
+    final key = _categoryKeys[categoryId];
+
+    if (key?.currentContext == null) {
+      return;
     }
-  }
 
-  // ============================================================
-  // CHANGE OUTLET
-  // ============================================================
+    _isCategoryJumping = true;
 
-  void _showChangeOutlet() {
-    showModalBottomSheet(
-      context: context,
-
-      isScrollControlled: true,
-
-      backgroundColor: Colors.white,
-
-      constraints: const BoxConstraints(minWidth: double.infinity),
-
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-
-      builder: (_) {
-        return const ChangeOutletPage();
-      },
+    await Scrollable.ensureVisible(
+      key!.currentContext!,
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      alignment: .04,
     );
+
+    await Future.delayed(const Duration(milliseconds: 80));
+
+    _isCategoryJumping = false;
   }
-}
 
-// ================================================================
-// HEADER TITLE
-// ================================================================
-
-class _HeaderTitle extends StatelessWidget {
-  final KasirController kasirController;
-
-  final VoidCallback onChangeOutlet;
-
-  const _HeaderTitle({
-    required this.kasirController,
-    required this.onChangeOutlet,
-  });
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onChangeOutlet,
+    return Scaffold(
+      key: _scaffoldKey,
 
-      behavior: HitTestBehavior.opaque,
+      backgroundColor: MyColors.background,
 
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      drawer: const custom_drawer.NavigationDrawer(),
 
-        crossAxisAlignment: CrossAxisAlignment.start,
-
-        children: [
-          Obx(
-            () => Text(
-              kasirController.namaKios.value,
-
-              maxLines: 1,
-
-              overflow: TextOverflow.ellipsis,
-
-              style: const TextStyle(
-                color: Colors.white,
-
-                fontSize: 15,
-
-                fontWeight: FontWeight.w800,
-              ),
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          color: MyColors.primary,
+          backgroundColor: MyColors.surface,
+          onRefresh: _refreshProducts,
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
-          ),
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PinnedHeaderDelegate(
+                  child: ProductHeroHeader(onMenuTap: _openDrawer),
+                ),
+              ),
 
-          const SizedBox(height: 1),
-
-          Row(
-            mainAxisSize: MainAxisSize.min,
-
-            children: [
-              Obx(
-                () => Text(
-                  'Cabang ${kasirController.namaCabang.value}',
-
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, .78),
-
-                    fontSize: 11,
-
-                    fontWeight: FontWeight.w500,
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PinnedCategoryDelegate(
+                  child: CategoriesMenu(
+                    onCategorySelected: _onCategorySelected,
                   ),
                 ),
               ),
 
-              const Icon(
-                Icons.keyboard_arrow_down_rounded,
-
-                color: Colors.white,
-
-                size: 16,
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 110),
+                sliver: _buildProductCategories(),
               ),
             ],
           ),
-        ],
+        ),
       ),
+
+      // ==========================================================
+      // CART
+      // ==========================================================
+      bottomNavigationBar: FooterProduct(cartController: cartController),
     );
+  }
+
+  // ============================================================
+  // PRODUCT CATEGORIES
+  // ============================================================
+
+  Widget _buildProductCategories() {
+    return Obx(() {
+      final categories = productController.productCategoryItems.toList();
+
+      if (categories.isEmpty) {
+        return const SliverToBoxAdapter(child: _EmptyProductState());
+      }
+
+      return SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final category = categories[index];
+
+          final categoryId = category.categoryId;
+
+          final categoryName = category.categoryName?.trim();
+
+          if (categoryId == null ||
+              categoryName == null ||
+              categoryName.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          _categoryKeys.putIfAbsent(categoryId, () => GlobalKey());
+
+          final products =
+              productController.productItems
+                  .where((product) => product.idCategory == categoryId)
+                  .toList();
+
+          if (products.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            key: _categoryKeys[categoryId],
+            padding: EdgeInsets.only(
+              bottom: index == categories.length - 1 ? 0 : 22,
+            ),
+            child: _ProductCategorySection(
+              title: categoryName,
+              products: products,
+              productController: productController,
+            ),
+          );
+        }, childCount: categories.length),
+      );
+    });
   }
 }
 
-// ================================================================
+// ==================================================================
+// SLIVER PERSISTENT HEADER DELEGATES
+// ==================================================================
+class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _PinnedHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 176;
+
+  @override
+  double get maxExtent => 176;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Material(color: MyColors.background, child: child);
+  }
+
+  @override
+  bool shouldRebuild(covariant _PinnedHeaderDelegate oldDelegate) {
+    return oldDelegate.child != child;
+  }
+}
+
+// ==================================================================
+// SLIVER PERSISTENT HEADER DELEGATES
+// ==================================================================
+class _PinnedCategoryDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _PinnedCategoryDelegate({required this.child});
+
+  @override
+  double get minExtent => 111;
+
+  @override
+  double get maxExtent => 111;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Material(
+      color: MyColors.background,
+      elevation: overlapsContent ? 1 : 0,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _PinnedCategoryDelegate oldDelegate) {
+    return oldDelegate.child != child;
+  }
+}
+
+// ==================================================================
 // PRODUCT CATEGORY SECTION
-// ================================================================
+// ==================================================================
 
 class _ProductCategorySection extends StatelessWidget {
-  final int categoryId;
   final String title;
   final List<ProductModel> products;
   final ProductController productController;
 
   const _ProductCategorySection({
-    required this.categoryId,
     required this.title,
     required this.products,
     required this.productController,
@@ -604,178 +363,141 @@ class _ProductCategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Column(
+    if (products.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Obx(() {
+      final isList = productController.showListGrid.value;
+
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: MyColors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const SizedBox(width: 9),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: MyColors.textPrimary,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: MyColors.primaryLight,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${products.length}',
-                  style: const TextStyle(
-                    color: MyColors.primaryDark,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _SectionHeader(title: title, itemCount: products.length),
 
-          const SizedBox(height: 12),
-          Obx(() {
-            if (productController.showListGrid.value) {
-              return ProductListView(
-                products: products,
-                productController: productController,
-              );
-            }
+          const SizedBox(height: 10),
 
-            return ProductGridView(
+          if (isList)
+            ProductListView(
               products: products,
               productController: productController,
-            );
-          }),
+            )
+          else
+            ProductGridView(
+              products: products,
+              productController: productController,
+            ),
         ],
-      ),
-    );
+      );
+    });
   }
 }
 
-// ================================================================
-// CATEGORY HEADER
-// ================================================================
+// ==================================================================
+// SECTION HEADER
+// ==================================================================
 
-class _CategoryHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final int itemCount;
 
-  _CategoryHeaderDelegate({required this.child});
-
-  @override
-  double get minExtent => 58;
-
-  @override
-  double get maxExtent => 58;
-
-  @override
-  Widget build(
-    BuildContext context,
-
-    double shrinkOffset,
-
-    bool overlapsContent,
-  ) {
-    return child;
-  }
-
-  @override
-  bool shouldRebuild(covariant _CategoryHeaderDelegate oldDelegate) {
-    return false;
-  }
-}
-
-// ================================================================
-// LOADING
-// ================================================================
-
-class _ProductLoading extends StatelessWidget {
-  const _ProductLoading();
+  const _SectionHeader({required this.title, required this.itemCount});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 21,
+          decoration: BoxDecoration(
+            color: MyColors.primary,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
 
-      child: Center(child: CircularProgressIndicator()),
+        const SizedBox(width: 9),
+
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: MyColors.textPrimary,
+              letterSpacing: -.2,
+            ),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          decoration: BoxDecoration(
+            color: MyColors.primaryLight,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            '$itemCount Menu',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: MyColors.primaryDark,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-// ================================================================
-// EMPTY
-// ================================================================
+// ==================================================================
+// EMPTY STATE
+// ==================================================================
 
-class _EmptyProduct extends StatelessWidget {
-  const _EmptyProduct();
+class _EmptyProductState extends StatelessWidget {
+  const _EmptyProductState();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 30),
-
+      padding: const EdgeInsets.symmetric(vertical: 80),
       child: Column(
         children: [
           Container(
-            width: 80,
-
-            height: 80,
-
+            width: 64,
+            height: 64,
             decoration: BoxDecoration(
-              color: Colors.white,
-
-              shape: BoxShape.circle,
-
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: .05),
-
-                  blurRadius: 20,
-
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              color: MyColors.primaryLight,
+              borderRadius: BorderRadius.circular(20),
             ),
-
             child: const Icon(
-              Icons.inventory_2_outlined,
-
-              size: 36,
-
-              color: MyColors.textMuted,
+              Icons.restaurant_menu_rounded,
+              color: MyColors.primaryDark,
+              size: 30,
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           const Text(
-            'Produk tidak ditemukan',
-
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            'Menu belum tersedia',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: MyColors.textPrimary,
+            ),
           ),
 
           const SizedBox(height: 5),
 
           const Text(
-            'Coba gunakan kata pencarian lain.',
-
+            'Tarik layar ke bawah untuk memuat ulang.',
             textAlign: TextAlign.center,
-
-            style: TextStyle(color: MyColors.textSecondary, fontSize: 13),
+            style: TextStyle(fontSize: 12, color: MyColors.textSecondary),
           ),
         ],
       ),

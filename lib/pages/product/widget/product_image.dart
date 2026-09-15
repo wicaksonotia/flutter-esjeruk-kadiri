@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cashier/commons/colors.dart';
 import 'package:flutter/material.dart';
 
 class ProductImage extends StatelessWidget {
@@ -31,12 +32,7 @@ class ProductImage extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.cover,
-
-        /*
-         * Jika byte image rusak / bukan image valid,
-         * jangan biarkan exception merusak UI.
-         */
-        errorBuilder: (context, error, stackTrace) {
+        errorBuilder: (_, _, _) {
           return _placeholder();
         },
       ),
@@ -47,14 +43,24 @@ class ProductImage extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F3F5),
+        color: MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-
-      child: const Center(
-        child: Icon(Icons.fastfood_rounded, size: 30, color: Color(0xFFB8BDC5)),
+      child: Center(
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: MyColors.primaryLight,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const Icon(
+            Icons.fastfood_rounded,
+            size: 23,
+            color: MyColors.primaryDark,
+          ),
+        ),
       ),
     );
   }

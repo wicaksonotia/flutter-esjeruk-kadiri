@@ -11,17 +11,22 @@ class SearchBarContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: 54,
 
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
 
+        border: Border.all(
+          color: MyColors.border.withValues(alpha: .75),
+          width: 1,
+        ),
+
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .10),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(alpha: .035),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -39,18 +44,50 @@ class SearchBarContainer extends StatelessWidget {
           productController.searchProduct(value);
         },
 
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+        cursorColor: MyColors.primary,
+
+        style: const TextStyle(
+          color: MyColors.textPrimary,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+        ),
 
         decoration: InputDecoration(
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
 
-          hintText: 'Cari produk...',
-          hintStyle: const TextStyle(color: Color(0xFF9AA0A6), fontSize: 13),
+          hintText: 'Cari menu atau produk...',
 
-          prefixIcon: const Icon(
-            Icons.search_rounded,
-            color: MyColors.primary,
-            size: 22,
+          hintStyle: const TextStyle(
+            color: MyColors.textMuted,
+            fontSize: 13.5,
+            fontWeight: FontWeight.w500,
+          ),
+
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 15, right: 8),
+
+            child: Container(
+              width: 30,
+              height: 30,
+
+              decoration: BoxDecoration(
+                color: MyColors.primaryLight,
+                borderRadius: BorderRadius.circular(9),
+              ),
+
+              child: const Icon(
+                Icons.search_rounded,
+                color: MyColors.primaryDark,
+                size: 18,
+              ),
+            ),
+          ),
+
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 54,
+            minHeight: 54,
           ),
 
           suffixIcon: Obx(() {
@@ -58,15 +95,32 @@ class SearchBarContainer extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            return IconButton(
-              icon: const Icon(Icons.close_rounded, size: 19),
-              color: Colors.grey.shade600,
+            return Padding(
+              padding: const EdgeInsets.only(right: 6),
 
-              onPressed: productController.clearSearch,
+              child: IconButton(
+                tooltip: 'Hapus pencarian',
+
+                splashRadius: 18,
+
+                icon: const Icon(Icons.close_rounded, size: 18),
+
+                color: MyColors.textMuted,
+
+                onPressed: productController.clearSearch,
+              ),
             );
           }),
 
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 44,
+            minHeight: 54,
+          ),
+
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: 4,
+          ),
         ),
       ),
     );

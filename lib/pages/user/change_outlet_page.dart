@@ -264,7 +264,7 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
             itemCount: 4,
-            itemBuilder: (_, __) {
+            itemBuilder: (_, _) {
               return Container(
                 height: 82,
                 margin: const EdgeInsets.only(bottom: 10),

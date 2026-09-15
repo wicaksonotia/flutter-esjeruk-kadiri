@@ -220,7 +220,7 @@ class _CashPaymentSection extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: suggestions.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 7),
+              separatorBuilder: (_, _) => const SizedBox(width: 7),
               itemBuilder: (_, index) {
                 final amount = suggestions[index];
 

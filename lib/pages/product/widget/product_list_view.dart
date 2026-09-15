@@ -20,7 +20,7 @@ class ProductListView extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: products.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 9),
+      separatorBuilder: (_, _) => const SizedBox(height: 9),
       itemBuilder: (context, index) {
         return ProductCard(
           product: products[index],
