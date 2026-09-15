@@ -8,6 +8,7 @@ import 'package:cashier/pages/product/widget/footer.dart';
 import 'package:cashier/pages/product/widget/product_grid_view.dart';
 import 'package:cashier/pages/product/widget/product_hero_header.dart';
 import 'package:cashier/pages/product/widget/product_list_view.dart';
+import 'package:cashier/pages/product/widget/product_loading_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -241,14 +242,7 @@ class _ProductPageState extends State<ProductPage> {
 
       if (productController.isLoadingProductCategory.value ||
           productController.isLoadingProduct.value) {
-        return const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 80),
-            child: Center(
-              child: CircularProgressIndicator(color: MyColors.primary),
-            ),
-          ),
-        );
+        return const SliverToBoxAdapter(child: ProductLoadingShimmer());
       }
 
       // ============================================================
