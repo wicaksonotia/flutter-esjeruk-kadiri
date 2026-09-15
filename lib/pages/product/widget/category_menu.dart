@@ -139,100 +139,154 @@ class _CategoryChip extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
-        splashColor: MyColors.primary.withValues(alpha: .08),
-        highlightColor: MyColors.primary.withValues(alpha: .04),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+        splashColor: MyColors.primary.withValues(alpha: .07),
+        highlightColor: MyColors.primary.withValues(alpha: .03),
+        child: AnimatedScale(
+          scale: selected ? 1.0 : .98,
+          duration: const Duration(milliseconds: 240),
           curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: selected ? MyColors.primaryLight : Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              // ==================================================
+              // SOFT SELECTED BACKGROUND
+              // ==================================================
+
               color:
                   selected
-                      ? MyColors.primary.withValues(alpha: .12)
-                      : MyColors.border.withValues(alpha: .85),
-            ),
-            boxShadow:
-                selected
-                    ? [
-                      BoxShadow(
-                        color: MyColors.primary.withValues(alpha: .06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
-                    : null,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color:
-                      selected
-                          ? Colors.white.withValues(alpha: .55)
-                          : MyColors.primaryLight,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  _categoryIcon(title),
-                  size: 14,
-                  color: MyColors.primaryDark,
-                ),
-              ),
+                      ? MyColors.primary.withValues(alpha: .075)
+                      : Colors.white,
 
-              const SizedBox(width: 8),
+              borderRadius: BorderRadius.circular(14),
 
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                style: TextStyle(
-                  color: selected ? MyColors.primaryDark : MyColors.textPrimary,
-                  fontSize: 12,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  letterSpacing: -.1,
-                ),
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-
-              AnimatedSize(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                child:
+              border: Border.all(
+                color:
                     selected
-                        ? Padding(
-                          padding: const EdgeInsets.only(left: 7),
-                          child: Container(
-                            width: 17,
-                            height: 17,
-                            decoration: BoxDecoration(
-                              color: MyColors.primaryDark,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check_rounded,
-                              size: 11,
-                              color: MyColors.surface,
-                            ),
-                          ),
-                        )
-                        : const SizedBox.shrink(),
+                        ? MyColors.primary.withValues(alpha: .18)
+                        : MyColors.border.withValues(alpha: .85),
+                width: selected ? 1.1 : 1,
               ),
-            ],
+
+              // ==================================================
+              // VERY SOFT LIFT
+              // ==================================================
+              boxShadow:
+                  selected
+                      ? [
+                        BoxShadow(
+                          color: MyColors.primary.withValues(alpha: .055),
+                          blurRadius: 9,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                      : null,
+            ),
+
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ==================================================
+                // ICON
+                // ==================================================
+
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeOutCubic,
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color:
+                        selected
+                            ? MyColors.primary.withValues(alpha: .10)
+                            : MyColors.primaryLight.withValues(alpha: .72),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (
+                      Widget child,
+                      Animation<double> animation,
+                    ) {
+                      return ScaleTransition(
+                        scale: animation,
+                        child: FadeTransition(opacity: animation, child: child),
+                      );
+                    },
+                    child: Icon(
+                      _categoryIcon(title),
+                      key: ValueKey('${title}_$selected'),
+                      size: 14,
+                      color:
+                          selected
+                              ? MyColors.primaryDark
+                              : MyColors.textSecondary,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // ==================================================
+                // TITLE
+                // ==================================================
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 240),
+                  curve: Curves.easeOutCubic,
+                  style: TextStyle(
+                    color:
+                        selected ? MyColors.primaryDark : MyColors.textPrimary,
+                    fontSize: 12,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                    letterSpacing: -.1,
+                  ),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+                // ==================================================
+                // SOFT ACTIVE INDICATOR
+                // ==================================================
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 240),
+                  curve: Curves.easeOutCubic,
+                  child:
+                      selected
+                          ? Padding(
+                            padding: const EdgeInsets.only(left: 7),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 240),
+                              curve: Curves.easeOutCubic,
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: MyColors.primaryDark.withValues(
+                                  alpha: .65,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          )
+                          : const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  // ================================================================
+  // CATEGORY ICON
+  // ================================================================
 
   IconData _categoryIcon(String name) {
     final value = name.toLowerCase();
