@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- KASIRA -->
+    <color name="launch_background_color">#F5F8FC</color>
+    <color name="kasira_primary">#00529C</color>
+
+</resources>
