@@ -82,4 +82,11 @@ class MyColors {
   static const Color tagPurple = Color(0xFFF2EFF5);
   static const Color tagPink = Color(0xFFFAF1F5);
   static const Color tagRed = Color(0xFFFDECEC);
+
+  // ==========================================================
+  // DISABLED
+  // ==========================================================
+
+  static const Color disabled = Color(0xFFC9D5E2);
+  static const Color disabledText = Color(0xFF94A3B8);
 }

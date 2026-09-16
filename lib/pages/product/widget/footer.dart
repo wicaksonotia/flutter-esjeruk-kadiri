@@ -86,9 +86,9 @@ class FooterProduct extends StatelessWidget {
                           },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: MyColors.primary,
-                    disabledBackgroundColor: MyColors.border,
                     foregroundColor: MyColors.textOnPrimary,
-                    disabledForegroundColor: MyColors.textMuted,
+                    disabledBackgroundColor: MyColors.disabled,
+                    disabledForegroundColor: MyColors.disabledText,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(horizontal: 22),
                     shape: RoundedRectangleBorder(
