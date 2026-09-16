@@ -752,7 +752,7 @@ class TransactionGroupedList extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: MyColors.notionBgGrey,
+        color: MyColors.background,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

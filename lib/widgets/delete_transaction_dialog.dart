@@ -73,7 +73,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
-                          color: MyColors.textDark,
+                          color: MyColors.textPrimary,
                         ),
                       ),
                       SizedBox(height: 3),
@@ -139,7 +139,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: MyColors.textDark,
+                color: MyColors.textPrimary,
               ),
             ),
 
@@ -160,7 +160,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                   fontSize: 12,
                 ),
                 filled: true,
-                fillColor: MyColors.notionBgGrey,
+                fillColor: MyColors.background,
                 contentPadding: const EdgeInsets.all(13),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -202,7 +202,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                     child: const Text(
                       'Batal',
                       style: TextStyle(
-                        color: MyColors.textDark,
+                        color: MyColors.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
                       ),

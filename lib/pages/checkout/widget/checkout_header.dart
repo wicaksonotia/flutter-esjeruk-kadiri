@@ -22,7 +22,7 @@ class CheckoutHeader extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: MyColors.textDark,
+                    color: MyColors.textPrimary,
                   ),
                 ),
                 SizedBox(height: 2),

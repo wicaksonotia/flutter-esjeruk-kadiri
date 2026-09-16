@@ -66,6 +66,10 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
     );
   }
 
+  // ==============================================================
+  // HEADER
+  // ==============================================================
+
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
@@ -79,7 +83,9 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
+
           const SizedBox(height: 18),
+
           Row(
             children: [
               Container(
@@ -95,7 +101,9 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
                   color: MyColors.primaryDark,
                 ),
               ),
+
               const SizedBox(width: 12),
+
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,6 +134,10 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
     );
   }
 
+  // ==============================================================
+  // OUTLET ITEM
+  // ==============================================================
+
   Widget _buildOutletItem({required dynamic outlet}) {
     return Obx(() {
       final isSelected =
@@ -136,7 +148,7 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Material(
-          color: isSelected ? MyColors.primaryLight : MyColors.surface,
+          color: isSelected ? MyColors.accentLight : MyColors.surface,
           borderRadius: BorderRadius.circular(14),
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
@@ -149,8 +161,8 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
               loginController.phoneCabang.value = outlet.phoneCabang!;
             },
 
-            splashColor: MyColors.primary.withValues(alpha: .06),
-            highlightColor: MyColors.primary.withValues(alpha: .03),
+            splashColor: MyColors.accent.withValues(alpha: .08),
+            highlightColor: MyColors.accent.withValues(alpha: .04),
 
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
@@ -161,30 +173,57 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
                 border: Border.all(
                   color:
                       isSelected
-                          ? MyColors.primary.withValues(alpha: .35)
+                          ? MyColors.accent.withValues(alpha: .30)
                           : MyColors.border,
                 ),
+                boxShadow:
+                    isSelected
+                        ? [
+                          BoxShadow(
+                            color: MyColors.accent.withValues(alpha: .08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                        : null,
               ),
               child: Row(
                 children: [
-                  Container(
+                  // ==================================================
+                  // OUTLET ICON
+                  // ==================================================
+
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOutCubic,
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
                       color:
                           isSelected ? MyColors.surface : MyColors.surfaceSoft,
                       borderRadius: BorderRadius.circular(11),
+                      border:
+                          isSelected
+                              ? Border.all(
+                                color: MyColors.accent.withValues(alpha: .18),
+                              )
+                              : null,
                     ),
                     child: Icon(
                       Icons.storefront_outlined,
                       size: 20,
                       color:
                           isSelected
-                              ? MyColors.primaryDark
+                              ? MyColors.accentDark
                               : MyColors.textSecondary,
                     ),
                   ),
+
                   const SizedBox(width: 12),
+
+                  // ==================================================
+                  // OUTLET INFO
+                  // ==================================================
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,11 +237,13 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
                             fontWeight: FontWeight.w700,
                             color:
                                 isSelected
-                                    ? MyColors.primaryDark
+                                    ? MyColors.accentDark
                                     : MyColors.textPrimary,
                           ),
                         ),
+
                         const SizedBox(height: 5),
+
                         Text(
                           outlet.alamatCabang!.replaceAll(r'\n', '\n'),
                           maxLines: 2,
@@ -216,10 +257,16 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
                       ],
                     ),
                   ),
+
                   const SizedBox(width: 12),
+
+                  // ==================================================
+                  // SELECTED INDICATOR
+                  // ==================================================
                   Obx(
                     () => AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutCubic,
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
@@ -230,7 +277,7 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
                                         kasirController.idKasir.value &&
                                     outlet.idCabang ==
                                         loginController.idCabang.value)
-                                ? MyColors.primary
+                                ? MyColors.accent
                                 : MyColors.surfaceSoft,
                       ),
                       child: Icon(
@@ -255,6 +302,10 @@ class _UserChangeOutletPageState extends State<UserChangeOutletPage> {
       );
     });
   }
+
+  // ==============================================================
+  // LOADING
+  // ==============================================================
 
   Widget _buildLoading() {
     return Column(
