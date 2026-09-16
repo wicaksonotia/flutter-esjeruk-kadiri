@@ -50,12 +50,6 @@ class LoginController extends GetxController {
   // ============================================================
 
   @override
-  void onInit() {
-    super.onInit();
-    checkLoginStatus();
-  }
-
-  @override
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
@@ -309,22 +303,6 @@ class LoginController extends GetxController {
       );
     } finally {
       isLoading(false);
-    }
-  }
-
-  // ============================================================
-  // CHECK LOGIN STATUS
-  // ============================================================
-
-  Future<void> checkLoginStatus() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    isLogin.value = prefs.getBool('statusLogin') ?? false;
-
-    if (isLogin.value) {
-      Get.offAllNamed(RouterClass.product);
-    } else {
-      Get.offAllNamed(RouterClass.login);
     }
   }
 

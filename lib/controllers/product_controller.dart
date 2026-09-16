@@ -25,9 +25,9 @@ class ProductController extends GetxController {
   // STATE
   // ============================================================
 
-  final isLoadingProductCategory = true.obs;
+  final isLoadingProductCategory = false.obs;
 
-  final isLoadingProduct = true.obs;
+  final isLoadingProduct = false.obs;
 
   final showListGrid = true.obs;
 
@@ -45,17 +45,6 @@ class ProductController extends GetxController {
       TextEditingController();
 
   // ============================================================
-  // LIFECYCLE
-  // ============================================================
-
-  @override
-  void onInit() {
-    super.onInit();
-
-    fetchProductCategory();
-  }
-
-  // ============================================================
   // CATEGORY
   // ============================================================
 
@@ -71,8 +60,15 @@ class ProductController extends GetxController {
         productCategoryItems.clear();
       }
 
+      // ----------------------------------------------------------
+      // Setelah kategori berhasil / selesai,
+      // ambil produk.
+      // ----------------------------------------------------------
+
       await fetchProduct();
     } catch (error) {
+      debugPrint('FETCH PRODUCT CATEGORY ERROR: $error');
+
       Get.snackbar(
         'Notification',
         error.toString(),
@@ -91,17 +87,21 @@ class ProductController extends GetxController {
     try {
       isLoadingProduct(true);
 
-      final prefs = await SharedPreferences.getInstance();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      final idKios = prefs.getInt('id_kios') ?? 0;
+      final int idKios = prefs.getInt('id_kios') ?? 0;
 
       debugPrint('========== FETCH PRODUCT ==========');
+
       debugPrint('id_kios: $idKios');
+
       debugPrint('search: ${searchTextFieldController.text.trim()}');
 
       if (idKios == 0) {
         debugPrint('ID KIOS = 0');
+
         productItems.clear();
+
         return;
       }
 
@@ -114,6 +114,7 @@ class ProductController extends GetxController {
       final result = await RemoteDataSource.getProduct(rawFormat);
 
       debugPrint('PRODUCT RESULT: ${result?.length}');
+
       debugPrint('===================================');
 
       if (result != null) {
@@ -135,6 +136,22 @@ class ProductController extends GetxController {
   }
 
   // ============================================================
+  // INITIAL LOAD
+  // ============================================================
+
+  Future<void> loadInitialData() async {
+    await fetchProductCategory();
+  }
+
+  // ============================================================
+  // REFRESH
+  // ============================================================
+
+  Future<void> refreshProducts() async {
+    await fetchProductCategory();
+  }
+
+  // ============================================================
   // SEARCH
   // ============================================================
 
@@ -146,12 +163,12 @@ class ProductController extends GetxController {
     await fetchProduct();
   }
 
-  void clearSearch() {
+  Future<void> clearSearch() async {
     searchTextFieldController.clear();
 
     isEmptyValue.value = true;
 
-    fetchProduct();
+    await fetchProduct();
   }
 
   // ============================================================
@@ -179,7 +196,7 @@ class ProductController extends GetxController {
   // ============================================================
 
   Future<void> toggleFavorite(ProductModel product) async {
-    final index = productItems.indexWhere(
+    final int index = productItems.indexWhere(
       (item) => item.idProduct == product.idProduct,
     );
 
@@ -187,7 +204,7 @@ class ProductController extends GetxController {
       return;
     }
 
-    final oldValue = productItems[index].favorite ?? false;
+    final bool oldValue = productItems[index].favorite ?? false;
 
     productItems[index].favorite = !oldValue;
 
@@ -228,7 +245,8 @@ class ProductController extends GetxController {
   }
 
   bool isCategoryName(ProductModel product, String keyword) {
-    final name = categoryNameById(product.idCategory).toLowerCase().trim();
+    final String name =
+        categoryNameById(product.idCategory).toLowerCase().trim();
 
     return name == keyword.toLowerCase();
   }

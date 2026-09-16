@@ -76,7 +76,7 @@ class _ProductPageState extends State<ProductPage> {
   // ============================================================
 
   Future<void> _refreshProducts() async {
-    await productController.fetchProductCategory();
+    await productController.refreshProducts();
   }
 
   // ============================================================
