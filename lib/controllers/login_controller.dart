@@ -1,4 +1,5 @@
 import 'package:cashier/commons/colors.dart';
+import 'package:cashier/controllers/product_controller.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
@@ -102,6 +103,16 @@ class LoginController extends GetxController {
       if (!result) {
         throw "Kios is not registered";
       }
+
+      // ========================================================
+      // LOAD DATA SETELAH LOGIN
+      // ========================================================
+
+      final productController = Get.find<ProductController>();
+
+      await productController.loadInitialData();
+
+      // ========================================================
 
       Get.offAllNamed(RouterClass.product);
     } catch (error) {

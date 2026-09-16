@@ -212,7 +212,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
 
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 110),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                 sliver: _buildProductCategories(),
               ),
             ],
