@@ -1,232 +1,384 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-// ignore: must_be_immutable
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final LoginController loginController = Get.find<LoginController>();
+  final LoginController controller = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        backgroundColor: MyColors.surface,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 400,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/login/background.png'),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 30,
-                      width: 80,
-                      height: 200,
-                      child: FadeInUp(
-                        duration: const Duration(seconds: 1),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                'assets/images/login/light-1.png',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 140,
-                      width: 80,
-                      height: 150,
-                      child: FadeInUp(
-                        duration: const Duration(milliseconds: 1200),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                'assets/images/login/light-2.png',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 40,
-                      top: 40,
-                      width: 80,
-                      height: 150,
-                      child: FadeInUp(
-                        duration: const Duration(milliseconds: 1300),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                'assets/images/login/clock.png',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      child: FadeInUp(
-                        duration: const Duration(milliseconds: 1600),
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 50),
-                          child: const Center(
-                            child: Text(
-                              "Login",
-                              style: TextStyle(
-                                color: MyColors.surface,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(30.0),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: MyColors.background,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
                 child: Column(
                   children: [
-                    FadeInUp(
-                      duration: const Duration(milliseconds: 1800),
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: MyColors.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: const Color.fromRGBO(143, 148, 251, 1),
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(143, 148, 251, .2),
-                              blurRadius: 20.0,
-                              offset: Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              // decoration: const BoxDecoration(
-                              //     border: Border(
-                              //         bottom: BorderSide(
-                              //             color: Color.fromRGBO(
-                              //                 143, 148, 251, 1)))),
-                              child: TextField(
-                                controller: loginController.emailController,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Nama Kios",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: loginController.passwordController,
-                                obscureText:
-                                    !loginController.isPasswordVisible.value,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(color: Colors.grey[700]),
-                                  suffixIcon: InkWell(
-                                    onTap: () {
-                                      loginController.showPassword();
-                                    },
-                                    child: Icon(
-                                      loginController.isPasswordVisible.value
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: const Color(0xFF5C5F65),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Gap(30),
-                    FadeInUp(
-                      duration: const Duration(milliseconds: 1900),
-                      child: GestureDetector(
-                        onTap: () {
-                          loginController.loginWithEmail();
-                        },
-                        child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color.fromRGBO(143, 148, 251, 1),
-                                Color.fromRGBO(143, 148, 251, .6),
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child:
-                                loginController.isLoading.value
-                                    ? const CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        MyColors.surface,
-                                      ),
-                                    )
-                                    : const Text(
-                                      "Login",
-                                      style: TextStyle(
-                                        color: MyColors.surface,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // const Gap(70),
-                    // FadeInUp(
-                    //     duration: const Duration(milliseconds: 2000),
-                    //     child: const Text(
-                    //       "Forgot Password?",
-                    //       style: TextStyle(
-                    //           color: Color.fromRGBO(143, 148, 251, 1)),
-                    //     )),
+                    const SizedBox(height: 20),
+
+                    const _LoginHeader(),
+
+                    const SizedBox(height: 36),
+
+                    _LoginCard(controller: controller),
+
+                    const SizedBox(height: 24),
+
+                    const _FooterText(),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+class _LoginHeader extends StatelessWidget {
+  const _LoginHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Hero(
+          tag: 'kasira-logo',
+          child: Container(
+            width: 92,
+            height: 92,
+            decoration: BoxDecoration(
+              color: MyColors.primary,
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: MyColors.primary.withValues(alpha: 0.18),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(
+                  Icons.point_of_sale_rounded,
+                  size: 44,
+                  color: Colors.white,
+                ),
+
+                Positioned(
+                  right: 14,
+                  top: 14,
+                  child: Container(
+                    width: 11,
+                    height: 11,
+                    decoration: BoxDecoration(
+                      color: MyColors.accent,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: MyColors.primary, width: 2),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        const Text(
+          'KASIRA',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            color: MyColors.primaryDark,
+            letterSpacing: 2.5,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        const Text(
+          'Simple cashier for everyday business',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            color: MyColors.textSecondary,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// LOGIN CARD
+// ============================================================================
+
+class _LoginCard extends StatelessWidget {
+  final LoginController controller;
+
+  const _LoginCard({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: MyColors.border.withValues(alpha: .7)),
+        boxShadow: [
+          BoxShadow(
+            color: MyColors.shadow.withValues(alpha: .06),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Masuk',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: MyColors.textPrimary,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          const Text(
+            'Masukkan nama kios dan password untuk melanjutkan.',
+            style: TextStyle(
+              fontSize: 13,
+              color: MyColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          _InputField(
+            title: 'Nama Kios',
+            hint: 'Contoh: Himalaya',
+            icon: Icons.storefront_outlined,
+            controller: controller.emailController,
+            textInputAction: TextInputAction.next,
+          ),
+
+          const SizedBox(height: 18),
+
+          Obx(
+            () => _InputField(
+              title: 'Password',
+              hint: '••••••••',
+              icon: Icons.lock_outline_rounded,
+              controller: controller.passwordController,
+              obscure: !controller.isPasswordVisible.value,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => controller.loginWithEmail(),
+              suffix: IconButton(
+                splashRadius: 20,
+                onPressed: controller.showPassword,
+                icon: Icon(
+                  controller.isPasswordVisible.value
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_rounded,
+                  size: 20,
+                  color: MyColors.textSecondary,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 28),
+
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed:
+                  controller.isLoading.value ? null : controller.loginWithEmail,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColors.primary,
+                disabledBackgroundColor: MyColors.primary.withValues(
+                  alpha: .65,
+                ),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child:
+                    controller.isLoading.value
+                        ? const SizedBox(
+                          key: ValueKey('loading'),
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            valueColor: AlwaysStoppedAnimation(
+                              MyColors.textOnPrimary,
+                            ),
+                          ),
+                        )
+                        : const Row(
+                          key: ValueKey('text'),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.login_rounded,
+                              size: 18,
+                              color: MyColors.textOnPrimary,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'Masuk',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: MyColors.textOnPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// INPUT
+// ============================================================================
+
+class _InputField extends StatelessWidget {
+  final String title;
+  final String hint;
+  final IconData icon;
+  final TextEditingController controller;
+  final bool obscure;
+  final Widget? suffix;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
+  const _InputField({
+    required this.title,
+    required this.hint,
+    required this.icon,
+    required this.controller,
+    this.obscure = false,
+    this.suffix,
+    this.textInputAction,
+    this.onSubmitted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: MyColors.textPrimary,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          textInputAction: textInputAction,
+          onSubmitted: onSubmitted,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: MyColors.textPrimary,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(
+              color: MyColors.textMuted,
+              fontWeight: FontWeight.w500,
+            ),
+            prefixIcon: Icon(icon, color: MyColors.primary, size: 20),
+            suffixIcon: suffix,
+            filled: true,
+            fillColor: MyColors.surfaceSoft,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 18,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: MyColors.border.withValues(alpha: .8),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: MyColors.primary, width: 1.4),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// FOOTER
+// ============================================================================
+
+class _FooterText extends StatelessWidget {
+  const _FooterText();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Text(
+          'Powered by KASIRA',
+          style: TextStyle(fontSize: 11, color: MyColors.textMuted),
+        ),
+        SizedBox(height: 4),
+        Text(
+          'Version 1.0.0',
+          style: TextStyle(fontSize: 11, color: MyColors.textMuted),
+        ),
+      ],
     );
   }
 }
