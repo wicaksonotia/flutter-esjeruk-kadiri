@@ -4,6 +4,7 @@ import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/controllers/login_controller.dart';
 import 'package:cashier/navigation/app_navigation.dart';
 import 'package:cashier/pages/change_outlet_page.dart';
+import 'package:cashier/widgets/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -405,10 +406,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           borderRadius: BorderRadius.circular(12),
           splashColor: MyColors.error.withValues(alpha: .06),
           highlightColor: MyColors.error.withValues(alpha: .03),
-          onTap: () {
-            cartController.clearCart();
-            loginController.logout();
-          },
+          onTap: () => _confirmLogout(context),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             decoration: BoxDecoration(
@@ -448,6 +446,16 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _confirmLogout(BuildContext context) {
+    return LogoutConfirmationDialog.show(
+      context: context,
+      onConfirm: () {
+        cartController.clearCart();
+        loginController.logout();
+      },
     );
   }
 

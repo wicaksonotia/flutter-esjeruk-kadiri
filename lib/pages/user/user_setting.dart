@@ -1,8 +1,9 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/controllers/login_controller.dart';
-import 'package:cashier/navigation/app_navigation.dart';
 import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
+import 'package:cashier/navigation/app_navigation.dart';
+import 'package:cashier/widgets/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -11,16 +12,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserSetting extends StatelessWidget {
   const UserSetting({super.key});
 
+  LoginController get loginController => Get.find<LoginController>();
+
+  CartController get cartController => Get.find<CartController>();
+
   @override
   Widget build(BuildContext context) {
-    final loginController = Get.find<LoginController>();
-    final cartController = Get.find<CartController>();
-
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
-
       backgroundColor: MyColors.background,
 
+      // ============================================================
+      // APP BAR
+      // ============================================================
       appBar: AppBar(
         backgroundColor: MyColors.primary,
         foregroundColor: MyColors.textOnPrimary,
@@ -30,14 +34,20 @@ class UserSetting extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
         leading: Builder(
-          builder:
-              (context) => IconButton(
-                icon: const Icon(Icons.menu_rounded),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
         ),
       ),
 
+      // ============================================================
+      // BODY
+      // ============================================================
       body: FutureBuilder<SharedPreferences>(
         future: SharedPreferences.getInstance(),
         builder: (context, snapshot) {
@@ -57,6 +67,10 @@ class UserSetting extends StatelessWidget {
               return ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  // ==================================================
+                  // USER HEADER
+                  // ==================================================
+
                   GetBuilder<LoginController>(
                     builder: (_) {
                       return _UserHeader(
@@ -69,6 +83,9 @@ class UserSetting extends StatelessWidget {
 
                   const Gap(20),
 
+                  // ==================================================
+                  // ACCOUNT
+                  // ==================================================
                   _SectionCard(
                     title: 'Account',
                     children: [
@@ -77,20 +94,27 @@ class UserSetting extends StatelessWidget {
                         color: MyColors.primary,
                         title: 'Profile',
                         subtitle: 'Edit account information',
-                        onTap: () => Get.toNamed(RouterClass.profile),
+                        onTap: () {
+                          Get.toNamed(RouterClass.profile);
+                        },
                       ),
                       _MenuTile(
                         icon: Icons.lock_outline_rounded,
                         color: MyColors.primary,
                         title: 'Change Password',
                         subtitle: 'Change account password',
-                        onTap: () => Get.toNamed(RouterClass.changePassword),
+                        onTap: () {
+                          Get.toNamed(RouterClass.changePassword);
+                        },
                       ),
                     ],
                   ),
 
                   const Gap(16),
 
+                  // ==================================================
+                  // OPERASIONAL
+                  // ==================================================
                   _SectionCard(
                     title: 'Operasional',
                     children: [
@@ -108,13 +132,18 @@ class UserSetting extends StatelessWidget {
                                   ? MyColors.success
                                   : MyColors.textMuted,
                         ),
-                        onTap: () => Get.toNamed(RouterClass.bluetoothSetting),
+                        onTap: () {
+                          Get.toNamed(RouterClass.bluetoothSetting);
+                        },
                       ),
                     ],
                   ),
 
                   const Gap(16),
 
+                  // ==================================================
+                  // SUPPORT
+                  // ==================================================
                   _SectionCard(
                     title: 'Support',
                     children: [
@@ -123,7 +152,9 @@ class UserSetting extends StatelessWidget {
                         color: MyColors.primary,
                         title: 'SOP Document',
                         subtitle: 'Panduan operasional kasir',
-                        onTap: () => Get.toNamed(RouterClass.sopDocument),
+                        onTap: () {
+                          Get.toNamed(RouterClass.sopDocument);
+                        },
                       ),
                       const _InfoTile(
                         icon: Icons.info_outline_rounded,
@@ -136,27 +167,10 @@ class UserSetting extends StatelessWidget {
 
                   const Gap(30),
 
+                  // ==================================================
                   // LOGOUT
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      loginController.logout();
-                      cartController.clearCart();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: MyColors.error,
-                      side: const BorderSide(color: MyColors.error),
-                      backgroundColor: MyColors.surface,
-                      minimumSize: const Size(double.infinity, 52),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    icon: const Icon(Icons.logout_rounded),
-                    label: const Text(
-                      'Logout',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
+                  // ==================================================
+                  _LogoutButton(onTap: () => _confirmLogout(context)),
 
                   const Gap(12),
 
@@ -177,6 +191,10 @@ class UserSetting extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // PRINTER
+  // ============================================================
+
   Future<Map<String, String?>> _loadPrinterInfo() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -185,11 +203,56 @@ class UserSetting extends StatelessWidget {
       'mac': prefs.getString('selected_printer_mac'),
     };
   }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  Future<void> _confirmLogout(BuildContext context) {
+    return LogoutConfirmationDialog.show(
+      context: context,
+      onConfirm: _performLogout,
+    );
+  }
+
+  void _performLogout() {
+    cartController.clearCart();
+    loginController.logout();
+  }
 }
 
-/// =======================================================
-/// USER HEADER
-/// =======================================================
+// ============================================================================
+// LOGOUT BUTTON
+// ============================================================================
+
+class _LogoutButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _LogoutButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: MyColors.error,
+        side: const BorderSide(color: MyColors.error),
+        backgroundColor: MyColors.surface,
+        minimumSize: const Size(double.infinity, 52),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      icon: const Icon(Icons.logout_rounded),
+      label: const Text(
+        'Logout',
+        style: TextStyle(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// USER HEADER
+// ============================================================================
 
 class _UserHeader extends StatelessWidget {
   final String name;
@@ -242,6 +305,8 @@ class _UserHeader extends StatelessWidget {
               children: [
                 Text(
                   name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -253,6 +318,8 @@ class _UserHeader extends StatelessWidget {
 
                 Text(
                   outlet,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: MyColors.textSecondary,
                     fontWeight: FontWeight.w500,
@@ -263,6 +330,8 @@ class _UserHeader extends StatelessWidget {
 
                 Text(
                   'Cabang $branch',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: MyColors.textMuted,
                     fontSize: 13,
@@ -277,9 +346,9 @@ class _UserHeader extends StatelessWidget {
   }
 }
 
-/// =======================================================
-/// SECTION CARD
-/// =======================================================
+// ============================================================================
+// SECTION CARD
+// ============================================================================
 
 class _SectionCard extends StatelessWidget {
   final String title;
@@ -326,9 +395,9 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-/// =======================================================
-/// MENU TILE
-/// =======================================================
+// ============================================================================
+// MENU TILE
+// ============================================================================
 
 class _MenuTile extends StatelessWidget {
   final IconData icon;
@@ -409,9 +478,9 @@ class _MenuTile extends StatelessWidget {
   }
 }
 
-/// =======================================================
-/// INFO TILE
-/// =======================================================
+// ============================================================================
+// INFO TILE
+// ============================================================================
 
 class _InfoTile extends StatelessWidget {
   final IconData icon;
