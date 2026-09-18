@@ -5,7 +5,6 @@ import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:cashier/navigation/app_navigation.dart';
 import 'package:cashier/widgets/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,172 +20,180 @@ class UserSetting extends StatelessWidget {
     return Scaffold(
       drawer: const custom_drawer.NavigationDrawer(),
       backgroundColor: MyColors.background,
+      appBar: const _SettingsAppBar(),
+      body: SafeArea(
+        child: FutureBuilder<SharedPreferences>(
+          future: SharedPreferences.getInstance(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(color: MyColors.primary),
+              );
+            }
 
-      // ============================================================
-      // APP BAR
-      // ============================================================
-      appBar: AppBar(
-        backgroundColor: MyColors.primary,
-        foregroundColor: MyColors.textOnPrimary,
-        elevation: 0,
-        title: const Text(
-          'User Settings',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu_rounded),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
+            final prefs = snapshot.data!;
+
+            return FutureBuilder<Map<String, String?>>(
+              future: _loadPrinterInfo(),
+              builder: (context, printerSnapshot) {
+                final printer = printerSnapshot.data ?? {};
+
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ==================================================
+                      // USER HEADER
+                      // ==================================================
+
+                      GetBuilder<LoginController>(
+                        builder: (_) {
+                          return _UserHeader(
+                            name: prefs.getString('nama_kasir') ?? '-',
+                            outlet: prefs.getString('kios') ?? '-',
+                            branch: prefs.getString('cabang') ?? '-',
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // ==================================================
+                      // ACCOUNT
+                      // ==================================================
+                      const _SectionHeader(
+                        title: 'Account',
+                        subtitle: 'Manage your personal account',
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _SettingsCard(
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.person_outline_rounded,
+                            iconBackground: MyColors.primary.withValues(
+                              alpha: 0.10,
+                            ),
+                            iconColor: MyColors.primary,
+                            title: 'Profile',
+                            subtitle: 'View and manage your profile',
+                            onTap: () {
+                              Get.toNamed(RouterClass.profile);
+                            },
+                          ),
+
+                          const _SettingsDivider(),
+
+                          _SettingsTile(
+                            icon: Icons.lock_outline_rounded,
+                            iconBackground: Colors.orange.withValues(
+                              alpha: 0.10,
+                            ),
+                            iconColor: Colors.orange.shade700,
+                            title: 'Change Password',
+                            subtitle: 'Update your account password',
+                            onTap: () {
+                              Get.toNamed(RouterClass.changePassword);
+                            },
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // ==================================================
+                      // OPERASIONAL
+                      // ==================================================
+                      const _SectionHeader(
+                        title: 'Operasional',
+                        subtitle: 'Configure your cashier equipment',
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _SettingsCard(
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.bluetooth_rounded,
+                            iconBackground: Colors.blue.withValues(alpha: 0.10),
+                            iconColor: Colors.blue.shade700,
+                            title: 'Bluetooth Printer',
+                            subtitle:
+                                printer['name'] ?? 'Belum memilih printer',
+                            trailing: _PrinterStatus(
+                              connected: printer['mac'] != null,
+                            ),
+                            onTap: () {
+                              Get.toNamed(RouterClass.bluetoothSetting);
+                            },
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // ==================================================
+                      // SUPPORT
+                      // ==================================================
+                      const _SectionHeader(
+                        title: 'Support',
+                        subtitle: 'Find answers and get help',
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _SettingsCard(
+                        children: [
+                          _SettingsTile(
+                            icon: Icons.menu_book_outlined,
+                            iconBackground: Colors.teal.withValues(alpha: 0.10),
+                            iconColor: Colors.teal.shade700,
+                            title: 'SOP Document',
+                            subtitle: 'Panduan operasional kasir',
+                            onTap: () {
+                              Get.toNamed(RouterClass.sopDocument);
+                            },
+                          ),
+
+                          const _SettingsDivider(),
+
+                          _SettingsTile(
+                            icon: Icons.help_outline_rounded,
+                            iconBackground: Colors.indigo.withValues(
+                              alpha: 0.10,
+                            ),
+                            iconColor: Colors.indigo.shade700,
+                            title: 'FAQ',
+                            subtitle: 'Frequently asked questions',
+                            onTap: () {
+                              // TODO:
+                              // Tambahkan route FAQ ketika halaman
+                              // FAQ sudah dibuat.
+                            },
+                          ),
+
+                          const _SettingsDivider(),
+
+                          const _VersionTile(),
+                        ],
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // ==================================================
+                      // LOGOUT
+                      // ==================================================
+                      _LogoutButton(onTap: () => _confirmLogout(context)),
+                    ],
+                  ),
+                );
               },
             );
           },
         ),
-      ),
-
-      // ============================================================
-      // BODY
-      // ============================================================
-      body: FutureBuilder<SharedPreferences>(
-        future: SharedPreferences.getInstance(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(color: MyColors.primary),
-            );
-          }
-
-          final prefs = snapshot.data!;
-
-          return FutureBuilder<Map<String, String?>>(
-            future: _loadPrinterInfo(),
-            builder: (context, bluetooth) {
-              final printer = bluetooth.data ?? {};
-
-              return ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // ==================================================
-                  // USER HEADER
-                  // ==================================================
-
-                  GetBuilder<LoginController>(
-                    builder: (_) {
-                      return _UserHeader(
-                        name: prefs.getString('nama_kasir') ?? '-',
-                        outlet: prefs.getString('kios') ?? '-',
-                        branch: prefs.getString('cabang') ?? '-',
-                      );
-                    },
-                  ),
-
-                  const Gap(20),
-
-                  // ==================================================
-                  // ACCOUNT
-                  // ==================================================
-                  _SectionCard(
-                    title: 'Account',
-                    children: [
-                      _MenuTile(
-                        icon: Icons.person_outline_rounded,
-                        color: MyColors.primary,
-                        title: 'Profile',
-                        subtitle: 'Edit account information',
-                        onTap: () {
-                          Get.toNamed(RouterClass.profile);
-                        },
-                      ),
-                      _MenuTile(
-                        icon: Icons.lock_outline_rounded,
-                        color: MyColors.primary,
-                        title: 'Change Password',
-                        subtitle: 'Change account password',
-                        onTap: () {
-                          Get.toNamed(RouterClass.changePassword);
-                        },
-                      ),
-                    ],
-                  ),
-
-                  const Gap(16),
-
-                  // ==================================================
-                  // OPERASIONAL
-                  // ==================================================
-                  _SectionCard(
-                    title: 'Operasional',
-                    children: [
-                      _MenuTile(
-                        icon: Icons.bluetooth_rounded,
-                        color: MyColors.primary,
-                        title: 'Bluetooth Printer',
-                        subtitle: printer['name'] ?? 'Belum memilih printer',
-                        trailing: Icon(
-                          printer['mac'] != null
-                              ? Icons.check_circle_rounded
-                              : Icons.radio_button_unchecked_rounded,
-                          color:
-                              printer['mac'] != null
-                                  ? MyColors.success
-                                  : MyColors.textMuted,
-                        ),
-                        onTap: () {
-                          Get.toNamed(RouterClass.bluetoothSetting);
-                        },
-                      ),
-                    ],
-                  ),
-
-                  const Gap(16),
-
-                  // ==================================================
-                  // SUPPORT
-                  // ==================================================
-                  _SectionCard(
-                    title: 'Support',
-                    children: [
-                      _MenuTile(
-                        icon: Icons.menu_book_outlined,
-                        color: MyColors.primary,
-                        title: 'SOP Document',
-                        subtitle: 'Panduan operasional kasir',
-                        onTap: () {
-                          Get.toNamed(RouterClass.sopDocument);
-                        },
-                      ),
-                      const _InfoTile(
-                        icon: Icons.info_outline_rounded,
-                        color: MyColors.primary,
-                        title: 'Versi Aplikasi',
-                        value: 'v1.0.0',
-                      ),
-                    ],
-                  ),
-
-                  const Gap(30),
-
-                  // ==================================================
-                  // LOGOUT
-                  // ==================================================
-                  _LogoutButton(onTap: () => _confirmLogout(context)),
-
-                  const Gap(12),
-
-                  const Center(
-                    child: Text(
-                      'Cashier Himalaya',
-                      style: TextStyle(color: MyColors.textMuted, fontSize: 12),
-                    ),
-                  ),
-
-                  const Gap(10),
-                ],
-              );
-            },
-          );
-        },
       ),
     );
   }
@@ -222,29 +229,44 @@ class UserSetting extends StatelessWidget {
 }
 
 // ============================================================================
-// LOGOUT BUTTON
+// APP BAR
 // ============================================================================
 
-class _LogoutButton extends StatelessWidget {
-  final VoidCallback onTap;
+class _SettingsAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _SettingsAppBar();
 
-  const _LogoutButton({required this.onTap});
+  @override
+  Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: MyColors.error,
-        side: const BorderSide(color: MyColors.error),
-        backgroundColor: MyColors.surface,
-        minimumSize: const Size(double.infinity, 52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    return AppBar(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: MyColors.background,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: 8,
+      leading: Builder(
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: IconButton(
+              tooltip: 'Menu',
+              icon: const Icon(Icons.menu_rounded, color: MyColors.textPrimary),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            ),
+          );
+        },
       ),
-      icon: const Icon(Icons.logout_rounded),
-      label: const Text(
-        'Logout',
-        style: TextStyle(fontWeight: FontWeight.w700),
+      title: const Text(
+        'Settings',
+        style: TextStyle(
+          color: MyColors.textPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -268,36 +290,25 @@ class _UserHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: MyColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: MyColors.border),
         boxShadow: const [
           BoxShadow(
             color: MyColors.shadow,
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            blurRadius: 16,
+            offset: Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
-          Container(
-            width: 62,
-            height: 62,
-            decoration: const BoxDecoration(
-              color: MyColors.primaryLight,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.person_rounded,
-              size: 34,
-              color: MyColors.primaryDark,
-            ),
-          ),
+          const _ProfileAvatar(),
 
-          const Gap(16),
+          const SizedBox(width: 16),
 
           Expanded(
             child: Column(
@@ -309,24 +320,42 @@ class _UserHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: MyColors.textPrimary,
                   ),
                 ),
 
-                const Gap(4),
+                const SizedBox(height: 6),
 
-                Text(
-                  outlet,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: MyColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: MyColors.success,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+
+                    const SizedBox(width: 7),
+
+                    Expanded(
+                      child: Text(
+                        outlet,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: MyColors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
-                const Gap(2),
+                const SizedBox(height: 3),
 
                 Text(
                   'Cabang $branch',
@@ -334,7 +363,7 @@ class _UserHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: MyColors.textMuted,
-                    fontSize: 13,
+                    fontSize: 11,
                   ),
                 ),
               ],
@@ -347,48 +376,62 @@ class _UserHeader extends StatelessWidget {
 }
 
 // ============================================================================
-// SECTION CARD
+// PROFILE AVATAR
 // ============================================================================
 
-class _SectionCard extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-
-  const _SectionCard({required this.title, required this.children});
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar();
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
-        color: MyColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: MyColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: MyColors.shadow,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
+        color: MyColors.primaryLight,
+        shape: BoxShape.circle,
       ),
+      child: const Icon(
+        Icons.person_rounded,
+        size: 30,
+        color: MyColors.primaryDark,
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// SECTION HEADER
+// ============================================================================
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SectionHeader({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: MyColors.textPrimary,
-              ),
+          Text(
+            title,
+            style: const TextStyle(
+              color: MyColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
-          const Divider(height: 1, color: MyColors.divider),
+          const SizedBox(height: 4),
 
-          ...children,
+          Text(
+            subtitle,
+            style: const TextStyle(color: MyColors.textMuted, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -396,20 +439,52 @@ class _SectionCard extends StatelessWidget {
 }
 
 // ============================================================================
-// MENU TILE
+// SETTINGS CARD
 // ============================================================================
 
-class _MenuTile extends StatelessWidget {
+class _SettingsCard extends StatelessWidget {
+  final List<Widget> children;
+
+  const _SettingsCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: MyColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: MyColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: MyColors.shadow,
+            blurRadius: 14,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+}
+
+// ============================================================================
+// SETTINGS TILE
+// ============================================================================
+
+class _SettingsTile extends StatelessWidget {
   final IconData icon;
-  final Color color;
+  final Color iconBackground;
+  final Color iconColor;
   final String title;
   final String subtitle;
   final Widget? trailing;
   final VoidCallback onTap;
 
-  const _MenuTile({
+  const _SettingsTile({
     required this.icon,
-    required this.color,
+    required this.iconBackground,
+    required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -422,23 +497,20 @@ class _MenuTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        splashColor: MyColors.primary.withValues(alpha: .05),
-        highlightColor: MyColors.primary.withValues(alpha: .025),
+        borderRadius: BorderRadius.circular(20),
+        splashColor: MyColors.primary.withValues(alpha: 0.05),
+        highlightColor: MyColors.primary.withValues(alpha: 0.025),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           child: Row(
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: MyColors.primaryLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: color, size: 21),
+              _MenuIcon(
+                icon: icon,
+                backgroundColor: iconBackground,
+                iconColor: iconColor,
               ),
 
-              const Gap(14),
+              const SizedBox(width: 14),
 
               Expanded(
                 child: Column(
@@ -446,28 +518,36 @@ class _MenuTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
                         color: MyColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
 
-                    const Gap(2),
+                    const SizedBox(height: 4),
 
                     Text(
                       subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: MyColors.textSecondary,
-                        fontSize: 12,
+                        fontSize: 11,
                       ),
                     ),
                   ],
                 ),
               ),
 
+              const SizedBox(width: 10),
+
               trailing ??
                   const Icon(
                     Icons.chevron_right_rounded,
+                    size: 22,
                     color: MyColors.textMuted,
                   ),
             ],
@@ -479,65 +559,192 @@ class _MenuTile extends StatelessWidget {
 }
 
 // ============================================================================
-// INFO TILE
+// MENU ICON
 // ============================================================================
 
-class _InfoTile extends StatelessWidget {
+class _MenuIcon extends StatelessWidget {
   final IconData icon;
-  final Color color;
-  final String title;
-  final String value;
+  final Color backgroundColor;
+  final Color iconColor;
 
-  const _InfoTile({
+  const _MenuIcon({
     required this.icon,
-    required this.color,
-    required this.title,
-    required this.value,
+    required this.backgroundColor,
+    required this.iconColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Icon(icon, size: 21, color: iconColor),
+    );
+  }
+}
+
+// ============================================================================
+// DIVIDER
+// ============================================================================
+
+class _SettingsDivider extends StatelessWidget {
+  const _SettingsDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(left: 74),
+      child: Divider(height: 1, thickness: 0.6, color: MyColors.divider),
+    );
+  }
+}
+
+// ============================================================================
+// PRINTER STATUS
+// ============================================================================
+
+class _PrinterStatus extends StatelessWidget {
+  final bool connected;
+
+  const _PrinterStatus({required this.connected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color:
+            connected
+                ? MyColors.success.withValues(alpha: 0.10)
+                : MyColors.textMuted.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            connected
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked_rounded,
+            size: 14,
+            color: connected ? MyColors.success : MyColors.textMuted,
+          ),
+
+          const SizedBox(width: 5),
+
+          Text(
+            connected ? 'Connected' : 'Not set',
+            style: TextStyle(
+              color: connected ? MyColors.success : MyColors.textMuted,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// VERSION TILE
+// ============================================================================
+
+class _VersionTile extends StatelessWidget {
+  const _VersionTile();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: MyColors.primaryLight,
-              borderRadius: BorderRadius.circular(12),
+              color: MyColors.textMuted.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(13),
             ),
-            child: Icon(icon, color: color, size: 21),
+            child: const Icon(
+              Icons.info_outline_rounded,
+              size: 21,
+              color: MyColors.textMuted,
+            ),
           ),
 
-          const Gap(14),
+          const SizedBox(width: 14),
 
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
+                  'Application Version',
+                  style: TextStyle(
                     color: MyColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
 
-                const Gap(2),
+                SizedBox(height: 4),
 
                 Text(
-                  value,
-                  style: const TextStyle(
-                    color: MyColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                  'Cashier Himalaya',
+                  style: TextStyle(color: MyColors.textSecondary, fontSize: 11),
                 ),
               ],
             ),
           ),
+
+          const Text(
+            '1.0.0',
+            style: TextStyle(
+              color: MyColors.textMuted,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// LOGOUT BUTTON
+// ============================================================================
+
+class _LogoutButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _LogoutButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        icon: const Icon(Icons.logout_rounded, size: 19),
+        label: const Text(
+          'Logout',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        ),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: MyColors.error,
+          backgroundColor: MyColors.surface,
+          side: BorderSide(color: MyColors.error.withValues(alpha: 0.30)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
       ),
     );
   }
