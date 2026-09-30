@@ -8,58 +8,189 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
-  var dailyTransactionItems = <TransactionModel>[].obs;
-  var transactionItems = <TransactionModel>[].obs;
+  // ============================================================
+  // DATA
+  // ============================================================
+
+  final dailyTransactionItems = <TransactionModel>[].obs;
+
+  final transactionItems = <TransactionModel>[].obs;
+
   List<CartModel> cartList = <CartModel>[].obs;
-  var isLoadingDailyTransaction = true.obs;
-  var isLoadingTransactionHistory = true.obs;
-  var isLoadingDetail = true.obs;
-  var total = 0.obs;
-  var startDate = DateTime.now().obs;
-  var endDate = DateTime.now().obs;
-  var filterBy = 'bulan'.obs;
-  var initMonth = DateTime.now().month.obs;
-  var initYear = DateTime.now().year.obs;
-  var isSideBarOpen = false.obs;
-  var totalCup = 0.obs;
-  var namaKasir = ''.obs;
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
+  final isLoadingDailyTransaction = true.obs;
+
+  final isLoadingTransactionHistory = true.obs;
+
+  final isLoadingDetail = true.obs;
+
+  // ============================================================
+  // DAILY SUMMARY
+  // ============================================================
+
+  final dailyTotal = 0.obs;
+
+  final dailyTotalCup = 0.obs;
+
+  // ============================================================
+  // HISTORY SUMMARY
+  // ============================================================
+
+  final historyTotal = 0.obs;
+
+  final historyTotalCup = 0.obs;
+
+  // ============================================================
+  // FILTER
+  // ============================================================
+
+  final startDate = DateTime.now().obs;
+
+  final endDate = DateTime.now().obs;
+
+  final filterBy = 'bulan'.obs;
+
+  final initMonth = DateTime.now().month.obs;
+
+  final initYear = DateTime.now().year.obs;
+
+  // ============================================================
+  // OTHER
+  // ============================================================
+
+  final isSideBarOpen = false.obs;
+
+  final namaKasir = ''.obs;
+
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
 
   @override
   void onInit() {
-    getNamaKasir();
     super.onInit();
+
+    getNamaKasir();
   }
 
-  void getNamaKasir() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    namaKasir.value = prefs.getString('nama_kasir')!;
+  // ============================================================
+  // GET NAMA KASIR
+  // ============================================================
+
+  Future<void> getNamaKasir() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      namaKasir.value = prefs.getString('nama_kasir') ?? '';
+    } catch (error) {
+      debugPrint('TransactionController.getNamaKasir: $error');
+    }
   }
+
+  // ============================================================
+  // REFRESH SETELAH GANTI OUTLET
+  // ============================================================
+
+  Future<void> refreshAfterOutletChanged() async {
+    try {
+      // ========================================================
+      // CLEAR DATA OUTLET LAMA
+      // ========================================================
+
+      dailyTransactionItems.clear();
+
+      transactionItems.clear();
+
+      dailyTotal.value = 0;
+
+      dailyTotalCup.value = 0;
+
+      historyTotal.value = 0;
+
+      historyTotalCup.value = 0;
+
+      // ========================================================
+      // REFRESH NAMA KASIR
+      // ========================================================
+
+      await getNamaKasir();
+
+      // ========================================================
+      // LOAD DAILY + HISTORY BERSAMAAN
+      // ========================================================
+
+      await Future.wait([fetchDailyTransactions(), fetchTransaction()]);
+    } catch (error) {
+      debugPrint('TransactionController.refreshAfterOutletChanged: $error');
+    }
+  }
+
+  // ============================================================
+  // DAILY TRANSACTIONS
+  // ============================================================
 
   Future<void> fetchDailyTransactions() async {
     try {
       isLoadingDailyTransaction(true);
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var kios = prefs.getInt('id_kios');
-      var cabang = prefs.getInt('id_cabang');
-      var kasir = prefs.getInt('id_kasir');
-      TransactionHistoryModel? result;
-      var data = {
+
+      final prefs = await SharedPreferences.getInstance();
+
+      final kios = prefs.getInt('id_kios') ?? 0;
+
+      final cabang = prefs.getInt('id_cabang') ?? 0;
+
+      final kasir = prefs.getInt('id_kasir') ?? 0;
+
+      // ========================================================
+      // REQUEST
+      // ========================================================
+
+      final data = {
         'startDate': DateTime.now().toString(),
         'endDate': DateTime.now().toString(),
         'id_kios': kios,
         'id_cabang': cabang,
         'id_kasir': kasir,
       };
-      result = await RemoteDataSource.transactionHistoryByDateRange(data);
+
+      final result = await RemoteDataSource.transactionHistoryByDateRange(data);
+
+      // ========================================================
+      // RESULT
+      // ========================================================
+
       if (result != null && result.data != null) {
-        totalCup.value = result.totalCup ?? 0;
         dailyTransactionItems.assignAll(result.data!);
 
-        total.value = dailyTransactionItems
+        dailyTotalCup.value = result.totalCup ?? 0;
+
+        dailyTotal.value = dailyTransactionItems
             .where((item) => item.deleteStatus == false)
             .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
+      } else {
+        dailyTransactionItems.clear();
+
+        dailyTotal.value = 0;
+
+        dailyTotalCup.value = 0;
       }
     } catch (error) {
+      debugPrint('TransactionController.fetchDailyTransactions: $error');
+
+      // ========================================================
+      // JANGAN TINGGALKAN DATA LAMA SAAT REQUEST GAGAL
+      // ========================================================
+
+      dailyTransactionItems.clear();
+
+      dailyTotal.value = 0;
+
+      dailyTotalCup.value = 0;
+
       Get.snackbar(
         'Error',
         error.toString(),
@@ -71,51 +202,99 @@ class TransactionController extends GetxController {
     }
   }
 
+  // ============================================================
+  // TRANSACTION HISTORY
+  // ============================================================
+
   Future<void> fetchTransaction() async {
     try {
       isLoadingTransactionHistory(true);
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      var kios = prefs.getInt('id_kios');
-      var cabang = prefs.getInt('id_cabang');
-      var kasir = prefs.getInt('id_kasir');
+
+      final prefs = await SharedPreferences.getInstance();
+
+      final kios = prefs.getInt('id_kios') ?? 0;
+
+      final cabang = prefs.getInt('id_cabang') ?? 0;
+
+      final kasir = prefs.getInt('id_kasir') ?? 0;
+
       TransactionHistoryModel? result;
+
+      // ========================================================
+      // FILTER BULAN
+      // ========================================================
+
       if (filterBy.value == 'bulan') {
-        var data = {
+        final data = {
           'monthYear': '${initMonth.value}-${initYear.value}',
           'id_kios': kios,
           'id_cabang': cabang,
           'id_kasir': kasir,
         };
+
         result = await RemoteDataSource.transactionHistoryByMonth(data);
-      } else {
-        var data = {
+      }
+      // ========================================================
+      // FILTER RANGE TANGGAL
+      // ========================================================
+      else {
+        final data = {
           'startDate': startDate.value.toString(),
           'endDate': endDate.value.toString(),
           'id_kios': kios,
           'id_cabang': cabang,
           'id_kasir': kasir,
         };
+
         result = await RemoteDataSource.transactionHistoryByDateRange(data);
       }
+
+      // ========================================================
+      // RESULT
+      // ========================================================
+
       if (result != null && result.data != null) {
-        totalCup.value = result.totalCup ?? 0;
         transactionItems.assignAll(result.data!);
-        total.value = transactionItems
+
+        historyTotalCup.value = result.totalCup ?? 0;
+
+        historyTotal.value = transactionItems
             .where((item) => item.deleteStatus == false)
             .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
+      } else {
+        transactionItems.clear();
+
+        historyTotal.value = 0;
+
+        historyTotalCup.value = 0;
       }
     } catch (error) {
+      debugPrint('TransactionController.fetchTransaction: $error');
+
+      // ========================================================
+      // CLEAR DATA HISTORY JIKA REQUEST GAGAL
+      // ========================================================
+
+      transactionItems.clear();
+
+      historyTotal.value = 0;
+
+      historyTotalCup.value = 0;
+
       Get.snackbar(
         'Error',
         error.toString(),
         icon: const Icon(Icons.error),
         snackPosition: SnackPosition.TOP,
       );
-      isLoadingTransactionHistory(false);
     } finally {
       isLoadingTransactionHistory(false);
     }
   }
+
+  // ============================================================
+  // REMOVE TRANSACTION
+  // ============================================================
 
   Future<void> removeTransaction(int transactionId) async {
     final String? reason = await Get.dialog<String>(
@@ -132,13 +311,10 @@ class TransactionController extends GetxController {
       reason: reason.trim(),
     );
   }
-  // ==============================================================
-  // DELETE CONFIRMATION
-  // ==============================================================
 
-  // ==============================================================
+  // ============================================================
   // DELETE TRANSACTION
-  // ==============================================================
+  // ============================================================
 
   Future<void> _deleteTransaction({
     required int transactionId,
@@ -152,7 +328,17 @@ class TransactionController extends GetxController {
       final result = await RemoteDataSource.deleteTransaction(rawFormat);
 
       if (result) {
+        // ======================================================
+        // DAILY
+        // ======================================================
+
         await fetchDailyTransactions();
+
+        // ======================================================
+        // HISTORY JUGA REFRESH
+        // ======================================================
+
+        await fetchTransaction();
 
         _showSuccessSnackbar('Transaksi berhasil dibatalkan');
       } else {
@@ -165,9 +351,9 @@ class TransactionController extends GetxController {
     }
   }
 
-  // ==============================================================
-  // SNACKBAR
-  // ==============================================================
+  // ============================================================
+  // SNACKBAR SUCCESS
+  // ============================================================
 
   void _showSuccessSnackbar(String message) {
     Get.snackbar(
@@ -186,6 +372,10 @@ class TransactionController extends GetxController {
     );
   }
 
+  // ============================================================
+  // SNACKBAR ERROR
+  // ============================================================
+
   void _showErrorSnackbar(String message) {
     Get.snackbar(
       'Gagal',
@@ -200,18 +390,21 @@ class TransactionController extends GetxController {
     );
   }
 
-  /// ===================================
-  /// FILTER DATE, MONTH
-  /// ===================================
+  // ============================================================
+  // MONTH FILTER
+  // ============================================================
+
   void nextOrPreviousMonth(bool isNext) {
     if (isNext) {
       initMonth.value++;
+
       if (initMonth.value > 12) {
         initMonth.value = 1;
         initYear.value++;
       }
     } else {
       initMonth.value--;
+
       if (initMonth.value < 1) {
         initMonth.value = 12;
         initYear.value--;
@@ -219,8 +412,12 @@ class TransactionController extends GetxController {
     }
   }
 
-  void showDialogDateRangePicker() async {
-    var pickedDate = await showDateRangePicker(
+  // ============================================================
+  // DATE RANGE FILTER
+  // ============================================================
+
+  Future<void> showDialogDateRangePicker() async {
+    final pickedDate = await showDateRangePicker(
       context: Get.context!,
       initialDateRange: DateTimeRange(
         start: startDate.value,
@@ -235,7 +432,6 @@ class TransactionController extends GetxController {
               primary: MyColors.primary,
               onPrimary: MyColors.surface,
               outlineVariant: Colors.grey.shade200,
-              // onSurfaceVariant: MyColors.green,
               outline: Colors.grey.shade300,
               secondaryContainer: Colors.green.shade50,
             ),
@@ -244,10 +440,13 @@ class TransactionController extends GetxController {
         );
       },
     );
+
     if (pickedDate != null) {
       startDate.value = pickedDate.start;
+
       endDate.value = pickedDate.end;
-      fetchTransaction();
+
+      await fetchTransaction();
     }
   }
 }

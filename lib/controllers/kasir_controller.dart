@@ -1,4 +1,5 @@
 import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:cashier/models/kasir_model.dart';
 import 'package:cashier/networks/api_request.dart';
 import 'package:get/get.dart';
@@ -28,6 +29,12 @@ class KasirController extends GetxController {
 
   final alamatCabang = ''.obs;
   final phoneCabang = ''.obs;
+
+  // ============================================================
+  // CHANGE OUTLET STATE
+  // ============================================================
+
+  final isChangingOutlet = false.obs;
 
   // ============================================================
   // LIFECYCLE
@@ -94,44 +101,92 @@ class KasirController extends GetxController {
   // ============================================================
 
   Future<void> changeBranchOutlet() async {
-    final prefs = await SharedPreferences.getInstance();
-
     // ==========================================================
-    // SAVE SESSION
+    // CEGAH DOUBLE TAP / REQUEST BERSAMAAN
     // ==========================================================
 
-    await prefs.setInt('id_kasir', idKasir.value);
+    if (isChangingOutlet.value) {
+      return;
+    }
 
-    await prefs.setString('nama_kasir', namaKasir.value);
+    try {
+      isChangingOutlet(true);
 
-    await prefs.setInt('id_kios', idKios.value);
+      final prefs = await SharedPreferences.getInstance();
 
-    await prefs.setString('kios', namaKios.value);
+      // ==========================================================
+      // SAVE SESSION
+      // ==========================================================
 
-    await prefs.setInt('id_cabang', idCabang.value);
+      await prefs.setInt('id_kasir', idKasir.value);
 
-    await prefs.setString('cabang', namaCabang.value);
+      await prefs.setString('nama_kasir', namaKasir.value);
 
-    await prefs.setString('alamat_cabang', alamatCabang.value);
+      await prefs.setInt('id_kios', idKios.value);
 
-    await prefs.setString('phone_cabang', phoneCabang.value);
+      await prefs.setString('kios', namaKios.value);
 
-    // ==========================================================
-    // REFRESH REACTIVE STATE
-    // ==========================================================
+      await prefs.setInt('id_cabang', idCabang.value);
 
-    namaKasir.refresh();
-    namaKios.refresh();
-    namaCabang.refresh();
-    idKios.refresh();
-    idCabang.refresh();
+      await prefs.setString('cabang', namaCabang.value);
 
-    // ==========================================================
-    // RELOAD PRODUCT
-    // ==========================================================
+      await prefs.setString('alamat_cabang', alamatCabang.value);
 
-    if (Get.isRegistered<ProductController>()) {
-      await Get.find<ProductController>().fetchProductCategory();
+      await prefs.setString('phone_cabang', phoneCabang.value);
+
+      // ==========================================================
+      // REFRESH REACTIVE STATE
+      // ==========================================================
+
+      namaKasir.refresh();
+      namaKios.refresh();
+      namaCabang.refresh();
+
+      idKasir.refresh();
+      idKios.refresh();
+      idCabang.refresh();
+
+      // ==========================================================
+      // RELOAD PRODUCT
+      // ==========================================================
+
+      Future<void> reloadProduct() async {
+        if (!Get.isRegistered<ProductController>()) {
+          return;
+        }
+
+        try {
+          await Get.find<ProductController>().fetchProductCategory();
+        } catch (error) {
+          print('KasirController.reloadProduct: $error');
+        }
+      }
+
+      // ==========================================================
+      // RELOAD TRANSACTION
+      // ==========================================================
+
+      Future<void> reloadTransaction() async {
+        if (!Get.isRegistered<TransactionController>()) {
+          return;
+        }
+
+        try {
+          await Get.find<TransactionController>().refreshAfterOutletChanged();
+        } catch (error) {
+          print('KasirController.reloadTransaction: $error');
+        }
+      }
+
+      // ==========================================================
+      // RELOAD SEMUA DATA
+      // ==========================================================
+
+      await Future.wait([reloadProduct(), reloadTransaction()]);
+    } catch (error) {
+      print('KasirController.changeBranchOutlet: $error');
+    } finally {
+      isChangingOutlet(false);
     }
   }
 }

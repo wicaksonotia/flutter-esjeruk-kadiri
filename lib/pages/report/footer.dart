@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FooterReport extends StatefulWidget {
-  const FooterReport({super.key});
+  final bool isDaily;
+
+  const FooterReport({super.key, this.isDaily = false});
 
   @override
   State<FooterReport> createState() => _FooterReportState();
@@ -37,8 +39,18 @@ class _FooterReportState extends State<FooterReport> {
           ),
         ],
       ),
-      child: Obx(
-        () => Row(
+      child: Obx(() {
+        final int totalItem =
+            widget.isDaily
+                ? _transactionController.dailyTotalCup.value
+                : _transactionController.historyTotalCup.value;
+
+        final int total =
+            widget.isDaily
+                ? _transactionController.dailyTotal.value
+                : _transactionController.historyTotal.value;
+
+        return Row(
           children: [
             // ==========================================================
             // TOTAL ITEM
@@ -54,7 +66,7 @@ class _FooterReportState extends State<FooterReport> {
                 ),
               ),
               child: Text(
-                'Total Item: ${_transactionController.totalCup.value}',
+                'Total Item: $totalItem',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeSm,
@@ -80,10 +92,7 @@ class _FooterReportState extends State<FooterReport> {
                 ),
                 children: [
                   TextSpan(
-                    text: CurrencyFormat.convertToIdr(
-                      _transactionController.total.value,
-                      0,
-                    ),
+                    text: CurrencyFormat.convertToIdr(total, 0),
                     style: const TextStyle(
                       fontSize: MySizes.fontSizeXl,
                       color: MyColors.primaryDark,
@@ -94,8 +103,8 @@ class _FooterReportState extends State<FooterReport> {
               ),
             ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }

@@ -41,7 +41,7 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
       // ==========================================================
       backgroundColor: MyColors.background,
 
-      bottomNavigationBar: const FooterReport(),
+      bottomNavigationBar: const FooterReport(isDaily: true),
 
       // ==========================================================
       // APP BAR
