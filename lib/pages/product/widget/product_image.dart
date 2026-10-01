@@ -1,22 +1,29 @@
-import 'dart:typed_data';
-
 import 'package:cashier/commons/colors.dart';
+import 'package:cashier/networks/api_endpoints.dart';
 import 'package:flutter/material.dart';
 
 class ProductImage extends StatelessWidget {
-  final Uint8List? image;
+  final String? image;
+  final String folder;
+
   final double? width;
   final double? height;
   final double size;
   final double borderRadius;
 
+  final IconData placeholderIcon;
+  final BoxFit fit;
+
   const ProductImage({
     super.key,
     required this.image,
+    required this.folder,
     this.width,
     this.height,
     this.size = 90,
     this.borderRadius = 14,
+    this.placeholderIcon = Icons.fastfood_rounded,
+    this.fit = BoxFit.cover,
   });
 
   // ================================================================
@@ -24,74 +31,29 @@ class ProductImage extends StatelessWidget {
   // ================================================================
 
   bool get _hasImage {
-    return image != null && image!.isNotEmpty;
+    return image != null && image!.trim().isNotEmpty;
   }
 
-  bool get _isSupportedImage {
-    if (!_hasImage) {
-      return false;
+  // ================================================================
+  // IMAGE URL
+  // ================================================================
+
+  String get _imageUrl {
+    final value = image!.trim();
+
+    // --------------------------------------------------------------
+    // Backend mengirim URL lengkap
+    // --------------------------------------------------------------
+
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
     }
 
-    final bytes = image!;
+    // --------------------------------------------------------------
+    // Backend hanya mengirim nama file
+    // --------------------------------------------------------------
 
-    // ------------------------------------------------------------
-    // JPEG
-    // FF D8 FF
-    // ------------------------------------------------------------
-    if (bytes.length >= 3 &&
-        bytes[0] == 0xFF &&
-        bytes[1] == 0xD8 &&
-        bytes[2] == 0xFF) {
-      return true;
-    }
-
-    // ------------------------------------------------------------
-    // PNG
-    // 89 50 4E 47 0D 0A 1A 0A
-    // ------------------------------------------------------------
-    if (bytes.length >= 8 &&
-        bytes[0] == 0x89 &&
-        bytes[1] == 0x50 &&
-        bytes[2] == 0x4E &&
-        bytes[3] == 0x47 &&
-        bytes[4] == 0x0D &&
-        bytes[5] == 0x0A &&
-        bytes[6] == 0x1A &&
-        bytes[7] == 0x0A) {
-      return true;
-    }
-
-    // ------------------------------------------------------------
-    // GIF
-    // GIF87a / GIF89a
-    // ------------------------------------------------------------
-    if (bytes.length >= 6 &&
-        bytes[0] == 0x47 &&
-        bytes[1] == 0x49 &&
-        bytes[2] == 0x46 &&
-        bytes[3] == 0x38 &&
-        (bytes[4] == 0x37 || bytes[4] == 0x39) &&
-        bytes[5] == 0x61) {
-      return true;
-    }
-
-    // ------------------------------------------------------------
-    // WEBP
-    // RIFF .... WEBP
-    // ------------------------------------------------------------
-    if (bytes.length >= 12 &&
-        bytes[0] == 0x52 && // R
-        bytes[1] == 0x49 && // I
-        bytes[2] == 0x46 && // F
-        bytes[3] == 0x46 && // F
-        bytes[8] == 0x57 && // W
-        bytes[9] == 0x45 && // E
-        bytes[10] == 0x42 && // B
-        bytes[11] == 0x50) {
-      return true;
-    }
-
-    return false;
+    return '${ApiEndPoints.ipPublic}images/$folder/$value';
   }
 
   // ================================================================
@@ -103,59 +65,43 @@ class ProductImage extends StatelessWidget {
     final imageWidth = width ?? size;
     final imageHeight = height ?? size;
 
-    // Tidak ada data image
-    if (!_hasImage) {
-      return _placeholder(width: imageWidth, height: imageHeight);
-    }
-
-    // Ada byte tetapi bukan format image yang didukung
-    if (!_isSupportedImage) {
-      return _placeholder(width: imageWidth, height: imageHeight);
-    }
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: Image.memory(
-        image!,
-        width: imageWidth,
-        height: imageHeight,
-        fit: BoxFit.cover,
-        gaplessPlayback: true,
-        errorBuilder: (context, error, stackTrace) {
-          return _placeholder(width: imageWidth, height: imageHeight);
-        },
-      ),
-    );
-  }
-
-  // ================================================================
-  // PLACEHOLDER
-  // ================================================================
-
-  Widget _placeholder({required double? width, required double? height}) {
     return Container(
-      width: width,
-      height: height,
+      width: imageWidth,
+      height: imageHeight,
       decoration: BoxDecoration(
         color: MyColors.surfaceSoft,
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: MyColors.border.withValues(alpha: .7)),
+        border: Border.all(color: MyColors.border),
       ),
-      child: Center(
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: MyColors.primaryLight,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: const Icon(
-            Icons.fastfood_rounded,
-            size: 23,
-            color: MyColors.primaryDark,
-          ),
-        ),
-      ),
+      clipBehavior: Clip.antiAlias,
+      child:
+          _hasImage
+              ? Image.network(
+                _imageUrl,
+                width: imageWidth,
+                height: imageHeight,
+                fit: fit,
+                gaplessPlayback: true,
+                errorBuilder: (context, error, stackTrace) {
+                  return _Placeholder(icon: placeholderIcon);
+                },
+              )
+              : _Placeholder(icon: placeholderIcon),
     );
+  }
+}
+
+// ================================================================
+// PLACEHOLDER
+// ================================================================
+
+class _Placeholder extends StatelessWidget {
+  final IconData icon;
+
+  const _Placeholder({required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Icon(icon, size: 29, color: MyColors.textMuted));
   }
 }

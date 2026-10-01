@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cashier/models/sop_model.dart';
+import 'package:cashier/models/transaction_save_result.dart';
 import 'package:dio/dio.dart';
 import 'package:cashier/models/kasir_model.dart';
 import 'package:cashier/models/product_category_model.dart';
@@ -7,6 +8,7 @@ import 'dart:convert';
 import 'package:cashier/models/product_model.dart';
 import 'package:cashier/models/transaction_history_model.dart';
 import 'package:cashier/networks/api_endpoints.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoteDataSource {
@@ -39,6 +41,10 @@ class RemoteDataSource {
           await prefs.setString(
             'keterangan_print',
             response.data['keterangan'],
+          );
+          await prefs.setString(
+            'kode_cabang',
+            response.data['kode_cabang']?.toString().trim().toUpperCase() ?? '',
           );
           return true;
         }
@@ -133,33 +139,74 @@ class RemoteDataSource {
   }
 
   // SAVE TRANSACTION
-  static Future<bool> saveTransaction(
+  static Future<TransactionSaveResult> saveTransactionResult(
     Map<String, dynamic> dataTransaction,
     List<dynamic> dataDetail,
   ) async {
     try {
-      var rawFormat = jsonEncode({
+      final rawFormat = jsonEncode({
         'transaction': dataTransaction,
         'details': dataDetail,
       });
-      var url =
+
+      final url =
           ApiEndPoints.baseUrl + ApiEndPoints.authEndpoints.saveTransaction;
-      Response response = await Dio().post(
+
+      debugPrint('========== SAVE TRANSACTION ==========');
+      debugPrint('URL: $url');
+      debugPrint('REQUEST: $rawFormat');
+
+      final Response response = await Dio().post(
         url,
         data: rawFormat,
-        options: Options(contentType: Headers.jsonContentType),
+        options: Options(
+          contentType: Headers.jsonContentType,
+          validateStatus: (_) => true,
+        ),
       );
-      if (response.statusCode == 200) {
-        if (response.data['status'] == 'ok') {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setInt('transaction_id', response.data['transaction_id']);
-          return true;
-        }
+
+      debugPrint('RESPONSE STATUS: ${response.statusCode}');
+
+      debugPrint('RESPONSE DATA: ${response.data}');
+
+      debugPrint('======================================');
+
+      if (response.statusCode != 200) {
+        return TransactionSaveResult(
+          success: false,
+          message:
+              'Server mengembalikan status '
+              '${response.statusCode}: '
+              '${response.data}',
+        );
       }
-      return false;
+
+      if (response.data is! Map) {
+        return const TransactionSaveResult(
+          success: false,
+          message: 'Response server tidak valid.',
+        );
+      }
+
+      final Map<String, dynamic> data = Map<String, dynamic>.from(
+        response.data,
+      );
+
+      return TransactionSaveResult.fromJson(data);
     } catch (error) {
-      return false;
+      debugPrint('SAVE TRANSACTION ERROR: $error');
+
+      return TransactionSaveResult(success: false, message: error.toString());
     }
+  }
+
+  static Future<bool> saveTransaction(
+    Map<String, dynamic> dataTransaction,
+    List<dynamic> dataDetail,
+  ) async {
+    final result = await saveTransactionResult(dataTransaction, dataDetail);
+
+    return result.success;
   }
 
   // UPDATE TO FAVORITE
@@ -227,7 +274,7 @@ class RemoteDataSource {
   }
 
   static Future<TransactionHistoryModel?> transactionHistoryByDateRange(
-    rawFormat,
+    Map<String, dynamic> rawFormat,
   ) async {
     try {
       var url =
@@ -251,7 +298,7 @@ class RemoteDataSource {
   }
 
   static Future<TransactionHistoryModel?> transactionHistoryByMonth(
-    rawFormat,
+    Map<String, dynamic> rawFormat,
   ) async {
     try {
       var url =

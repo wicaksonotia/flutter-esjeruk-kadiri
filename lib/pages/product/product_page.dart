@@ -9,6 +9,7 @@ import 'package:cashier/pages/product/widget/product_grid_view.dart';
 import 'package:cashier/pages/product/widget/product_hero_header.dart';
 import 'package:cashier/pages/product/widget/product_list_view.dart';
 import 'package:cashier/pages/product/widget/product_loading_shimmer.dart';
+import 'package:cashier/widgets/sync_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -198,7 +199,10 @@ class _ProductPageState extends State<ProductPage> {
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _PinnedHeaderDelegate(
-                  child: ProductHeroHeader(onMenuTap: _openDrawer),
+                  child: ProductHeroHeader(
+                    onMenuTap: _openDrawer,
+                    trailing: const SyncStatusIndicator(),
+                  ),
                 ),
               ),
 

@@ -74,7 +74,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                   });
                 },
                 onRender: (pages) {
-                  print("PDF rendered with $pages pages");
+                  debugPrint("PDF rendered with $pages pages");
                 },
               ),
     );

@@ -47,7 +47,11 @@ class ProductCard extends StatelessWidget {
           Expanded(
             child: SizedBox(
               width: double.infinity,
-              child: ProductImage(image: product.photo1, borderRadius: 0),
+              child: ProductImage(
+                image: product.photo1,
+                folder: 'product',
+                borderRadius: 0,
+              ),
             ),
           ),
 
@@ -106,7 +110,12 @@ class ProductCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ProductImage(image: product.photo1, size: 82, borderRadius: 13),
+          ProductImage(
+            image: product.photo1,
+            folder: 'product',
+            size: 82,
+            borderRadius: 13,
+          ),
 
           const SizedBox(width: 12),
 

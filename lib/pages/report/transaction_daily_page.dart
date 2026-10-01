@@ -2,6 +2,7 @@ import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:cashier/pages/report/footer.dart';
+import 'package:cashier/widgets/sync_status_indicator.dart';
 import 'package:cashier/widgets/transaction_grouped_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -51,7 +52,6 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
         foregroundColor: MyColors.textOnPrimary,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-
         titleSpacing: 0,
 
         title: const Text(
@@ -64,6 +64,9 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
           ),
         ),
 
+        // ========================================================
+        // MENU
+        // ========================================================
         leading: Builder(
           builder: (context) {
             return IconButton(
@@ -80,6 +83,19 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
           },
         ),
 
+        // ========================================================
+        // SYNC STATUS
+        // ========================================================
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Center(child: SyncStatusIndicator()),
+          ),
+        ],
+
+        // ========================================================
+        // ACCENT LINE
+        // ========================================================
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: Align(

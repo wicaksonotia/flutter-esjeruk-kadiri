@@ -1,13 +1,15 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
 import 'package:cashier/controllers/product_controller.dart';
+import 'package:cashier/widgets/sync_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ProductHeroHeader extends StatefulWidget {
   final VoidCallback onMenuTap;
+  final Widget? trailing;
 
-  const ProductHeroHeader({super.key, required this.onMenuTap});
+  const ProductHeroHeader({super.key, required this.onMenuTap, this.trailing});
 
   @override
   State<ProductHeroHeader> createState() => _ProductHeroHeaderState();
@@ -62,10 +64,17 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
 
       return Row(
         children: [
+          // ----------------------------------------------------------
+          // MENU
+          // ----------------------------------------------------------
+
           _HeaderButton(icon: Icons.menu_rounded, onTap: widget.onMenuTap),
 
           const SizedBox(width: 12),
 
+          // ----------------------------------------------------------
+          // OUTLET + KASIR
+          // ----------------------------------------------------------
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,12 +104,16 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      namaKasir.isEmpty ? 'Kasir' : 'Kasir • $namaKasir',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: MyColors.textOnPrimary,
+                    Flexible(
+                      child: Text(
+                        namaKasir.isEmpty ? 'Kasir' : 'Kasir • $namaKasir',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: MyColors.textOnPrimary,
+                        ),
                       ),
                     ),
                   ],
@@ -108,6 +121,17 @@ class _ProductHeroHeaderState extends State<ProductHeroHeader> {
               ],
             ),
           ),
+
+          // ----------------------------------------------------------
+          // SYNC STATUS
+          // ----------------------------------------------------------
+          if (widget.trailing != null) ...[
+            const SizedBox(width: 10),
+            widget.trailing!,
+          ] else ...[
+            const SizedBox(width: 10),
+            const SyncStatusIndicator(),
+          ],
         ],
       );
     });
@@ -204,10 +228,14 @@ class _HeaderButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(13),
         splashColor: MyColors.surface.withValues(alpha: .10),
         highlightColor: MyColors.surface.withValues(alpha: .06),
-        child: SizedBox(
+        child: const SizedBox(
           width: 42,
           height: 42,
-          child: Icon(icon, color: MyColors.textOnPrimary, size: 22),
+          child: Icon(
+            Icons.menu_rounded,
+            color: MyColors.textOnPrimary,
+            size: 22,
+          ),
         ),
       ),
     );

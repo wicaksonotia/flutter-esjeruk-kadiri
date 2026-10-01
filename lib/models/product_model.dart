@@ -1,13 +1,10 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 class ProductModel {
   int? idProduct;
   int? idCategory;
   String? productName;
   String? description;
   int? price;
-  Uint8List? photo1;
+  String? photo1;
   bool? favorite;
 
   ProductModel({
@@ -26,21 +23,19 @@ class ProductModel {
     productName = json['product_name'];
     description = json['description'];
     price = json['price'];
-    Uint8List decodePhoto;
-    decodePhoto = const Base64Decoder().convert('${json['photo_1']}');
-    photo1 = decodePhoto;
+    photo1 = json['photo_1'];
     favorite = json['favorite'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id_product'] = idProduct;
-    data['id_categories'] = idCategory;
-    data['product_name'] = productName;
-    data['description'] = description;
-    data['price'] = price;
-    data['photo_1'] = photo1;
-    data['favorite'] = favorite;
-    return data;
+    return {
+      'id_product': idProduct,
+      'id_categories': idCategory,
+      'product_name': productName,
+      'description': description,
+      'price': price,
+      'photo_1': photo1,
+      'favorite': favorite,
+    };
   }
 }

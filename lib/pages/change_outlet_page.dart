@@ -1,6 +1,7 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
+import 'package:cashier/models/kasir_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -38,6 +39,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
             return Column(
               children: [
                 _buildHeader(),
+
                 Expanded(
                   child: ListView.builder(
                     controller: scrollController,
@@ -130,7 +132,7 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
   // OUTLET ITEM
   // ==============================================================
 
-  Widget _buildOutletItem({required dynamic outlet, required int index}) {
+  Widget _buildOutletItem({required KasirModel outlet, required int index}) {
     return Obx(() {
       final isSelected =
           outlet.idKios == kasirController.idKios.value &&
@@ -145,22 +147,54 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
 
-            // ======================================================
-            // LOGIC ASLI — TIDAK DIUBAH
-            // ======================================================
-            onTap: () {
-              kasirController.idKasir.value = outlet.idKasir!;
-              kasirController.namaKasir.value = outlet.namaKasir ?? '';
-              kasirController.idKios.value = outlet.idKios!;
-              kasirController.namaKios.value = outlet.kios ?? '';
-              kasirController.idCabang.value = outlet.idCabang!;
-              kasirController.namaCabang.value = outlet.cabang ?? '';
-              kasirController.alamatCabang.value = outlet.alamatCabang ?? '';
-              kasirController.phoneCabang.value = outlet.phoneCabang ?? '';
-              kasirController.changeBranchOutlet();
+            // ====================================================
+            // SELECT OUTLET
+            // ====================================================
+            onTap: () async {
+              // --------------------------------------------------
+              // JIKA SEDANG PROSES, JANGAN DOUBLE TAP
+              // --------------------------------------------------
+
+              if (kasirController.isChangingOutlet.value) {
+                return;
+              }
+
+              // --------------------------------------------------
+              // SET SEMUA DATA OUTLET
+              //
+              // Termasuk:
+              // idKios
+              // namaKios
+              // idCabang
+              // namaCabang
+              // kodeCabang
+              // alamatCabang
+              // phoneCabang
+              // --------------------------------------------------
+
+              kasirController.setSelectedOutlet(outlet);
+
+              // --------------------------------------------------
+              // SIMPAN SESSION + RELOAD DATA
+              // --------------------------------------------------
+
+              await kasirController.changeBranchOutlet();
+
+              // --------------------------------------------------
+              // TUTUP BOTTOM SHEET
+              // --------------------------------------------------
+
+              if (!mounted) {
+                return;
+              }
+
+              if (!kasirController.isChangingOutlet.value) {
+                Get.back();
+              }
             },
 
             splashColor: MyColors.accent.withValues(alpha: .08),
+
             highlightColor: MyColors.accent.withValues(alpha: .04),
 
             child: AnimatedContainer(
@@ -227,7 +261,8 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${outlet.kios!} - ${outlet.cabang!}',
+                          '${outlet.kios ?? '-'} - '
+                          '${outlet.cabang ?? '-'}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -242,8 +277,25 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
 
                         const SizedBox(height: 5),
 
+                        // ==================================================
+                        // KODE OUTLET
+                        // ==================================================
+                        if ((outlet.kode ?? '').trim().isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3),
+                            child: Text(
+                              'Kode: '
+                              '${outlet.kode!.trim().toUpperCase()}',
+                              style: const TextStyle(
+                                fontSize: MySizes.fontSizeXsm,
+                                fontWeight: FontWeight.w600,
+                                color: MyColors.textMuted,
+                              ),
+                            ),
+                          ),
+
                         Text(
-                          outlet.alamatCabang!.replaceAll(r'\n', '\n'),
+                          (outlet.alamatCabang ?? '').replaceAll(r'\n', '\n'),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -261,42 +313,35 @@ class _ChangeOutletPageState extends State<ChangeOutletPage> {
                   // ==================================================
                   // SELECTED INDICATOR
                   // ==================================================
-                  Obx(() {
-                    final selected =
-                        outlet.idKios == kasirController.idKios.value &&
-                        outlet.idKasir == kasirController.idKasir.value &&
-                        outlet.idCabang == kasirController.idCabang.value;
-
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOutCubic,
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOutCubic,
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          isSelected ? MyColors.accent : MyColors.surfaceSoft,
+                      border:
+                          isSelected
+                              ? null
+                              : Border.all(
+                                color: MyColors.border.withValues(alpha: .8),
+                              ),
+                    ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      child: Icon(
+                        Icons.check_rounded,
+                        key: ValueKey(isSelected),
+                        size: 17,
                         color:
-                            selected ? MyColors.accent : MyColors.surfaceSoft,
-                        border:
-                            selected
-                                ? null
-                                : Border.all(
-                                  color: MyColors.border.withValues(alpha: .8),
-                                ),
+                            isSelected
+                                ? MyColors.textOnPrimary
+                                : MyColors.textMuted,
                       ),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 150),
-                        child: Icon(
-                          Icons.check_rounded,
-                          key: ValueKey(selected),
-                          size: 17,
-                          color:
-                              selected
-                                  ? MyColors.textOnPrimary
-                                  : MyColors.textMuted,
-                        ),
-                      ),
-                    );
-                  }),
+                    ),
+                  ),
                 ],
               ),
             ),

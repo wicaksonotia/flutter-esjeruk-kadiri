@@ -1,6 +1,6 @@
 import 'package:cashier/commons/colors.dart';
 import 'package:cashier/controllers/product_controller.dart';
-import 'package:dio/dio.dart' as Dio;
+import 'package:dio/dio.dart' as dio;
 import 'package:cashier/commons/sizes.dart';
 import 'package:cashier/controllers/kasir_controller.dart';
 import 'package:cashier/navigation/app_navigation.dart';
@@ -93,7 +93,7 @@ class LoginController extends GetxController {
     try {
       isLoading(true);
 
-      final Dio.FormData formData = Dio.FormData.fromMap({
+      final dio.FormData formData = dio.FormData.fromMap({
         "username": emailController.text.trim(),
         "password": passwordController.text,
       });

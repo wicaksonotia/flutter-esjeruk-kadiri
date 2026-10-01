@@ -74,7 +74,12 @@ class _CheckoutCartItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ProductImage(image: product.photo1, size: 64, borderRadius: 14),
+          ProductImage(
+            image: product.photo1,
+            folder: 'product',
+            size: 64,
+            borderRadius: 14,
+          ),
 
           const SizedBox(width: 12),
 

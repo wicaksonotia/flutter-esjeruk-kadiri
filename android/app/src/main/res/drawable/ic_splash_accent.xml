@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Outer border -->
+    <item
+        android:width="11dp"
+        android:height="11dp"
+        android:gravity="center">
+
+        <shape android:shape="oval">
+
+            <solid android:color="#00529C" />
+
+        </shape>
+
+    </item>
+
+    <!-- Orange accent -->
+    <item
+        android:width="7dp"
+        android:height="7dp"
+        android:gravity="center">
+
+        <shape android:shape="oval">
+
+            <solid android:color="#F37021" />
+
+        </shape>
+
+    </item>
+
+</layer-list>

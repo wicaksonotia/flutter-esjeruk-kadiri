@@ -1,4 +1,6 @@
 import 'package:cashier/commons/colors.dart';
+import 'package:cashier/database/app_database.dart';
+import 'package:cashier/database/repositories/transaction_repository.dart';
 import 'package:cashier/models/cart_model.dart';
 import 'package:cashier/models/transaction_history_model.dart';
 import 'package:cashier/networks/api_request.dart';
@@ -8,6 +10,12 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionController extends GetxController {
+  // ============================================================
+  // REPOSITORY
+  // ============================================================
+
+  final TransactionRepository _transactionRepository = TransactionRepository();
+
   // ============================================================
   // DATA
   // ============================================================
@@ -87,20 +95,19 @@ class TransactionController extends GetxController {
 
       namaKasir.value = prefs.getString('nama_kasir') ?? '';
     } catch (error) {
-      debugPrint('TransactionController.getNamaKasir: $error');
+      debugPrint(
+        'TransactionController.getNamaKasir: '
+        '$error',
+      );
     }
   }
 
   // ============================================================
-  // REFRESH SETELAH GANTI OUTLET
+  // REFRESH OUTLET
   // ============================================================
 
   Future<void> refreshAfterOutletChanged() async {
     try {
-      // ========================================================
-      // CLEAR DATA OUTLET LAMA
-      // ========================================================
-
       dailyTransactionItems.clear();
 
       transactionItems.clear();
@@ -113,19 +120,15 @@ class TransactionController extends GetxController {
 
       historyTotalCup.value = 0;
 
-      // ========================================================
-      // REFRESH NAMA KASIR
-      // ========================================================
-
       await getNamaKasir();
-
-      // ========================================================
-      // LOAD DAILY + HISTORY BERSAMAAN
-      // ========================================================
 
       await Future.wait([fetchDailyTransactions(), fetchTransaction()]);
     } catch (error) {
-      debugPrint('TransactionController.refreshAfterOutletChanged: $error');
+      debugPrint(
+        'TransactionController.'
+        'refreshAfterOutletChanged: '
+        '$error',
+      );
     }
   }
 
@@ -145,44 +148,57 @@ class TransactionController extends GetxController {
 
       final kasir = prefs.getInt('id_kasir') ?? 0;
 
-      // ========================================================
-      // REQUEST
-      // ========================================================
-
-      final data = {
-        'startDate': DateTime.now().toString(),
-        'endDate': DateTime.now().toString(),
-        'id_kios': kios,
-        'id_cabang': cabang,
-        'id_kasir': kasir,
-      };
-
-      final result = await RemoteDataSource.transactionHistoryByDateRange(data);
-
-      // ========================================================
-      // RESULT
-      // ========================================================
-
-      if (result != null && result.data != null) {
-        dailyTransactionItems.assignAll(result.data!);
-
-        dailyTotalCup.value = result.totalCup ?? 0;
-
-        dailyTotal.value = dailyTransactionItems
-            .where((item) => item.deleteStatus == false)
-            .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
-      } else {
+      if (kios == 0 || cabang == 0 || kasir == 0) {
         dailyTransactionItems.clear();
 
         dailyTotal.value = 0;
 
         dailyTotalCup.value = 0;
+
+        return;
       }
-    } catch (error) {
-      debugPrint('TransactionController.fetchDailyTransactions: $error');
 
       // ========================================================
-      // JANGAN TINGGALKAN DATA LAMA SAAT REQUEST GAGAL
+      // LOCAL DATABASE
+      // ========================================================
+
+      final localTransactions = await _transactionRepository
+          .getDailyTransactions(idKios: kios, idCabang: cabang, idKasir: kasir);
+
+      final models = await _transactionRepository.toTransactionModels(
+        localTransactions,
+        cashierName: namaKasir.value,
+      );
+
+      dailyTransactionItems.assignAll(models);
+
+      // ========================================================
+      // SUMMARY
+      // ========================================================
+
+      final activeItems =
+          dailyTransactionItems
+              .where((item) => item.deleteStatus == false)
+              .toList();
+
+      dailyTotal.value = activeItems.fold(
+        0,
+        (sum, item) => sum + (item.grandTotal ?? 0),
+      );
+
+      dailyTotalCup.value = activeItems.fold(
+        0,
+        (sum, item) => sum + (item.totalItem ?? 0),
+      );
+    } catch (error) {
+      debugPrint(
+        'TransactionController.'
+        'fetchDailyTransactions: '
+        '$error',
+      );
+
+      // ========================================================
+      // LOCAL ERROR
       // ========================================================
 
       dailyTransactionItems.clear();
@@ -218,62 +234,78 @@ class TransactionController extends GetxController {
 
       final kasir = prefs.getInt('id_kasir') ?? 0;
 
-      TransactionHistoryModel? result;
-
-      // ========================================================
-      // FILTER BULAN
-      // ========================================================
-
-      if (filterBy.value == 'bulan') {
-        final data = {
-          'monthYear': '${initMonth.value}-${initYear.value}',
-          'id_kios': kios,
-          'id_cabang': cabang,
-          'id_kasir': kasir,
-        };
-
-        result = await RemoteDataSource.transactionHistoryByMonth(data);
-      }
-      // ========================================================
-      // FILTER RANGE TANGGAL
-      // ========================================================
-      else {
-        final data = {
-          'startDate': startDate.value.toString(),
-          'endDate': endDate.value.toString(),
-          'id_kios': kios,
-          'id_cabang': cabang,
-          'id_kasir': kasir,
-        };
-
-        result = await RemoteDataSource.transactionHistoryByDateRange(data);
-      }
-
-      // ========================================================
-      // RESULT
-      // ========================================================
-
-      if (result != null && result.data != null) {
-        transactionItems.assignAll(result.data!);
-
-        historyTotalCup.value = result.totalCup ?? 0;
-
-        historyTotal.value = transactionItems
-            .where((item) => item.deleteStatus == false)
-            .fold(0, (sum, item) => sum + (item.grandTotal ?? 0));
-      } else {
+      if (kios == 0 || cabang == 0 || kasir == 0) {
         transactionItems.clear();
 
         historyTotal.value = 0;
 
         historyTotalCup.value = 0;
+
+        return;
       }
-    } catch (error) {
-      debugPrint('TransactionController.fetchTransaction: $error');
+
+      List<Transaction> localTransactions;
 
       // ========================================================
-      // CLEAR DATA HISTORY JIKA REQUEST GAGAL
+      // BULAN
       // ========================================================
+
+      if (filterBy.value == 'bulan') {
+        localTransactions = await _transactionRepository.getTransactionsByMonth(
+          idKios: kios,
+          idCabang: cabang,
+          idKasir: kasir,
+          month: initMonth.value,
+          year: initYear.value,
+        );
+      }
+      // ========================================================
+      // RANGE TANGGAL
+      // ========================================================
+      else {
+        localTransactions = await _transactionRepository
+            .getTransactionsByDateRange(
+              idKios: kios,
+              idCabang: cabang,
+              idKasir: kasir,
+              startDate: startDate.value,
+              endDate: endDate.value,
+            );
+      }
+
+      // ========================================================
+      // CONVERT
+      // ========================================================
+
+      final models = await _transactionRepository.toTransactionModels(
+        localTransactions,
+        cashierName: namaKasir.value,
+      );
+
+      transactionItems.assignAll(models);
+
+      // ========================================================
+      // SUMMARY
+      // ========================================================
+
+      final activeItems =
+          transactionItems.where((item) => item.deleteStatus == false).toList();
+
+      historyTotal.value = activeItems.fold(
+        0,
+        (sum, item) => sum + (item.grandTotal ?? 0),
+      );
+
+      historyTotalCup.value = activeItems.fold(
+        0,
+        (sum, item) => sum + (item.totalItem ?? 0),
+      );
+    } catch (error) {
+      debugPrint(
+        'TransactionController.'
+        'fetchTransaction: '
+        '$error',
+      );
 
       transactionItems.clear();
 
@@ -323,26 +355,63 @@ class TransactionController extends GetxController {
     try {
       isLoadingDailyTransaction(true);
 
-      final rawFormat = {'id_transaction': transactionId, 'reason': reason};
+      // ========================================================
+      // CARI TRANSAKSI LOKAL BERDASARKAN SERVER ID
+      // ========================================================
+
+      final localTransaction = await _getLocalTransactionByServerId(
+        transactionId,
+      );
+
+      if (localTransaction == null) {
+        _showErrorSnackbar('Transaksi tidak ditemukan di perangkat.');
+
+        return;
+      }
+
+      // ========================================================
+      // BELUM SYNC
+      // ========================================================
+
+      if (localTransaction.serverTransactionId == null) {
+        await _transactionRepository.cancelLocalTransaction(
+          localUuid: localTransaction.localUuid,
+          reason: reason,
+        );
+
+        await fetchDailyTransactions();
+
+        await fetchTransaction();
+
+        _showSuccessSnackbar('Transaksi berhasil dibatalkan.');
+
+        return;
+      }
+
+      // ========================================================
+      // SUDAH SYNC
+      // ========================================================
+
+      final rawFormat = {
+        'id_transaction': localTransaction.serverTransactionId,
+        'reason': reason,
+      };
 
       final result = await RemoteDataSource.deleteTransaction(rawFormat);
 
       if (result) {
-        // ======================================================
-        // DAILY
-        // ======================================================
+        await _transactionRepository.cancelLocalTransaction(
+          localUuid: localTransaction.localUuid,
+          reason: reason,
+        );
 
         await fetchDailyTransactions();
 
-        // ======================================================
-        // HISTORY JUGA REFRESH
-        // ======================================================
-
         await fetchTransaction();
 
-        _showSuccessSnackbar('Transaksi berhasil dibatalkan');
+        _showSuccessSnackbar('Transaksi berhasil dibatalkan.');
       } else {
-        _showErrorSnackbar('Transaksi gagal dibatalkan');
+        _showErrorSnackbar('Transaksi gagal dibatalkan.');
       }
     } catch (error) {
       _showErrorSnackbar(error.toString());
@@ -352,7 +421,38 @@ class TransactionController extends GetxController {
   }
 
   // ============================================================
-  // SNACKBAR SUCCESS
+  // FIND LOCAL TRANSACTION
+  // ============================================================
+
+  Future<Transaction?> _getLocalTransactionByServerId(int serverId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final kios = prefs.getInt('id_kios') ?? 0;
+
+    final cabang = prefs.getInt('id_cabang') ?? 0;
+
+    final kasir = prefs.getInt('id_kasir') ?? 0;
+
+    final transactions = await _transactionRepository
+        .getTransactionsByDateRange(
+          idKios: kios,
+          idCabang: cabang,
+          idKasir: kasir,
+          startDate: DateTime.now().subtract(const Duration(days: 3650)),
+          endDate: DateTime.now(),
+        );
+
+    for (final transaction in transactions) {
+      if (transaction.serverTransactionId == serverId) {
+        return transaction;
+      }
+    }
+
+    return null;
+  }
+
+  // ============================================================
+  // SUCCESS SNACKBAR
   // ============================================================
 
   void _showSuccessSnackbar(String message) {
@@ -373,7 +473,7 @@ class TransactionController extends GetxController {
   }
 
   // ============================================================
-  // SNACKBAR ERROR
+  // ERROR SNACKBAR
   // ============================================================
 
   void _showErrorSnackbar(String message) {
@@ -410,6 +510,8 @@ class TransactionController extends GetxController {
         initYear.value--;
       }
     }
+
+    fetchTransaction();
   }
 
   // ============================================================

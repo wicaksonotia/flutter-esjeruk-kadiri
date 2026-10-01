@@ -2,6 +2,7 @@ import 'package:cashier/controllers/product_controller.dart';
 import 'package:cashier/controllers/transaction_controller.dart';
 import 'package:cashier/models/kasir_model.dart';
 import 'package:cashier/networks/api_request.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,6 +27,7 @@ class KasirController extends GetxController {
 
   final idCabang = 0.obs;
   final namaCabang = ''.obs;
+  final kodeCabang = ''.obs;
 
   final alamatCabang = ''.obs;
   final phoneCabang = ''.obs;
@@ -62,24 +64,35 @@ class KasirController extends GetxController {
       // ==========================================================
 
       idKios.value = prefs.getInt('id_kios') ?? 0;
+
       idKasir.value = prefs.getInt('id_kasir') ?? 0;
+
       idCabang.value = prefs.getInt('id_cabang') ?? 0;
 
       namaKasir.value = prefs.getString('nama_kasir') ?? '';
+
       namaKios.value = prefs.getString('kios') ?? '';
+
       namaCabang.value = prefs.getString('cabang') ?? '';
+
+      kodeCabang.value =
+          (prefs.getString('kode_cabang') ?? '').trim().toUpperCase();
 
       alamatCabang.value = prefs.getString('alamat_cabang') ?? '';
 
       phoneCabang.value = prefs.getString('phone_cabang') ?? '';
 
       // ==========================================================
-      // LOAD OUTLET
+      // VALIDASI SESSION
       // ==========================================================
 
       if (idKios.value == 0 || idKasir.value == 0) {
         return;
       }
+
+      // ==========================================================
+      // LOAD LIST OUTLET
+      // ==========================================================
 
       final result = await RemoteDataSource.getListOutlet({
         'id_kios': idKios.value,
@@ -89,11 +102,102 @@ class KasirController extends GetxController {
       if (result != null) {
         listOutlet.assignAll(result);
       }
+
+      // ==========================================================
+      // DEBUG
+      // ==========================================================
+
+      debugPrint('========================================');
+
+      debugPrint('LOAD SESSION');
+      debugPrint('id_kios     : ${idKios.value}');
+      debugPrint('kios        : ${namaKios.value}');
+      debugPrint('id_cabang   : ${idCabang.value}');
+      debugPrint('cabang      : ${namaCabang.value}');
+      debugPrint('kode_cabang : ${kodeCabang.value}');
+      debugPrint('id_kasir    : ${idKasir.value}');
+      debugPrint('nama_kasir  : ${namaKasir.value}');
+
+      debugPrint('========================================');
     } catch (error) {
-      print('KasirController.fetchDataListOutlet: $error');
+      debugPrint('KasirController.fetchDataListOutlet: $error');
     } finally {
       isLoading(false);
     }
+  }
+
+  // ============================================================
+  // SET SELECTED OUTLET
+  // ============================================================
+  //
+  // Dipanggil ketika user memilih outlet dari list.
+  //
+  // Contoh:
+  //
+  // setSelectedOutlet(item);
+  // await changeBranchOutlet();
+  //
+  // ============================================================
+
+  void setSelectedOutlet(KasirModel outlet) {
+    // ==========================================================
+    // KIOS
+    // ==========================================================
+
+    idKios.value = outlet.idKios ?? idKios.value;
+
+    namaKios.value = (outlet.kios ?? namaKios.value).trim();
+
+    // ==========================================================
+    // CABANG
+    // ==========================================================
+
+    idCabang.value = outlet.idCabang ?? idCabang.value;
+
+    namaCabang.value = (outlet.cabang ?? namaCabang.value).trim();
+
+    // ==========================================================
+    // KODE CABANG
+    // ==========================================================
+
+    kodeCabang.value = (outlet.kode ?? '').trim().toUpperCase();
+
+    // ==========================================================
+    // ALAMAT
+    // ==========================================================
+
+    alamatCabang.value = (outlet.alamatCabang ?? alamatCabang.value).trim();
+
+    // ==========================================================
+    // PHONE
+    // ==========================================================
+
+    phoneCabang.value = (outlet.phoneCabang ?? phoneCabang.value).trim();
+
+    // ==========================================================
+    // KASIR
+    // ==========================================================
+
+    idKasir.value = outlet.idKasir ?? idKasir.value;
+
+    namaKasir.value = (outlet.namaKasir ?? namaKasir.value).trim();
+
+    // ==========================================================
+    // DEBUG
+    // ==========================================================
+
+    debugPrint('========================================');
+
+    debugPrint('SELECTED OUTLET');
+    debugPrint('id_kios     : ${idKios.value}');
+    debugPrint('kios        : ${namaKios.value}');
+    debugPrint('id_cabang   : ${idCabang.value}');
+    debugPrint('cabang      : ${namaCabang.value}');
+    debugPrint('kode_cabang : ${kodeCabang.value}');
+    debugPrint('id_kasir    : ${idKasir.value}');
+    debugPrint('nama_kasir  : ${namaKasir.value}');
+
+    debugPrint('========================================');
   }
 
   // ============================================================
@@ -102,7 +206,7 @@ class KasirController extends GetxController {
 
   Future<void> changeBranchOutlet() async {
     // ==========================================================
-    // CEGAH DOUBLE TAP / REQUEST BERSAMAAN
+    // CEGAH DOUBLE TAP
     // ==========================================================
 
     if (isChangingOutlet.value) {
@@ -113,6 +217,32 @@ class KasirController extends GetxController {
       isChangingOutlet(true);
 
       final prefs = await SharedPreferences.getInstance();
+
+      // ==========================================================
+      // VALIDASI
+      // ==========================================================
+
+      if (idKios.value == 0) {
+        throw Exception('ID kios tidak ditemukan.');
+      }
+
+      if (idCabang.value == 0) {
+        throw Exception('ID cabang tidak ditemukan.');
+      }
+
+      if (idKasir.value == 0) {
+        throw Exception('ID kasir tidak ditemukan.');
+      }
+
+      if (kodeCabang.value.trim().isEmpty) {
+        throw Exception('Kode outlet tidak ditemukan.');
+      }
+
+      // ==========================================================
+      // NORMALISASI
+      // ==========================================================
+
+      kodeCabang.value = kodeCabang.value.trim().toUpperCase();
 
       // ==========================================================
       // SAVE SESSION
@@ -130,21 +260,32 @@ class KasirController extends GetxController {
 
       await prefs.setString('cabang', namaCabang.value);
 
+      // ==========================================================
+      // KODE OUTLET
+      // ==========================================================
+
+      await prefs.setString('kode_cabang', kodeCabang.value);
+
       await prefs.setString('alamat_cabang', alamatCabang.value);
 
       await prefs.setString('phone_cabang', phoneCabang.value);
 
       // ==========================================================
-      // REFRESH REACTIVE STATE
+      // DEBUG SESSION
       // ==========================================================
 
-      namaKasir.refresh();
-      namaKios.refresh();
-      namaCabang.refresh();
+      debugPrint('========================================');
 
-      idKasir.refresh();
-      idKios.refresh();
-      idCabang.refresh();
+      debugPrint('CHANGE OUTLET SUCCESS');
+      debugPrint('id_kios     : ${idKios.value}');
+      debugPrint('kios        : ${namaKios.value}');
+      debugPrint('id_cabang   : ${idCabang.value}');
+      debugPrint('cabang      : ${namaCabang.value}');
+      debugPrint('kode_cabang : ${kodeCabang.value}');
+      debugPrint('id_kasir    : ${idKasir.value}');
+      debugPrint('nama_kasir  : ${namaKasir.value}');
+
+      debugPrint('========================================');
 
       // ==========================================================
       // RELOAD PRODUCT
@@ -158,7 +299,7 @@ class KasirController extends GetxController {
         try {
           await Get.find<ProductController>().fetchProductCategory();
         } catch (error) {
-          print('KasirController.reloadProduct: $error');
+          debugPrint('KasirController.reloadProduct: $error');
         }
       }
 
@@ -174,17 +315,17 @@ class KasirController extends GetxController {
         try {
           await Get.find<TransactionController>().refreshAfterOutletChanged();
         } catch (error) {
-          print('KasirController.reloadTransaction: $error');
+          debugPrint('KasirController.reloadTransaction: $error');
         }
       }
 
       // ==========================================================
-      // RELOAD SEMUA DATA
+      // RELOAD DATA
       // ==========================================================
 
       await Future.wait([reloadProduct(), reloadTransaction()]);
     } catch (error) {
-      print('KasirController.changeBranchOutlet: $error');
+      debugPrint('KasirController.changeBranchOutlet: $error');
     } finally {
       isChangingOutlet(false);
     }

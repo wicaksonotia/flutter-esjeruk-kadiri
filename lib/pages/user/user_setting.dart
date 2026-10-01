@@ -3,6 +3,7 @@ import 'package:cashier/controllers/cart_controller.dart';
 import 'package:cashier/controllers/login_controller.dart';
 import 'package:cashier/drawer/nav_drawer.dart' as custom_drawer;
 import 'package:cashier/navigation/app_navigation.dart';
+import 'package:cashier/services/sync_service.dart';
 import 'package:cashier/widgets/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -130,6 +131,10 @@ class UserSetting extends StatelessWidget {
                               Get.toNamed(RouterClass.bluetoothSetting);
                             },
                           ),
+
+                          const _SettingsDivider(),
+
+                          const _SyncSettingsTile(),
                         ],
                       ),
 
@@ -225,6 +230,280 @@ class UserSetting extends StatelessWidget {
   void _performLogout() {
     cartController.clearCart();
     loginController.logout();
+  }
+}
+
+class _SyncSettingsTile extends StatelessWidget {
+  const _SyncSettingsTile();
+
+  @override
+  Widget build(BuildContext context) {
+    final SyncService syncService = Get.find<SyncService>();
+
+    return Obx(() {
+      final state = syncService.syncState.value;
+
+      final pending = syncService.pendingCount.value;
+
+      final bool syncing = state == SyncState.syncing;
+
+      final bool hasPending = pending > 0;
+
+      final Color iconColor;
+      final Color iconBackground;
+      final String title;
+      final String subtitle;
+
+      if (syncing) {
+        iconColor = MyColors.primary;
+        iconBackground = MyColors.primaryLight;
+        title = 'Menyinkronkan...';
+        subtitle = 'Sedang mengirim transaksi ke server';
+      } else if (hasPending) {
+        iconColor = const Color(0xFFB7791F);
+        iconBackground = const Color(0xFFFFF4D6);
+        title = '$pending transaksi menunggu';
+        subtitle =
+            'Data tersimpan di perangkat, '
+            'menunggu koneksi';
+      } else if (state == SyncState.offline) {
+        iconColor = MyColors.error;
+        iconBackground = MyColors.errorBg;
+        title = 'Tidak terhubung';
+        subtitle = 'Transaksi tetap bisa disimpan offline';
+      } else {
+        iconColor = MyColors.success;
+        iconBackground = MyColors.successBg;
+        title = 'Data tersinkron';
+        subtitle =
+            'Semua transaksi sudah tersimpan '
+            'ke server';
+      }
+
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            _showSyncDetail(context, syncService);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: iconBackground,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child:
+                      syncing
+                          ? Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: iconColor,
+                            ),
+                          )
+                          : Icon(
+                            hasPending
+                                ? Icons.cloud_upload_rounded
+                                : state == SyncState.offline
+                                ? Icons.cloud_off_rounded
+                                : Icons.cloud_done_rounded,
+                            size: 21,
+                            color: iconColor,
+                          ),
+                ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sinkronisasi Data',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: MyColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: MyColors.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                if (hasPending && !syncing)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF4D6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$pending',
+                      style: const TextStyle(
+                        color: Color(0xFF8A5A00),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  )
+                else
+                  Icon(
+                    syncing ? Icons.sync_rounded : Icons.chevron_right_rounded,
+                    size: 21,
+                    color: iconColor,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  void _showSyncDetail(BuildContext context, SyncService syncService) {
+    Get.bottomSheet(
+      Obx(() {
+        final state = syncService.syncState.value;
+
+        final pending = syncService.pendingCount.value;
+
+        final bool syncing = state == SyncState.syncing;
+
+        final bool hasPending = pending > 0;
+
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            decoration: const BoxDecoration(
+              color: MyColors.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: MyColors.border,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+
+                const SizedBox(height: 22),
+
+                Icon(
+                  hasPending
+                      ? Icons.cloud_upload_rounded
+                      : syncing
+                      ? Icons.sync_rounded
+                      : state == SyncState.offline
+                      ? Icons.cloud_off_rounded
+                      : Icons.cloud_done_rounded,
+                  size: 36,
+                  color:
+                      hasPending
+                          ? const Color(0xFFB7791F)
+                          : syncing
+                          ? MyColors.primary
+                          : state == SyncState.offline
+                          ? MyColors.error
+                          : MyColors.success,
+                ),
+
+                const SizedBox(height: 12),
+
+                Text(
+                  hasPending
+                      ? '$pending transaksi menunggu'
+                      : syncing
+                      ? 'Sedang menyinkronkan'
+                      : state == SyncState.offline
+                      ? 'Tidak terhubung'
+                      : 'Data tersinkron',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: MyColors.textPrimary,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  hasPending
+                      ? 'Transaksi sudah tersimpan aman '
+                          'di perangkat dan akan dikirim '
+                          'ke server.'
+                      : syncing
+                      ? 'Mohon tunggu, transaksi sedang '
+                          'dikirim ke server.'
+                      : state == SyncState.offline
+                      ? 'Tidak ada koneksi ke server. '
+                          'Transaksi baru tetap aman '
+                          'disimpan secara lokal.'
+                      : 'Tidak ada transaksi yang '
+                          'menunggu sinkronisasi.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    height: 1.45,
+                    color: MyColors.textSecondary,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: ElevatedButton.icon(
+                    onPressed:
+                        syncing
+                            ? null
+                            : () async {
+                              await syncService.syncNow();
+                            },
+                    icon: const Icon(Icons.sync_rounded, size: 19),
+                    label: Text(
+                      syncing ? 'Menyinkronkan...' : 'Sinkronkan Sekarang',
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                TextButton(onPressed: Get.back, child: const Text('Tutup')),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
   }
 }
 

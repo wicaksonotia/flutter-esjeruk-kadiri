@@ -2,10 +2,10 @@ class ApiEndPoints {
   // static const String baseUrl = 'http://103.184.181.9/apiGlobal/';
   static const String ipPublic = 'http://36.93.148.82/pkbsurabaya/';
   static const String baseUrl = '${ipPublic}apiGlobal/';
-  static _AuthEndPoints authEndpoints = _AuthEndPoints();
+  static AuthEndPoints authEndpoints = AuthEndPoints();
 }
 
-class _AuthEndPoints {
+class AuthEndPoints {
   final String login = 'loginkios';
   final String changePassword = 'changepassword';
   final String updateProfile = 'updateprofile';
