@@ -15,22 +15,29 @@ class TransactionHistoryModel {
     status = json['status'];
     message = json['message'];
     totalCup = json['total_cup'];
+
     if (json['data'] != null) {
       data = <TransactionModel>[];
+
       json['data'].forEach((v) {
         data!.add(TransactionModel.fromJson(v));
       });
+    } else {
+      data = <TransactionModel>[];
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
     data['status'] = status;
     data['message'] = message;
     data['total_cup'] = totalCup;
+
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
+
     return data;
   }
 }
@@ -50,8 +57,19 @@ class TransactionModel {
   int? idCabang;
   String? paymentMethod;
   int? totalItem;
+
+  // ============================================================
+  // NAMA KASIR
+  // ============================================================
+
   String? cashierName;
+
+  // ============================================================
+  // KODE CABANG
+  // ============================================================
+
   String? branchCode;
+
   List<ListDetailTransactionModel>? details;
 
   TransactionModel({
@@ -76,23 +94,52 @@ class TransactionModel {
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+
     numerator = json['numerator'];
+
     transactionDate =
         json['transaction_date'] ?? DateTime.now().toIso8601String();
+
     idKios = json['id_kios'];
+
     idKasir = json['id_kasir'];
+
     subTotal = json['sub_total'] ?? 0;
+
     discount = json['discount'] ?? 0;
+
     grandTotal = json['grand_total'] ?? 0;
+
     orderType = json['order_type'];
+
     deleteStatus = json['delete_status'] ?? false;
+
     deleteReason = json['delete_reason'] ?? '';
+
     idCabang = json['id_cabang'];
+
     paymentMethod = json['payment_method'] ?? 'Cash';
+
     totalItem = json['total_item'] ?? 0;
-    cashierName = json['nama_kasir'] ?? 'Unknown Cashier';
+
+    // ==========================================================
+    // NAMA KASIR DARI SERVER
+    // ==========================================================
+
+    cashierName = json['nama_kasir'];
+
+    // ==========================================================
+    // KODE CABANG DARI SERVER
+    // ==========================================================
+
     branchCode = json['kode_cabang'];
+
+    // ==========================================================
+    // DETAILS
+    // ==========================================================
+
     details = <ListDetailTransactionModel>[];
+
     if (json['details'] != null) {
       json['details'].forEach((v) {
         details!.add(ListDetailTransactionModel.fromJson(v));
@@ -102,36 +149,56 @@ class TransactionModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
     data['id'] = id;
+
     data['numerator'] = numerator;
+
     data['transaction_date'] = transactionDate;
+
     data['id_kios'] = idKios;
+
     data['id_kasir'] = idKasir;
-    data['sub_total'] = subTotal;
-    data['discount'] = discount;
-    data['grand_total'] = grandTotal;
-    data['order_type'] = orderType;
-    data['delete_status'] = deleteStatus;
-    data['delete_reason'] = deleteReason;
+
     data['id_cabang'] = idCabang;
+
+    data['sub_total'] = subTotal;
+
+    data['discount'] = discount;
+
+    data['grand_total'] = grandTotal;
+
+    data['order_type'] = orderType;
+
+    data['delete_status'] = deleteStatus;
+
+    data['delete_reason'] = deleteReason;
+
     data['payment_method'] = paymentMethod;
+
     data['total_item'] = totalItem;
+
     data['nama_kasir'] = cashierName;
+
     data['kode_cabang'] = branchCode;
+
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();
     }
+
     return data;
   }
 }
 
 class ListDetailTransactionModel {
+  int? idProduct;
   String? productName;
   int? quantity;
   int? unitPrice;
   int? totalPrice;
 
   ListDetailTransactionModel({
+    this.idProduct,
     this.productName,
     this.quantity,
     this.unitPrice,
@@ -139,18 +206,30 @@ class ListDetailTransactionModel {
   });
 
   ListDetailTransactionModel.fromJson(Map<String, dynamic> json) {
+    idProduct = json['id_product'];
+
     productName = json['product_name'];
+
     quantity = json['quantity'];
+
     unitPrice = json['unit_price'];
+
     totalPrice = json['total_price'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+
+    data['id_product'] = idProduct;
+
     data['product_name'] = productName;
+
     data['quantity'] = quantity;
+
     data['unit_price'] = unitPrice;
+
     data['total_price'] = totalPrice;
+
     return data;
   }
 }

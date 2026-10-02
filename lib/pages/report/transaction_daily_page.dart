@@ -128,8 +128,6 @@ class TransactionDailyPageState extends State<TransactionDailyPage> {
 
             showSummary: false,
 
-            cashierName: _transactionController.namaKasir.value,
-
             onRefresh: _refresh,
           ),
         ),

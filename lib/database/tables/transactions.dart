@@ -21,6 +21,9 @@ class Transactions extends Table {
   /// ID kasir
   IntColumn get idKasir => integer().named('id_kasir')();
 
+  TextColumn get cashierName =>
+      text().named('cashier_name').withDefault(const Constant(''))();
+
   /// Kode outlet, contoh:
   /// BGSN
   /// STG

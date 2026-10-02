@@ -17,7 +17,6 @@ class TransactionGroupedList extends StatelessWidget {
   final bool enableDelete;
   final bool enablePrint;
   final bool showSummary;
-  final String cashierName;
   final Future<void> Function() onRefresh;
 
   const TransactionGroupedList({
@@ -28,7 +27,6 @@ class TransactionGroupedList extends StatelessWidget {
     this.enableDelete = false,
     this.enablePrint = false,
     this.showSummary = false,
-    this.cashierName = '',
   });
 
   // ==============================================================
@@ -123,7 +121,9 @@ class TransactionGroupedList extends StatelessWidget {
                       height: 14,
                       color: Colors.white,
                     ),
+
                     const Gap(8),
+
                     Container(width: 110, height: 10, color: Colors.white),
                   ],
                 ),
@@ -142,7 +142,9 @@ class TransactionGroupedList extends StatelessWidget {
           Row(
             children: [
               Container(width: 100, height: 10, color: Colors.white),
+
               const Gap(15),
+
               Container(width: 90, height: 10, color: Colors.white),
             ],
           ),
@@ -217,14 +219,16 @@ class TransactionGroupedList extends StatelessWidget {
       onRefresh: onRefresh,
       child: GroupListView(
         physics: const AlwaysScrollableScrollPhysics(),
+
         sectionsCount: keys.length,
+
         countOfItemInSection: (section) {
           return values[section].length;
         },
 
-        // ==========================================================
+        // ========================================================
         // HEADER
-        // ==========================================================
+        // ========================================================
         groupHeaderBuilder: (_, section) {
           final date = DateFormat('dd MMMM yyyy', 'id_ID').parse(keys[section]);
 
@@ -233,9 +237,9 @@ class TransactionGroupedList extends StatelessWidget {
           return _buildDateHeader(date, dayItems);
         },
 
-        // ==========================================================
+        // ========================================================
         // ITEM
-        // ==========================================================
+        // ========================================================
         itemBuilder: (_, index) {
           final item = values[index.section][index.index];
 
@@ -259,6 +263,7 @@ class TransactionGroupedList extends StatelessWidget {
 
   Widget _buildDateHeader(DateTime date, List<dynamic> transactions) {
     final totalItem = _calculateTotalItem(transactions);
+
     final totalOmzet = _calculateTotalOmzet(transactions);
 
     return Padding(
@@ -266,10 +271,6 @@ class TransactionGroupedList extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ========================================================
-          // DATE BADGE
-          // ========================================================
-
           Container(
             width: 48,
             height: 48,
@@ -307,9 +308,6 @@ class TransactionGroupedList extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // ========================================================
-          // DATE INFO
-          // ========================================================
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,9 +361,6 @@ class TransactionGroupedList extends StatelessWidget {
             ),
           ),
 
-          // ========================================================
-          // DAILY TOTAL
-          // ========================================================
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -428,8 +423,7 @@ class TransactionGroupedList extends StatelessWidget {
   // ==============================================================
 
   Widget _buildTransactionItem(dynamic item) {
-    final canDelete =
-        enableDelete && !item.deleteStatus && item.cashierName == cashierName;
+    final canDelete = enableDelete && !item.deleteStatus;
 
     final canPrint = enablePrint;
 
@@ -460,6 +454,7 @@ class TransactionGroupedList extends StatelessWidget {
     required bool canPrint,
   }) {
     final printController = Get.find<PrintNotaController>();
+
     final trxController = Get.find<TransactionController>();
 
     return Slidable(
@@ -467,12 +462,17 @@ class TransactionGroupedList extends StatelessWidget {
 
       endActionPane: ActionPane(
         motion: const DrawerMotion(),
+
         extentRatio: canPrint && canDelete ? 0.15 : 0.10,
+
         children: [
           CustomSlidableAction(
             onPressed: (_) {},
+
             backgroundColor: Colors.transparent,
+
             padding: EdgeInsets.zero,
+
             child: Container(
               margin: const EdgeInsets.only(top: 4, bottom: 4, right: 8),
               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -519,15 +519,19 @@ class TransactionGroupedList extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
+
       decoration: BoxDecoration(
         color: MyColors.surface,
+
         borderRadius: BorderRadius.circular(16),
+
         border: Border.all(
           color:
               isDeleted
                   ? MyColors.error.withValues(alpha: .18)
                   : MyColors.border.withValues(alpha: .65),
         ),
+
         boxShadow: [
           BoxShadow(
             color: MyColors.shadow.withValues(alpha: .04),
@@ -536,18 +540,23 @@ class TransactionGroupedList extends StatelessWidget {
           ),
         ],
       ),
+
       child: Theme(
         data: Theme.of(Get.context!).copyWith(dividerColor: Colors.transparent),
+
         child: ExpansionTile(
           tilePadding: const EdgeInsets.fromLTRB(16, 8, 14, 8),
+
           childrenPadding: EdgeInsets.zero,
 
           iconColor: MyColors.primary,
+
           collapsedIconColor: MyColors.textMuted,
 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+
           collapsedShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -572,23 +581,33 @@ class TransactionGroupedList extends StatelessWidget {
   // ==============================================================
 
   Widget _buildTransactionHeader(dynamic item, bool isDeleted) {
+    final numerator = item.numerator;
+
+    final transactionNumber =
+        numerator == null ? 'LOCAL' : numerator.toString().padLeft(4, '0');
+
     return Row(
       children: [
         Container(
           width: 38,
           height: 38,
+
           decoration: BoxDecoration(
             color:
                 isDeleted
                     ? MyColors.error.withValues(alpha: .08)
                     : MyColors.primaryLight,
+
             borderRadius: BorderRadius.circular(11),
           ),
+
           child: Icon(
             isDeleted
                 ? Icons.receipt_long_outlined
                 : Icons.receipt_long_rounded,
+
             size: 20,
+
             color: isDeleted ? MyColors.error : MyColors.primaryDark,
           ),
         ),
@@ -602,9 +621,12 @@ class TransactionGroupedList extends StatelessWidget {
               Text(
                 'HIMALAYA/'
                 '${item.branchCode}/'
-                '${item.numerator.toString().padLeft(4, '0')}',
+                '$transactionNumber',
+
                 maxLines: 1,
+
                 overflow: TextOverflow.ellipsis,
+
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeMd,
                   fontWeight: FontWeight.w800,
@@ -614,6 +636,7 @@ class TransactionGroupedList extends StatelessWidget {
 
               if (isDeleted) ...[
                 const Gap(4),
+
                 _buildStatusBadge('DIBATALKAN', MyColors.error),
               ],
             ],
@@ -628,6 +651,15 @@ class TransactionGroupedList extends StatelessWidget {
   // ==============================================================
 
   Widget _buildTransactionMeta(dynamic item) {
+    final cashierName = item.cashierName?.toString().trim();
+
+    final cashierText =
+        cashierName != null && cashierName.isNotEmpty
+            ? cashierName
+            : item.idKasir != null
+            ? 'Kasir #${item.idKasir}'
+            : 'Kasir -';
+
     return Wrap(
       spacing: 12,
       runSpacing: 5,
@@ -642,7 +674,7 @@ class TransactionGroupedList extends StatelessWidget {
           ).format(DateTime.parse(item.transactionDate)),
         ),
 
-        _buildMetaItem(Icons.person_outline_rounded, item.cashierName ?? '-'),
+        _buildMetaItem(Icons.person_outline_rounded, cashierText),
       ],
     );
   }
@@ -673,15 +705,21 @@ class TransactionGroupedList extends StatelessWidget {
   Widget _buildTransactionAmount(dynamic item, bool isDeleted) {
     return Padding(
       padding: const EdgeInsets.only(left: 8),
+
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+
         crossAxisAlignment: CrossAxisAlignment.end,
+
         children: [
           Text(
             CurrencyFormat.convertToIdr(item.grandTotal, 0),
+
             style: TextStyle(
               fontSize: MySizes.fontSizeMd,
+
               fontWeight: FontWeight.w800,
+
               color: isDeleted ? MyColors.error : MyColors.primaryDark,
             ),
           ),
@@ -701,13 +739,18 @@ class TransactionGroupedList extends StatelessWidget {
   Widget _buildPaymentBadge(String paymentMethod) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+
       decoration: BoxDecoration(
         color: MyColors.surfaceSoft,
+
         borderRadius: BorderRadius.circular(6),
+
         border: Border.all(color: MyColors.border.withValues(alpha: .6)),
       ),
+
       child: Text(
         paymentMethod,
+
         style: const TextStyle(
           color: MyColors.textSecondary,
           fontSize: 10,
@@ -724,12 +767,16 @@ class TransactionGroupedList extends StatelessWidget {
   Widget _buildStatusBadge(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+
       decoration: BoxDecoration(
         color: color.withValues(alpha: .08),
+
         borderRadius: BorderRadius.circular(6),
       ),
+
       child: Text(
         text,
+
         style: TextStyle(
           color: color,
           fontSize: 9,
@@ -749,24 +796,32 @@ class TransactionGroupedList extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+
       margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+
       padding: const EdgeInsets.all(14),
+
       decoration: BoxDecoration(
         color: MyColors.background,
+
         borderRadius: BorderRadius.circular(12),
       ),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           Row(
             children: [
               Container(
                 width: 28,
                 height: 28,
+
                 decoration: BoxDecoration(
                   color: MyColors.accentLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
+
                 child: const Icon(
                   Icons.list_alt_rounded,
                   size: 16,
@@ -861,19 +916,24 @@ class TransactionGroupedList extends StatelessWidget {
     return details.map<Widget>((detail) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 7),
+
         decoration: BoxDecoration(
           border: Border(
             top: BorderSide(color: MyColors.border.withValues(alpha: .7)),
           ),
         ),
+
         child: Row(
           children: [
             Expanded(
               flex: 5,
               child: Text(
                 detail.productName ?? '-',
+
                 maxLines: 2,
+
                 overflow: TextOverflow.ellipsis,
+
                 style: const TextStyle(
                   fontSize: MySizes.fontSizeSm,
                   fontWeight: FontWeight.w500,
@@ -887,20 +947,27 @@ class TransactionGroupedList extends StatelessWidget {
               child: Center(
                 child: Container(
                   constraints: const BoxConstraints(minWidth: 24),
+
                   padding: const EdgeInsets.symmetric(
                     horizontal: 5,
                     vertical: 2,
                   ),
+
                   decoration: BoxDecoration(
                     color: MyColors.accentLight,
+
                     borderRadius: BorderRadius.circular(5),
+
                     border: Border.all(
                       color: MyColors.accent.withValues(alpha: .18),
                     ),
                   ),
+
                   child: Text(
                     '${detail.quantity ?? 0}',
+
                     textAlign: TextAlign.center,
+
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -915,8 +982,10 @@ class TransactionGroupedList extends StatelessWidget {
               flex: 3,
               child: Align(
                 alignment: Alignment.centerRight,
+
                 child: Text(
                   CurrencyFormat.convertToIdr(detail.totalPrice, 0),
+
                   style: const TextStyle(
                     fontSize: MySizes.fontSizeSm,
                     fontWeight: FontWeight.w600,
@@ -938,15 +1007,22 @@ class TransactionGroupedList extends StatelessWidget {
   Widget _buildDeleteStatus(dynamic item) {
     return Container(
       width: double.infinity,
+
       margin: const EdgeInsets.only(top: 10),
+
       padding: const EdgeInsets.all(10),
+
       decoration: BoxDecoration(
         color: MyColors.error.withValues(alpha: .07),
+
         borderRadius: BorderRadius.circular(9),
+
         border: Border.all(color: MyColors.error.withValues(alpha: .15)),
       ),
+
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           const Icon(
             Icons.info_outline_rounded,
@@ -959,7 +1035,9 @@ class TransactionGroupedList extends StatelessWidget {
           Expanded(
             child: Text(
               'Transaksi dibatalkan\n'
-              'Alasan: ${item.deleteReason ?? '-'}',
+              'Alasan: '
+              '${item.deleteReason ?? '-'}',
+
               style: const TextStyle(
                 color: MyColors.error,
                 fontSize: MySizes.fontSizeSm,
@@ -992,16 +1070,22 @@ class _SlideIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+
       child: InkWell(
         onTap: onTap,
+
         borderRadius: BorderRadius.circular(12),
+
         child: Container(
           width: 36,
           height: 36,
+
           decoration: BoxDecoration(
             color: color.withValues(alpha: .10),
+
             borderRadius: BorderRadius.circular(12),
           ),
+
           child: Icon(icon, color: color, size: 21),
         ),
       ),

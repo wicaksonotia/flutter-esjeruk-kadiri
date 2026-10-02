@@ -1028,6 +1028,18 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _cashierNameMeta = const VerificationMeta(
+    'cashierName',
+  );
+  @override
+  late final GeneratedColumn<String> cashierName = GeneratedColumn<String>(
+    'cashier_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _branchCodeMeta = const VerificationMeta(
     'branchCode',
   );
@@ -1211,6 +1223,7 @@ class $TransactionsTable extends Transactions
     idKios,
     idCabang,
     idKasir,
+    cashierName,
     branchCode,
     localNumber,
     numerator,
@@ -1282,6 +1295,15 @@ class $TransactionsTable extends Transactions
       );
     } else if (isInserting) {
       context.missing(_idKasirMeta);
+    }
+    if (data.containsKey('cashier_name')) {
+      context.handle(
+        _cashierNameMeta,
+        cashierName.isAcceptableOrUnknown(
+          data['cashier_name']!,
+          _cashierNameMeta,
+        ),
+      );
     }
     if (data.containsKey('branch_code')) {
       context.handle(
@@ -1439,6 +1461,11 @@ class $TransactionsTable extends Transactions
             DriftSqlType.int,
             data['${effectivePrefix}id_kasir'],
           )!,
+      cashierName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}cashier_name'],
+          )!,
       branchCode:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -1538,6 +1565,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
 
   /// ID kasir
   final int idKasir;
+  final String cashierName;
 
   /// Kode outlet, contoh:
   /// BGSN
@@ -1605,6 +1633,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     required this.idKios,
     required this.idCabang,
     required this.idKasir,
+    required this.cashierName,
     required this.branchCode,
     this.localNumber,
     this.numerator,
@@ -1632,6 +1661,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['id_kios'] = Variable<int>(idKios);
     map['id_cabang'] = Variable<int>(idCabang);
     map['id_kasir'] = Variable<int>(idKasir);
+    map['cashier_name'] = Variable<String>(cashierName);
     map['branch_code'] = Variable<String>(branchCode);
     if (!nullToAbsent || localNumber != null) {
       map['local_number'] = Variable<int>(localNumber);
@@ -1669,6 +1699,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       idKios: Value(idKios),
       idCabang: Value(idCabang),
       idKasir: Value(idKasir),
+      cashierName: Value(cashierName),
       branchCode: Value(branchCode),
       localNumber:
           localNumber == null && nullToAbsent
@@ -1713,6 +1744,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       idKios: serializer.fromJson<int>(json['idKios']),
       idCabang: serializer.fromJson<int>(json['idCabang']),
       idKasir: serializer.fromJson<int>(json['idKasir']),
+      cashierName: serializer.fromJson<String>(json['cashierName']),
       branchCode: serializer.fromJson<String>(json['branchCode']),
       localNumber: serializer.fromJson<int?>(json['localNumber']),
       numerator: serializer.fromJson<int?>(json['numerator']),
@@ -1740,6 +1772,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'idKios': serializer.toJson<int>(idKios),
       'idCabang': serializer.toJson<int>(idCabang),
       'idKasir': serializer.toJson<int>(idKasir),
+      'cashierName': serializer.toJson<String>(cashierName),
       'branchCode': serializer.toJson<String>(branchCode),
       'localNumber': serializer.toJson<int?>(localNumber),
       'numerator': serializer.toJson<int?>(numerator),
@@ -1765,6 +1798,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     int? idKios,
     int? idCabang,
     int? idKasir,
+    String? cashierName,
     String? branchCode,
     Value<int?> localNumber = const Value.absent(),
     Value<int?> numerator = const Value.absent(),
@@ -1790,6 +1824,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     idKios: idKios ?? this.idKios,
     idCabang: idCabang ?? this.idCabang,
     idKasir: idKasir ?? this.idKasir,
+    cashierName: cashierName ?? this.cashierName,
     branchCode: branchCode ?? this.branchCode,
     localNumber: localNumber.present ? localNumber.value : this.localNumber,
     numerator: numerator.present ? numerator.value : this.numerator,
@@ -1817,6 +1852,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       idKios: data.idKios.present ? data.idKios.value : this.idKios,
       idCabang: data.idCabang.present ? data.idCabang.value : this.idCabang,
       idKasir: data.idKasir.present ? data.idKasir.value : this.idKasir,
+      cashierName:
+          data.cashierName.present ? data.cashierName.value : this.cashierName,
       branchCode:
           data.branchCode.present ? data.branchCode.value : this.branchCode,
       localNumber:
@@ -1861,6 +1898,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('idKios: $idKios, ')
           ..write('idCabang: $idCabang, ')
           ..write('idKasir: $idKasir, ')
+          ..write('cashierName: $cashierName, ')
           ..write('branchCode: $branchCode, ')
           ..write('localNumber: $localNumber, ')
           ..write('numerator: $numerator, ')
@@ -1888,6 +1926,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     idKios,
     idCabang,
     idKasir,
+    cashierName,
     branchCode,
     localNumber,
     numerator,
@@ -1914,6 +1953,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.idKios == this.idKios &&
           other.idCabang == this.idCabang &&
           other.idKasir == this.idKasir &&
+          other.cashierName == this.cashierName &&
           other.branchCode == this.branchCode &&
           other.localNumber == this.localNumber &&
           other.numerator == this.numerator &&
@@ -1938,6 +1978,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> idKios;
   final Value<int> idCabang;
   final Value<int> idKasir;
+  final Value<String> cashierName;
   final Value<String> branchCode;
   final Value<int?> localNumber;
   final Value<int?> numerator;
@@ -1960,6 +2001,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.idKios = const Value.absent(),
     this.idCabang = const Value.absent(),
     this.idKasir = const Value.absent(),
+    this.cashierName = const Value.absent(),
     this.branchCode = const Value.absent(),
     this.localNumber = const Value.absent(),
     this.numerator = const Value.absent(),
@@ -1983,6 +2025,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     required int idKios,
     required int idCabang,
     required int idKasir,
+    this.cashierName = const Value.absent(),
     this.branchCode = const Value.absent(),
     this.localNumber = const Value.absent(),
     this.numerator = const Value.absent(),
@@ -2014,6 +2057,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<int>? idKios,
     Expression<int>? idCabang,
     Expression<int>? idKasir,
+    Expression<String>? cashierName,
     Expression<String>? branchCode,
     Expression<int>? localNumber,
     Expression<int>? numerator,
@@ -2038,6 +2082,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (idKios != null) 'id_kios': idKios,
       if (idCabang != null) 'id_cabang': idCabang,
       if (idKasir != null) 'id_kasir': idKasir,
+      if (cashierName != null) 'cashier_name': cashierName,
       if (branchCode != null) 'branch_code': branchCode,
       if (localNumber != null) 'local_number': localNumber,
       if (numerator != null) 'numerator': numerator,
@@ -2063,6 +2108,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<int>? idKios,
     Value<int>? idCabang,
     Value<int>? idKasir,
+    Value<String>? cashierName,
     Value<String>? branchCode,
     Value<int?>? localNumber,
     Value<int?>? numerator,
@@ -2086,6 +2132,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       idKios: idKios ?? this.idKios,
       idCabang: idCabang ?? this.idCabang,
       idKasir: idKasir ?? this.idKasir,
+      cashierName: cashierName ?? this.cashierName,
       branchCode: branchCode ?? this.branchCode,
       localNumber: localNumber ?? this.localNumber,
       numerator: numerator ?? this.numerator,
@@ -2124,6 +2171,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     }
     if (idKasir.present) {
       map['id_kasir'] = Variable<int>(idKasir.value);
+    }
+    if (cashierName.present) {
+      map['cashier_name'] = Variable<String>(cashierName.value);
     }
     if (branchCode.present) {
       map['branch_code'] = Variable<String>(branchCode.value);
@@ -2182,6 +2232,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('idKios: $idKios, ')
           ..write('idCabang: $idCabang, ')
           ..write('idKasir: $idKasir, ')
+          ..write('cashierName: $cashierName, ')
           ..write('branchCode: $branchCode, ')
           ..write('localNumber: $localNumber, ')
           ..write('numerator: $numerator, ')
@@ -3251,6 +3302,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       required int idKios,
       required int idCabang,
       required int idKasir,
+      Value<String> cashierName,
       Value<String> branchCode,
       Value<int?> localNumber,
       Value<int?> numerator,
@@ -3275,6 +3327,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<int> idKios,
       Value<int> idCabang,
       Value<int> idKasir,
+      Value<String> cashierName,
       Value<String> branchCode,
       Value<int?> localNumber,
       Value<int?> numerator,
@@ -3328,6 +3381,11 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<int> get idKasir => $composableBuilder(
     column: $table.idKasir,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashierName => $composableBuilder(
+    column: $table.cashierName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3446,6 +3504,11 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get cashierName => $composableBuilder(
+    column: $table.cashierName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get branchCode => $composableBuilder(
     column: $table.branchCode,
     builder: (column) => ColumnOrderings(column),
@@ -3551,6 +3614,11 @@ class $$TransactionsTableAnnotationComposer
   GeneratedColumn<int> get idKasir =>
       $composableBuilder(column: $table.idKasir, builder: (column) => column);
 
+  GeneratedColumn<String> get cashierName => $composableBuilder(
+    column: $table.cashierName,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get branchCode => $composableBuilder(
     column: $table.branchCode,
     builder: (column) => column,
@@ -3653,6 +3721,7 @@ class $$TransactionsTableTableManager
                 Value<int> idKios = const Value.absent(),
                 Value<int> idCabang = const Value.absent(),
                 Value<int> idKasir = const Value.absent(),
+                Value<String> cashierName = const Value.absent(),
                 Value<String> branchCode = const Value.absent(),
                 Value<int?> localNumber = const Value.absent(),
                 Value<int?> numerator = const Value.absent(),
@@ -3675,6 +3744,7 @@ class $$TransactionsTableTableManager
                 idKios: idKios,
                 idCabang: idCabang,
                 idKasir: idKasir,
+                cashierName: cashierName,
                 branchCode: branchCode,
                 localNumber: localNumber,
                 numerator: numerator,
@@ -3699,6 +3769,7 @@ class $$TransactionsTableTableManager
                 required int idKios,
                 required int idCabang,
                 required int idKasir,
+                Value<String> cashierName = const Value.absent(),
                 Value<String> branchCode = const Value.absent(),
                 Value<int?> localNumber = const Value.absent(),
                 Value<int?> numerator = const Value.absent(),
@@ -3721,6 +3792,7 @@ class $$TransactionsTableTableManager
                 idKios: idKios,
                 idCabang: idCabang,
                 idKasir: idKasir,
+                cashierName: cashierName,
                 branchCode: branchCode,
                 localNumber: localNumber,
                 numerator: numerator,

@@ -299,6 +299,7 @@ class CartController extends GetxController {
         idCabang: cabang,
 
         idKasir: kasir,
+        cashierName: prefs.getString('nama_kasir') ?? '',
 
         branchCode: branchCode,
 

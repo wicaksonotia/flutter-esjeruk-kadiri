@@ -156,9 +156,6 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
           const SizedBox(width: 4),
         ],
 
-        // ========================================================
-        // TERRACOTTA ACCENT
-        // ========================================================
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: Align(
@@ -196,8 +193,6 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
                   enablePrint: true,
 
                   showSummary: true,
-
-                  cashierName: _transactionController.namaKasir.value,
 
                   onRefresh: _refresh,
                 ),
@@ -255,10 +250,6 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ),
 
         choiceStyle: C2ChipStyle.filled(
-          // ======================================================
-          // NORMAL CHIP
-          // ======================================================
-
           foregroundStyle: const TextStyle(
             color: MyColors.textSecondary,
             fontSize: MySizes.fontSizeSm,
@@ -269,9 +260,6 @@ class TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
           borderRadius: BorderRadius.circular(12),
 
-          // ======================================================
-          // SELECTED CHIP
-          // ======================================================
           selectedStyle: C2ChipStyle(
             backgroundColor: MyColors.accentLight,
 

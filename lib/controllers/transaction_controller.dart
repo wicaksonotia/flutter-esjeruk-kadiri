@@ -95,15 +95,12 @@ class TransactionController extends GetxController {
 
       namaKasir.value = prefs.getString('nama_kasir') ?? '';
     } catch (error) {
-      debugPrint(
-        'TransactionController.getNamaKasir: '
-        '$error',
-      );
+      debugPrint('TransactionController.getNamaKasir: $error');
     }
   }
 
   // ============================================================
-  // REFRESH OUTLET
+  // REFRESH AFTER OUTLET CHANGED
   // ============================================================
 
   Future<void> refreshAfterOutletChanged() async {
@@ -126,14 +123,15 @@ class TransactionController extends GetxController {
     } catch (error) {
       debugPrint(
         'TransactionController.'
-        'refreshAfterOutletChanged: '
-        '$error',
+        'refreshAfterOutletChanged: $error',
       );
     }
   }
 
   // ============================================================
   // DAILY TRANSACTIONS
+  //
+  // DAILY tetap berdasarkan KASIR yang sedang login.
   // ============================================================
 
   Future<void> fetchDailyTransactions() async {
@@ -193,13 +191,8 @@ class TransactionController extends GetxController {
     } catch (error) {
       debugPrint(
         'TransactionController.'
-        'fetchDailyTransactions: '
-        '$error',
+        'fetchDailyTransactions: $error',
       );
-
-      // ========================================================
-      // LOCAL ERROR
-      // ========================================================
 
       dailyTransactionItems.clear();
 
@@ -220,11 +213,21 @@ class TransactionController extends GetxController {
 
   // ============================================================
   // TRANSACTION HISTORY
+  //
+  // HISTORY berdasarkan:
+  // - id_kios
+  // - id_cabang
+  // - periode
+  //
+  // TIDAK berdasarkan id_kasir.
+  //
+  // Artinya semua transaksi kasir pada outlet aktif
+  // akan ditampilkan.
   // ============================================================
 
   Future<void> fetchTransaction() async {
     try {
-      isLoadingTransactionHistory(true);
+      isLoadingTransactionHistory.value = true;
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -232,95 +235,128 @@ class TransactionController extends GetxController {
 
       final cabang = prefs.getInt('id_cabang') ?? 0;
 
-      final kasir = prefs.getInt('id_kasir') ?? 0;
+      debugPrint('========================================');
+      debugPrint('FETCH TRANSACTION HISTORY');
+      debugPrint('id_kios   : $kios');
+      debugPrint('id_cabang : $cabang');
+      debugPrint('filter    : ${filterBy.value}');
+      debugPrint('month     : ${initMonth.value}');
+      debugPrint('year      : ${initYear.value}');
+      debugPrint('startDate : ${startDate.value}');
+      debugPrint('endDate   : ${endDate.value}');
+      debugPrint('========================================');
 
-      if (kios == 0 || cabang == 0 || kasir == 0) {
+      if (kios == 0) {
         transactionItems.clear();
-
         historyTotal.value = 0;
-
         historyTotalCup.value = 0;
-
         return;
       }
 
-      List<Transaction> localTransactions;
+      // =====================================================
+      // 1. LOAD LOCAL TERLEBIH DAHULU
+      // =====================================================
 
-      // ========================================================
-      // BULAN
-      // ========================================================
+      List<Transaction> localTransactions = [];
 
       if (filterBy.value == 'bulan') {
         localTransactions = await _transactionRepository.getTransactionsByMonth(
           idKios: kios,
           idCabang: cabang,
-          idKasir: kasir,
           month: initMonth.value,
           year: initYear.value,
         );
-      }
-      // ========================================================
-      // RANGE TANGGAL
-      // ========================================================
-      else {
+      } else {
         localTransactions = await _transactionRepository
             .getTransactionsByDateRange(
               idKios: kios,
               idCabang: cabang,
-              idKasir: kasir,
               startDate: startDate.value,
               endDate: endDate.value,
             );
       }
 
-      // ========================================================
-      // CONVERT
-      // ========================================================
+      if (localTransactions.isNotEmpty) {
+        final models = await _transactionRepository.toTransactionModels(
+          localTransactions,
+        );
 
-      final models = await _transactionRepository.toTransactionModels(
-        localTransactions,
-        cashierName: namaKasir.value,
-      );
+        transactionItems.assignAll(models);
 
-      transactionItems.assignAll(models);
+        _calculateHistorySummary(models);
+      } else {
+        transactionItems.clear();
+        historyTotal.value = 0;
+        historyTotalCup.value = 0;
+      }
 
-      // ========================================================
-      // SUMMARY
-      // ========================================================
+      // =====================================================
+      // 2. PULL SERVER
+      // =====================================================
 
-      final activeItems =
-          transactionItems.where((item) => item.deleteStatus == false).toList();
+      bool syncSuccess = false;
 
-      historyTotal.value = activeItems.fold(
-        0,
-        (sum, item) => sum + (item.grandTotal ?? 0),
-      );
+      if (filterBy.value == 'bulan') {
+        syncSuccess = await _transactionRepository
+            .syncTransactionsFromServerByMonth(
+              idKios: kios,
+              idCabang: cabang,
+              month: initMonth.value,
+              year: initYear.value,
+            );
+      } else {
+        syncSuccess = await _transactionRepository
+            .syncTransactionsFromServerByDateRange(
+              idKios: kios,
+              idCabang: cabang,
+              startDate: startDate.value,
+              endDate: endDate.value,
+            );
+      }
 
-      historyTotalCup.value = activeItems.fold(
-        0,
-        (sum, item) => sum + (item.totalItem ?? 0),
-      );
-    } catch (error) {
+      // =====================================================
+      // 3. JIKA SERVER BERHASIL → BACA SQLITE LAGI
+      // =====================================================
+
+      if (syncSuccess) {
+        List<Transaction> syncedTransactions = [];
+
+        if (filterBy.value == 'bulan') {
+          syncedTransactions = await _transactionRepository
+              .getTransactionsByMonth(
+                idKios: kios,
+                idCabang: cabang,
+                month: initMonth.value,
+                year: initYear.value,
+              );
+        } else {
+          syncedTransactions = await _transactionRepository
+              .getTransactionsByDateRange(
+                idKios: kios,
+                idCabang: cabang,
+                startDate: startDate.value,
+                endDate: endDate.value,
+              );
+        }
+
+        final models = await _transactionRepository.toTransactionModels(
+          syncedTransactions,
+        );
+
+        transactionItems.assignAll(models);
+
+        _calculateHistorySummary(models);
+      }
+
       debugPrint(
-        'TransactionController.'
-        'fetchTransaction: '
-        '$error',
+        'HISTORY FINAL => '
+        '${transactionItems.length} transaksi',
       );
-
-      transactionItems.clear();
-
-      historyTotal.value = 0;
-
-      historyTotalCup.value = 0;
-
-      Get.snackbar(
-        'Error',
-        error.toString(),
-        icon: const Icon(Icons.error),
-        snackPosition: SnackPosition.TOP,
-      );
+    } catch (e, stackTrace) {
+      debugPrint('FETCH TRANSACTION HISTORY ERROR: $e');
+      debugPrint('$stackTrace');
     } finally {
-      isLoadingTransactionHistory(false);
+      isLoadingTransactionHistory.value = false;
     }
   }
 
@@ -357,6 +393,9 @@ class TransactionController extends GetxController {
 
       // ========================================================
       // CARI TRANSAKSI LOKAL BERDASARKAN SERVER ID
+      //
+      // Tidak dibatasi kasir.
+      // Karena history sekarang adalah seluruh transaksi outlet.
       // ========================================================
 
       final localTransaction = await _getLocalTransactionByServerId(
@@ -422,6 +461,9 @@ class TransactionController extends GetxController {
 
   // ============================================================
   // FIND LOCAL TRANSACTION
+  //
+  // Tidak berdasarkan kasir.
+  // Cari seluruh transaksi pada kios + cabang.
   // ============================================================
 
   Future<Transaction?> _getLocalTransactionByServerId(int serverId) async {
@@ -431,13 +473,14 @@ class TransactionController extends GetxController {
 
     final cabang = prefs.getInt('id_cabang') ?? 0;
 
-    final kasir = prefs.getInt('id_kasir') ?? 0;
+    if (kios == 0 || cabang == 0) {
+      return null;
+    }
 
     final transactions = await _transactionRepository
         .getTransactionsByDateRange(
           idKios: kios,
           idCabang: cabang,
-          idKasir: kasir,
           startDate: DateTime.now().subtract(const Duration(days: 3650)),
           endDate: DateTime.now(),
         );
@@ -550,5 +593,20 @@ class TransactionController extends GetxController {
 
       await fetchTransaction();
     }
+  }
+
+  void _calculateHistorySummary(List<TransactionModel> models) {
+    final activeItems =
+        models.where((item) => item.deleteStatus != true).toList();
+
+    historyTotal.value = activeItems.fold<int>(
+      0,
+      (sum, item) => sum + (item.grandTotal ?? 0),
+    );
+
+    historyTotalCup.value = activeItems.fold<int>(
+      0,
+      (sum, item) => sum + (item.totalItem ?? 0),
+    );
   }
 }

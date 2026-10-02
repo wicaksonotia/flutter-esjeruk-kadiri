@@ -16,7 +16,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -68,6 +68,13 @@ class AppDatabase extends _$AppDatabase {
             ALTER TABLE transactions
             ADD COLUMN numerator INTEGER
           ''');
+        }
+
+        if (from < 4) {
+          await m.database.customStatement('''
+          ALTER TABLE transactions
+          ADD COLUMN cashier_name TEXT NOT NULL DEFAULT ''
+        ''');
         }
       },
     );

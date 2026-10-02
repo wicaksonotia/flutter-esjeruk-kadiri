@@ -357,4 +357,60 @@ class RemoteDataSource {
       throw Exception(e.toString());
     }
   }
+
+  // ============================================================
+  // TRANSACTION HISTORY - SERVER
+  // ============================================================
+
+  static Future<TransactionHistoryModel?> pullTransactionHistoryByMonth(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      debugPrint('========== PULL TRANSACTION MONTH ==========');
+      debugPrint('REQUEST: $rawFormat');
+
+      final result = await transactionHistoryByMonth(rawFormat);
+
+      if (result == null) {
+        debugPrint('PULL TRANSACTION MONTH: NULL');
+        return null;
+      }
+
+      debugPrint(
+        'PULL TRANSACTION MONTH SUCCESS: '
+        '${result.data?.length ?? 0} transaksi',
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint('PULL TRANSACTION MONTH ERROR: $e');
+      return null;
+    }
+  }
+
+  static Future<TransactionHistoryModel?> pullTransactionHistoryByDateRange(
+    Map<String, dynamic> rawFormat,
+  ) async {
+    try {
+      debugPrint('========== PULL TRANSACTION RANGE ==========');
+      debugPrint('REQUEST: $rawFormat');
+
+      final result = await transactionHistoryByDateRange(rawFormat);
+
+      if (result == null) {
+        debugPrint('PULL TRANSACTION RANGE: NULL');
+        return null;
+      }
+
+      debugPrint(
+        'PULL TRANSACTION RANGE SUCCESS: '
+        '${result.data?.length ?? 0} transaksi',
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint('PULL TRANSACTION RANGE ERROR: $e');
+      return null;
+    }
+  }
 }
