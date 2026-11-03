@@ -469,8 +469,22 @@ class TransactionRepository {
       return;
     }
 
-    final transactionDate =
-        DateTime.tryParse(transaction.transactionDate ?? '') ?? DateTime.now();
+    final rawTransactionDate = transaction.transactionDate;
+
+    if (rawTransactionDate == null || rawTransactionDate.isEmpty) {
+      throw FormatException(
+        'Tanggal transaksi server kosong. '
+        'Server ID: ${transaction.id}',
+      );
+    }
+
+    final transactionDate = DateTime.tryParse(rawTransactionDate);
+
+    if (transactionDate == null) {
+      throw FormatException(
+        'Format tanggal transaksi tidak valid: $rawTransactionDate',
+      );
+    }
 
     final existing = await getByServerTransactionId(serverId);
 

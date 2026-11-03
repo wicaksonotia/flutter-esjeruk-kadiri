@@ -97,8 +97,7 @@ class TransactionModel {
 
     numerator = json['numerator'];
 
-    transactionDate =
-        json['transaction_date'] ?? DateTime.now().toIso8601String();
+    transactionDate = json['transaction_date']?.toString();
 
     idKios = json['id_kios'];
 

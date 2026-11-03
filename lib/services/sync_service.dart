@@ -14,9 +14,7 @@ class SyncService extends GetxService {
   // ============================================================
 
   final RxBool isSyncing = false.obs;
-
   final RxInt pendingCount = 0.obs;
-
   final Rx<SyncState> syncState = SyncState.synced.obs;
 
   final RxString lastSyncMessage = 'Belum ada sinkronisasi'.obs;
@@ -32,7 +30,6 @@ class SyncService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-
     refreshPendingCount();
   }
 
@@ -59,7 +56,7 @@ class SyncService extends GetxService {
   }
 
   // ============================================================
-  // PUSH TRANSACTION
+  // PUSH TRANSACTIONS
   // ============================================================
 
   Future<void> syncPendingTransactions() async {
@@ -77,10 +74,6 @@ class SyncService extends GetxService {
 
       pendingCount.value = pendingTransactions.length;
 
-      // ----------------------------------------------------------
-      // Tidak ada pending
-      // ----------------------------------------------------------
-
       if (pendingTransactions.isEmpty) {
         syncState.value = SyncState.synced;
 
@@ -95,15 +88,10 @@ class SyncService extends GetxService {
 
       debugPrint(
         'SYNC: ditemukan '
-        '${pendingTransactions.length} '
-        'transaksi pending.',
+        '${pendingTransactions.length} transaksi pending.',
       );
 
       bool hasError = false;
-
-      // ----------------------------------------------------------
-      // Push satu per satu
-      // ----------------------------------------------------------
 
       for (final transaction in pendingTransactions) {
         final success = await _syncSingleTransaction(transaction);
@@ -114,10 +102,6 @@ class SyncService extends GetxService {
 
         await refreshPendingCount();
       }
-
-      // ----------------------------------------------------------
-      // Final state
-      // ----------------------------------------------------------
 
       await refreshPendingCount();
 
@@ -131,11 +115,11 @@ class SyncService extends GetxService {
         syncState.value = SyncState.offline;
 
         lastSyncMessage.value =
-            '${pendingCount.value} transaksi '
-            'menunggu koneksi';
+            '${pendingCount.value} transaksi menunggu koneksi';
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('SYNC ERROR: $e');
+      debugPrint('$stackTrace');
 
       syncState.value =
           pendingCount.value > 0 ? SyncState.offline : SyncState.synced;
@@ -143,9 +127,18 @@ class SyncService extends GetxService {
       lastSyncMessage.value = 'Belum dapat terhubung ke server';
     } finally {
       isSyncing.value = false;
-
       await refreshPendingCount();
     }
+  }
+
+  // ============================================================
+  // FORMAT TRANSACTION DATE
+  // ============================================================
+
+  String _formatTransactionDate(DateTime date) {
+    // Jangan mengubah ke UTC.
+    // Pertahankan representasi tanggal dari transaksi lokal.
+    return date.toIso8601String();
   }
 
   // ============================================================
@@ -153,18 +146,18 @@ class SyncService extends GetxService {
   // ============================================================
 
   Future<bool> _syncSingleTransaction(Transaction transaction) async {
-    final String localUuid = transaction.localUuid;
+    final localUuid = transaction.localUuid;
 
     try {
       debugPrint('SYNC: processing $localUuid');
 
+      // ----------------------------------------------------------
+      // Ambil detail transaksi lokal
+      // ----------------------------------------------------------
+
       final details = await _transactionRepository.getDetailsByLocalUuid(
         localUuid,
       );
-
-      // ----------------------------------------------------------
-      // Detail kosong
-      // ----------------------------------------------------------
 
       if (details.isEmpty) {
         debugPrint('SYNC: detail kosong untuk $localUuid');
@@ -175,27 +168,41 @@ class SyncService extends GetxService {
       }
 
       // ----------------------------------------------------------
+      // Tanggal asli transaksi dari SQLite
+      // ----------------------------------------------------------
+
+      final transactionDate = _formatTransactionDate(
+        transaction.transactionDate,
+      );
+
+      debugPrint(
+        'SYNC DATE => '
+        'uuid=$localUuid | '
+        'date=${transaction.transactionDate} | '
+        'utc=${transaction.transactionDate.isUtc} | '
+        'payload=$transactionDate',
+      );
+
+      // ----------------------------------------------------------
       // Header transaction
       // ----------------------------------------------------------
 
       final dataTransaction = {
         'id_kios': transaction.idKios,
-
         'id_cabang': transaction.idCabang,
-
         'id_kasir': transaction.idKasir,
 
         'sub_total': transaction.subTotal,
-
         'discount': transaction.discount,
-
         'total_bayar': transaction.totalBayar,
 
         'payment_method': transaction.paymentMethod,
-
         'total_quantity': transaction.totalQuantity,
 
-        'local_uuid': transaction.localUuid,
+        'local_uuid': localUuid,
+
+        // TANGGAL ASLI TRANSAKSI LOKAL
+        'transaction_date': transactionDate,
       };
 
       // ----------------------------------------------------------
@@ -206,11 +213,8 @@ class SyncService extends GetxService {
           details.map((detail) {
             return {
               'id_product': detail.idProduct,
-
               'product_name': detail.productName,
-
               'quantity': detail.quantity,
-
               'unit_price': detail.unitPrice,
             };
           }).toList();
@@ -231,8 +235,7 @@ class SyncService extends GetxService {
       if (!result.success) {
         debugPrint(
           'SYNC FAILED: '
-          '$localUuid - '
-          '${result.message}',
+          '$localUuid - ${result.message}',
         );
 
         await _transactionRepository.markAsPending(localUuid: localUuid);
@@ -246,8 +249,7 @@ class SyncService extends GetxService {
 
       if (result.transactionId == null) {
         debugPrint(
-          'SYNC FAILED: '
-          'transaction_id kosong '
+          'SYNC FAILED: transaction_id kosong '
           'untuk $localUuid',
         );
 
@@ -268,17 +270,15 @@ class SyncService extends GetxService {
 
       debugPrint(
         'SYNC SUCCESS: '
-        '$localUuid → '
-        '#${result.transactionId}'
+        '$localUuid → #${result.transactionId}'
         '${result.duplicate ? ' (DUPLICATE)' : ''}',
       );
 
       return true;
-    } catch (e) {
-      debugPrint(
-        'SYNC TRANSACTION ERROR '
-        '[$localUuid]: $e',
-      );
+    } catch (e, stackTrace) {
+      debugPrint('SYNC TRANSACTION ERROR [$localUuid]: $e');
+
+      debugPrint('$stackTrace');
 
       await _transactionRepository.markAsPending(localUuid: localUuid);
 
@@ -298,17 +298,11 @@ class SyncService extends GetxService {
   }) async {
     try {
       debugPrint('========================================');
-
       debugPrint('SYNC PULL TRANSACTION BY MONTH');
-
       debugPrint('kios   : $idKios');
-
       debugPrint('cabang : $idCabang');
-
       debugPrint('month  : $month');
-
       debugPrint('year   : $year');
-
       debugPrint('========================================');
 
       final success = await _transactionRepository
@@ -321,7 +315,6 @@ class SyncService extends GetxService {
 
       if (success) {
         lastSyncAt.value = DateTime.now();
-
         lastSyncMessage.value = 'Data transaksi berhasil diperbarui';
 
         debugPrint('SYNC PULL MONTH SUCCESS');
@@ -332,9 +325,7 @@ class SyncService extends GetxService {
       return success;
     } catch (e, stackTrace) {
       debugPrint('SYNC PULL MONTH ERROR: $e');
-
       debugPrint('$stackTrace');
-
       return false;
     }
   }
@@ -351,17 +342,11 @@ class SyncService extends GetxService {
   }) async {
     try {
       debugPrint('========================================');
-
       debugPrint('SYNC PULL TRANSACTION BY DATE RANGE');
-
       debugPrint('kios   : $idKios');
-
       debugPrint('cabang : $idCabang');
-
       debugPrint('start  : $startDate');
-
       debugPrint('end    : $endDate');
-
       debugPrint('========================================');
 
       final success = await _transactionRepository
@@ -374,7 +359,6 @@ class SyncService extends GetxService {
 
       if (success) {
         lastSyncAt.value = DateTime.now();
-
         lastSyncMessage.value = 'Data transaksi berhasil diperbarui';
 
         debugPrint('SYNC PULL RANGE SUCCESS');
@@ -385,9 +369,7 @@ class SyncService extends GetxService {
       return success;
     } catch (e, stackTrace) {
       debugPrint('SYNC PULL RANGE ERROR: $e');
-
       debugPrint('$stackTrace');
-
       return false;
     }
   }
